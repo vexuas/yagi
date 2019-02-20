@@ -1,6 +1,6 @@
 const fs = require("fs");
 const Discord = require("discord.js");
-const { prefix, token } = require("./config.json");
+const { prefix, token, api } = require("./config.json");
 const { google } = require("googleapis");
 const sheets = google.sheets("v4");
 
@@ -105,7 +105,9 @@ yagi.on("message", message => {
         countString = countString.replace(":", ",");
         countString = countString.replace("AM", "");
         countString = countString.replace("PM", "");
-        const countArray = JSON.parse("[" + countString + "]");
+        console.log(countString);
+        const countArray = countString.split(",").map(Number);
+        console.log(countArray);
         if (cdata[3].includes("PM")) {
           countArray[0] += 12;
         }
@@ -126,20 +128,20 @@ yagi.on("message", message => {
           );
           const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-          const hour = ("00" + hours).substr(-2);
+          const hour = hours;
           const minute = ("00" + minutes).substr(-2);
           const second = ("00" + seconds).substr(-2);
-          let hsuffix = "hours";
-          let msuffix = "minutes";
-          let ssuffix = "seconds";
-          if (minutes < 2) {
-            msuffix = "minute";
-          }
+          let hsuffix = "hrs";
+          let msuffix = "mins";
+          let ssuffix = "secs";
           if (hours < 2) {
-            hsuffix = "hour";
+            hsuffix = "hr";
+          }
+          if (minutes < 2) {
+            msuffix = "min";
           }
           if (seconds < 2) {
-            ssuffix = "second";
+            ssuffix = "sec";
           }
           let countdown = `${hour} ${hsuffix} ${minute} ${msuffix} ${second} ${ssuffix}`;
           if (hours < 0) {
@@ -148,21 +150,46 @@ yagi.on("message", message => {
             countdown = `${second} ${ssuffix}`;
           }
           console.log(countdown);
-          message.channel.send(
-            `${cdata[0].toLowerCase()}, ${
-              cdata[3]
-            }\nChimera World Boss spawning in ${countdown}\nServer Time: ${
-              weekday[day]
-            }, ${ServerTime}\nNext Spawn Time: ${cdata[3]}\nLocation: ${
-              maps[cdata[0]]
-            } `
-          );
+          const nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
+          const embed = {
+            title: "Chimera | Goats",
+            description:
+              "Server Time : `" +
+              weekday[day] +
+              ", " +
+              ServerTime +
+              "`\nSpawn : `" +
+              nextSpawn +
+              "`",
+            color: 32896,
+            thumbnail: {
+              url:
+                "https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png"
+            },
+            fields: [
+              {
+                name: "Location",
+                value: "```fix\n\n" + maps[cdata[0]] + "```"
+              },
+              {
+                name: "Countdown",
+                value: "```xl\n\n" + countdown + "```",
+                inline: true
+              },
+              {
+                name: "Time of Spawn",
+                value: "```xl\n\n" + cdata[3] + "```",
+                inline: true
+              }
+            ]
+          };
+          message.channel.send({ embed });
         }
       });
     });
 
     function authorize(callback) {
-      const authClient = "AIzaSyBiFHKMbvY9jB9CPsxINcszXQUCZKKw4Go";
+      const authClient = api;
 
       if (authClient == null) {
         console.log("authentication failed");
