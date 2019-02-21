@@ -1,7 +1,7 @@
 const embed = {
   title: "Yagi | Info",
   description:
-    "Vulture's Vale and Blizzard Berg World Boss Timer For Aura Kingdom.\n[Invite Link](https://discordapp.com/oauth2/authorize?&client_id=518196430104428579&scope=bot&permissions=8)",
+    "Vulture's Vale and Blizzard Berg World Boss Timer For Aura Kingdom. Kudos to leads and editors for the up-to-date times.\n[Catalyst Sheet (Chimera)](https://tinyurl.com/catalyst-ak) | [Angel Sheet (Phoenix)](https://tinyurl.com/Angels-WB)",
   color: 32896,
   thumbnail: {
     url:
@@ -11,12 +11,12 @@ const embed = {
     {
       name: "List of Commands",
       value:
-        "**+`info`** : Displays bot information.\n**+`invite`** : Generates invite link\n**+`goatsc`** : Displays upcoming world boss spawn in Chimera\n**+`goatsp`** : Displays upcoming world boss spawn in Phoenix\n**+`leads`** : Displays players who lead the hunt for world bosses\n**+`loot`** : Displays loot from world bosses"
+        "**+`info`** : Displays bot information.\n**+`invite`** : Generates invite link\n**+`goatsc`** : Displays upcoming world boss spawn in Chimera\n**+`goatsp`** : Displays upcoming world boss spawn in Phoenix\n**+`loot`** : Displays loot from world bosses\n**+`remind`** : Displays reminder functions"
     },
     {
-      name: "Other AK Bots",
+      name: "Bot Links",
       value:
-        "[Eternia]() - `Aura Kingdom Timers`\n[Amaterasu](https://discordapp.com/oauth2/authorize?&client_id=510980011008983060&scope=bot&permissions=8) - `Aura Kingdom Eidolons`\n"
+        "[Yagi](https://bit.ly/2TTzAkh) - `Aura Kingdom Goats`\n[Eternia]() - `Aura Kingdom Timers`\n[Amaterasu](https://bit.ly/2GPcZSl) - `Aura Kingdom Eidolons`\n"
     }
   ]
 };
