@@ -144,8 +144,7 @@ yagi.on("message", message => {
         });
         let countString = cdata[3];
         //Taking off unnecesarry characters and converting to array
-        countString = countString.replace(":", ",");
-        countString = countString.replace(":", ",");
+        countString = countString.replace(/:/g, ",");
         countString = countString.replace("AM", "");
         countString = countString.replace("PM", "");
         console.log(countString);
@@ -261,15 +260,12 @@ yagi.on("message", message => {
           pdata.push(item);
         });
         let countString = pdata[1] + pdata[2];
-        //Taking off unnecesarry characters and converting to array
-        countString = countString.replace(":", ",");
-        countString = countString.replace(":", ",");
-        console.log(countString);
-        let countArray = countString.split(",").map(Number);
-        if (typeof countArray[0] != "number") {
+        if (countString.includes("U")) {
           message.channel.send("Currently Unavailable (๑•́ω•̀)");
         }
-        console.log(countArray);
+        //Taking off unnecesarry characters and converting to array
+        countString = countString.replace(/:/g, ",");
+        let countArray = countString.split(",").map(Number);
 
         const count = new Date(gameTime);
         let countertime = new Date(
@@ -295,17 +291,15 @@ yagi.on("message", message => {
           countTime += 24 * 60 * 60 * 1000;
           diff = parseInt(countTime - gameTime);
           timeofday = "AM";
-          console.log("hi");
         }
-
         if (diff > 14400000) {
           countArray[0] += 4;
           ampmstring = countArray[0].toString();
           countertime = new Date(
             count.getFullYear(),
             count.getMonth(),
-            count.getDate(),
-            countArray[0],
+            count.getDate() + 1,
+            ampm[countArray[0]],
             countArray[1],
             countArray[2]
           );
@@ -313,7 +307,7 @@ yagi.on("message", message => {
           diff = parseInt(countTime - gameTime);
           timeofday = "AM";
         }
-        if (diff > 0 && diff < 14400000) {
+        if (diff > 0) {
           const hours = Math.floor(
             (diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60)
           );
