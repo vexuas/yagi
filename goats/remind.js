@@ -8,7 +8,7 @@ const embed = {
   },
   fields: [
     {
-      name: "Personal",
+      name: "User",
       value:
         "• Bot will make reminders through direct messages\n• To activate, type `+remindme` followed by a command\n• To deactivate, type `+remindme!` followed by the command\n• Example: `+remindme goatsc` | `+remindme! goatsc`"
     },
