@@ -1,6 +1,4 @@
 const embed = {
-  description:
-    "Reminders |  Activating this function will make the bot automatically send relevant commands after reaching set countdowns",
   color: 32896,
   footer: {
     text:
@@ -15,7 +13,7 @@ const embed = {
     {
       name: "Channel",
       value:
-        "• Bot will make reminders through the channel it was activated in\n• To activate, type `+remindhere` followed by a command\n• To deactivate, type `+remindhere!` followed by the command\n• To view activce reminders, type `+remindhere list`\n• Example: `+remindhere goatsp` | `+remindhere! goatsp`"
+        "• Bot will make reminders through the channel it was activated in\n• To activate, type `+remindhere` followed by a command\n• To deactivate, type `+remindhere!` followed by the command\n• To view active reminders, type `+remindhere list`\n• Example: `+remindhere goatsp` | `+remindhere! goatsp`"
     }
   ]
 };

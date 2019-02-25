@@ -64,14 +64,30 @@ module.exports = {
         let timeofday = "AM";
         let ampmstring = countArray[0].toString();
         console.log(ServerTime);
-        if (diff < 0 && ServerTime.includes("AM")) {
-          countTime += 12 * 60 * 60 * 1000;
+        if (diff < 0) {
+          countertime = new Date(
+            count.getFullYear(),
+            count.getMonth(),
+            count.getDate(),
+            countArray[0] + 12,
+            countArray[1],
+            countArray[2]
+          );
+          countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
           timeofday = "PM";
           console.log("hello");
         }
-        if (diff < 0 && ServerTime.includes("PM")) {
-          countTime += 24 * 60 * 60 * 1000;
+        if ((diff < 0) & ServerTime.includes("PM")) {
+          countertime = new Date(
+            count.getFullYear(),
+            count.getMonth(),
+            count.getDate() + 1,
+            countArray[0],
+            countArray[1],
+            countArray[2]
+          );
+          countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
           timeofday = "AM";
         }
@@ -90,6 +106,7 @@ module.exports = {
           diff = parseInt(countTime - gameTime);
           timeofday = "AM";
         }
+
         if (diff > 0) {
           const hours = Math.floor(
             (diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60)
