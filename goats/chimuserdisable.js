@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { chimuserlist } = require("./chimusers.js");
+const { chimuserlist, chimidlist } = require("./chimusers.js");
 
 module.exports = {
   name: "remindme! goatsc",
@@ -12,15 +12,22 @@ module.exports = {
     } else {
       message.channel.send("User reminder disabled!");
       chimuserlist[username] = "chimDisable";
+      delete chimidlist[username];
       const userkeys = Object.keys(chimuserlist);
       const uservalues = Object.values(chimuserlist);
+      const idkeys = Object.keys(chimidlist);
+      const idvalues = Object.values(chimidlist);
+      let idobject = [];
       let userobject = [];
       for (let i = 0; i < userkeys.length; i++) {
         userobject.push(` ${userkeys[i]} : "${uservalues[i]}"`);
       }
+      for (let i = 0; i < idkeys.length; i++) {
+        idobject.push(` ${idkeys[i]} : "${idvalues[i]}"`);
+      }
       fs.writeFile(
         "./goats/chimusers.js",
-        `let chimuserlist = {${userobject}}\n\nmodule.exports = {\n  chimuserlist: chimuserlist\n}`,
+        `let chimuserlist = {${userobject}}\nlet chimidlist = {${idobject}}\n\nmodule.exports = {\n  chimuserlist: chimuserlist,\nchimidlist: chimidlist\n}`,
         function(err) {
           if (err) {
             return console.log(err);
