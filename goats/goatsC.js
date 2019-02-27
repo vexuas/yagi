@@ -55,8 +55,9 @@ module.exports = {
         console.log(countString);
         const countArray = countString.split(",").map(Number);
         let nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
+        let timeofSpawn = cdata[3];
 
-        if (cdata[3].includes("PM")) {
+        if (cdata[3].includes("PM") && cdata[3].includes("12") === false) {
           countArray[0] += 12;
         }
         console.log(countArray);
@@ -87,6 +88,12 @@ module.exports = {
           );
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
+          nextSpawn = `${cdata[0].toLowerCase()}, ${countArray[0] + 4}:${
+            countArray[1]
+          }:${countArray[2]} ${countArray[0] > 12 ? "PM" : "AM"}`;
+          timeofSpawn = `${countArray[0] + 4}:${countArray[1]}:${
+            countArray[2]
+          } ${countArray[0] > 12 ? "PM" : "AM"}`;
         }
         if (diff > 86400000) {
           countArray[0] += 4;
@@ -153,7 +160,7 @@ module.exports = {
               },
               {
                 name: "Time of Spawn",
-                value: "```xl\n\n" + cdata[3] + "```",
+                value: "```xl\n\n" + timeofSpawn + "```",
                 inline: true
               }
             ]
