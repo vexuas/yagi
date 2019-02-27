@@ -9,10 +9,10 @@ const reminders = {
 let userReminders = [];
 function getListReminders(message) {
   userReminders = [];
-  if (chimuserlist[message.author.username] === "chimEnable") {
+  if (chimuserlist[message.author.username] === "enable") {
     userReminders.push("goatsc");
   }
-  if (phoeuserlist[message.author.username] === "phoeEnable") {
+  if (phoeuserlist[message.author.username] === "enable") {
     userReminders.push("goatsp");
   }
   const reminderOutput = userReminders

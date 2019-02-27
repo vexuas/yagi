@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { phoeuserlist, phoeidlist } = require("./phoeusers.js");
+const reminders = require("../yagi");
 
 module.exports = {
   name: "remindme! goatsp",
@@ -7,11 +8,12 @@ module.exports = {
   execute(message, args) {
     //Updating user files to indicate disabled
     let username = message.author.username;
-    if (phoeuserlist[username] === "phoeDisable") {
+    if (phoeuserlist[username] === "disable") {
       return message.channel.send("User reminder is already disabled");
     } else {
+      reminders.removePhoeUser(username);
       message.channel.send("User reminder disabled!");
-      phoeuserlist[username] = "phoeDisable";
+      phoeuserlist[username] = "disable";
       delete phoeidlist[username];
       const userkeys = Object.keys(phoeuserlist);
       const uservalues = Object.values(phoeuserlist);

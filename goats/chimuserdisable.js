@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { chimuserlist, chimidlist } = require("./chimusers.js");
+const reminders = require("../yagi");
 
 module.exports = {
   name: "remindme! goatsc",
@@ -7,11 +8,12 @@ module.exports = {
   execute(message, args) {
     //Updating user files to indicate disabled
     let username = message.author.username;
-    if (chimuserlist[username] === "chimDisable") {
+    if (chimuserlist[username] === "disable") {
       return message.channel.send("User reminder is already disabled");
     } else {
+      reminders.removeChimUser(username);
       message.channel.send("User reminder disabled!");
-      chimuserlist[username] = "chimDisable";
+      chimuserlist[username] = "disable";
       delete chimidlist[username];
       const userkeys = Object.keys(chimuserlist);
       const uservalues = Object.values(chimuserlist);

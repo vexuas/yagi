@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { phoeuserlist, phoeidlist } = require("./phoeusers.js");
+const reminders = require("../yagi");
 
 module.exports = {
   name: "remindme goatsp",
@@ -8,11 +9,12 @@ module.exports = {
     //Updating user files to indicate enabled
     let username = message.author.username;
     let userid = message.author.id;
-    if (phoeuserlist[username] === "phoeEnable") {
+    if (phoeuserlist[username] === "enable") {
       return message.channel.send("User reminder is already enabled");
     } else {
+      reminders.addPhoeUser(username, userid);
       message.channel.send("User reminder enabled!");
-      phoeuserlist[username] = "phoeEnable";
+      phoeuserlist[username] = "enable";
       phoeidlist[username] = userid; //Setting userID to send message later
       const userkeys = Object.keys(phoeuserlist);
       const uservalues = Object.values(phoeuserlist);
