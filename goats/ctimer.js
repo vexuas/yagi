@@ -149,12 +149,10 @@ function chimeraTime(response, id, interval) {
           ]
         };
         if (countdown === "1 hr 00 min 00 sec") {
-          id.send("`wb starting in 1 hour on Chimera!`");
-          id.send({ embed });
+          id.send("`wb starting in 1 hour on Chimera!`", { embed });
         }
         if (countdown === "0 hr 10 mins 00 sec") {
-          id.send("`wb starting in 10 minutes on Chimera!`");
-          id.send({ embed });
+          id.send("`wb starting in 10 minutes on Chimera!`", { embed });
         }
       }
       console.log(ServerTime);

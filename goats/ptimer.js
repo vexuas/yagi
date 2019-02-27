@@ -177,12 +177,10 @@ function phoenixTime(response, id, intervals) {
           ]
         };
         if (countdown === "1 hr 00 min 00 sec") {
-          id.send("`wb starting in 1 hour on Phoenix`");
-          id.send({ embed });
+          id.send("`wb starting in 1 hour on Phoenix`", { embed });
         }
         if (countdown === "0 hr 10 mins 00 sec") {
-          id.send("`wb starting in 10 minutes on Phoenix!`");
-          id.send({ embed });
+          id.send("`wb starting in 10 minutes on Phoenix!`", { embed });
         }
         console.log(ServerTime);
         console.log(newtime);
