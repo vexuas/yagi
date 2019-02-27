@@ -16,7 +16,7 @@ const embed = {
     {
       name: "Bot Links",
       value:
-        "[Yagi](https://bit.ly/2TTzAkh) - `Aura Kingdom Goats`\n[Eternia]() - `Aura Kingdom Timers`\n[Amaterasu](https://bit.ly/2GPcZSl) - `Aura Kingdom Eidolons`\n"
+        "[Yagi](https://tinyurl.com/ak-goats-bot) - `Aura Kingdom Goats`\n[Eternia]() - `Aura Kingdom Timers`\n[Amaterasu](https://tinyurl.com/ak-eidolons-bot) - `Aura Kingdom Eidolons`\n"
     }
   ]
 };

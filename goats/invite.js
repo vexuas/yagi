@@ -9,7 +9,7 @@ module.exports = {
   execute(message, args) {
     embed.description = `${
       message.author
-    } | [Add me to your servers! (◕ᴗ◕✿)](https://bit.ly/2TTzAkh)`;
+    } | [Add me to your servers! (◕ᴗ◕✿)](https://tinyurl.com/ak-goats-bot)`;
     message.channel.send({ embed });
   }
 };
