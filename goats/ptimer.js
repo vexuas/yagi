@@ -98,7 +98,6 @@ function phoenixTime(response, id, intervals) {
         timeofday = "AM";
       }
       if (diff > 86400000) {
-        countArray[0] += 4;
         ampmstring = countArray[0].toString();
         countertime = new Date(
           count.getFullYear(),

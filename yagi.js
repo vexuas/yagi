@@ -22,9 +22,12 @@ let chimchannelIds = Object.values(chimchannelid);
 let phoechannelIds = Object.values(phoechannelid);
 const yagi = new Discord.Client();
 yagi.commands = new Discord.Collection();
+
 console.log(chimIds);
 console.log(Object.keys(chimuserlist));
 console.log(phoeIds);
+console.log(Object.keys(phoeuserlist));
+console.log(Object.keys(chimchannellist));
 console.log(Object.keys(phoeuserlist));
 const commandFiles = fs
   .readdirSync("./goats")
@@ -114,14 +117,14 @@ function phoeUserReminderSend(phoenix) {
 
 function chimChannelReminderSend(chimera) {
   chimera.forEach(item => {
-    const chimuserId = yagi.channels.get(item);
-    chimeraTimer(chimuserId, chimChanIntervals);
+    const chimchannelId = yagi.channels.get(item);
+    chimeraTimer(chimchannelId, chimChanIntervals);
   });
 }
 function phoeChannelReminderSend(phoenix) {
   phoenix.forEach(item => {
-    const phoeuserId = yagi.channels.get(item);
-    phoenixTimer(phoeuserId, phoeChanIntervals);
+    const phoechannelId = yagi.channels.get(item);
+    phoenixTimer(phoechannelId, phoeChanIntervals);
   });
 }
 //Refreshing reminder intervals
@@ -171,8 +174,8 @@ yagi.on("ready", () => {
   //Gets data from sheet every 10 minutes
   setInterval(() => {
     refreshReminders();
-    console.log("10 minute sheet checkup");
-  }, 10000);
+    console.log("30 second sheet checkup");
+  }, 30000);
 });
 
 yagi.login(token);
@@ -183,6 +186,8 @@ yagi.on("message", message => {
   const args = message.content.slice(prefix.length).split();
   const command = args.shift().toLowerCase();
   //if command doesn't exist, show error message
+  if (message.content === "+remindhere") {
+  }
   if (!yagi.commands.has(command))
     return message.channel.send("type `+info` for commands list");
   //if it does, do command

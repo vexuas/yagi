@@ -23,6 +23,7 @@ module.exports = {
       minute: "2-digit",
       second: "2-digit"
     });
+
     //Gets day from Date Object, returns a number(0-6)
     const day = serverTime.getDay();
     cdata = [];
@@ -42,6 +43,10 @@ module.exports = {
         response.data.values[0].forEach(item => {
           cdata.push(item);
         });
+        if (cdata[1].includes("No ETA Yet")) {
+          message.channel.send("Currently Unavailable (๑•́ω•̀)");
+        }
+
         let countString = cdata[3];
         //Taking off unnecesarry characters and converting to array
         countString = countString.replace(/:/g, ",");
@@ -49,6 +54,8 @@ module.exports = {
         countString = countString.replace("PM", "");
         console.log(countString);
         const countArray = countString.split(",").map(Number);
+        let nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
+        let timeofSpawn = cdata[3];
 
         if (cdata[3].includes("PM")) {
           countArray[0] += 12;
@@ -81,6 +88,12 @@ module.exports = {
           );
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
+          nextSpawn = `${cdata[0].toLowerCase()}, ${countArray[0] + 4}:${
+            countArray[1]
+          }:${countArray[2]} ${countArray[0] > 12 ? "PM" : "AM"}`;
+          timeofSpawn = `${countArray[0] + 4}:${countArray[1]}:${
+            countArray[2]
+          } ${countArray[0] > 12 ? "PM" : "AM"}`;
         }
         if (diff > 86400000) {
           countArray[0] += 4;
@@ -95,6 +108,7 @@ module.exports = {
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
         }
+
         if (diff > 0) {
           const hours = Math.floor(
             (diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60)
@@ -118,7 +132,7 @@ module.exports = {
           }
           let countdown = `${hour} ${hsuffix} ${minute} ${msuffix} ${second} ${ssuffix}`;
           console.log(countdown);
-          const nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
+
           const embed = {
             title: "Chimera | Goats",
             description:
@@ -146,7 +160,7 @@ module.exports = {
               },
               {
                 name: "Time of Spawn",
-                value: "```xl\n\n" + cdata[3] + "```",
+                value: "```xl\n\n" + timeofSpawn + "```",
                 inline: true
               }
             ]

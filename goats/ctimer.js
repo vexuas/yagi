@@ -44,7 +44,8 @@ function chimeraTime(response, id, interval) {
       countString = countString.replace("PM", "");
       console.log(countString);
       const countArray = countString.split(",").map(Number);
-
+      let nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
+      let timeofSpawn = cdata[3];
       if (cdata[3].includes("PM")) {
         countArray[0] += 12;
       }
@@ -72,6 +73,12 @@ function chimeraTime(response, id, interval) {
         );
         countTime = countertime.getTime();
         diff = parseInt(countTime - gameTime);
+        nextSpawn = `${cdata[0].toLowerCase()}, ${countArray[0] + 4}:${
+          countArray[1]
+        }:${countArray[2]} ${countArray[0] > 12 ? "PM" : "AM"}`;
+        timeofSpawn = `${countArray[0] + 4}:${countArray[1]}:${countArray[2]} ${
+          countArray[0] > 12 ? "PM" : "AM"
+        }`;
       }
       if (diff > 86400000) {
         countArray[0] += 4;
@@ -109,7 +116,6 @@ function chimeraTime(response, id, interval) {
         }
         let countdown = `${hour} ${hsuffix} ${minute} ${msuffix} ${second} ${ssuffix}`;
         console.log(countdown);
-        const nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
         const embed = {
           title: "Chimera | Goats",
           description:
@@ -137,7 +143,7 @@ function chimeraTime(response, id, interval) {
             },
             {
               name: "Time of Spawn",
-              value: "```xl\n\n" + cdata[3] + "```",
+              value: "```xl\n\n" + timeofSpawn + "```",
               inline: true
             }
           ]
@@ -147,7 +153,7 @@ function chimeraTime(response, id, interval) {
           id.send({ embed });
         }
         if (countdown === "0 hr 10 mins 00 sec") {
-          id.send("`wb starting in 10 minutes on Chimera`");
+          id.send("`wb starting in 10 minutes on Chimera!`");
           id.send({ embed });
         }
       }
