@@ -13,7 +13,7 @@ const embed = {
     {
       name: "Channel",
       value:
-        "• Bot will make reminders through the channel it was activated in\n• To activate, type `+remindhere` followed by a command\n• To deactivate, type `+remindhere!` followed by the command\n• To view active reminders, type `+remindhere list`\n• To clear all channel reminders, type `+remindhere stop`\n• Example: `+remindhere goatsp` | `+remindhere! goatsp`"
+        "• Bot will make reminders through the channel it was activated in\n• Can only be used by members with Administrative permissions\n• To activate, type `+remindhere` followed by a command\n• To deactivate, type `+remindhere!` followed by the command\n• To view active reminders, type `+remindhere list`\n• To clear all channel reminders, type `+remindhere stop`\n• Example: `+remindhere goatsp` | `+remindhere! goatsp`"
     }
   ]
 };

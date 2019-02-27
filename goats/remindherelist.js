@@ -40,6 +40,11 @@ module.exports = {
   name: "remindhere list",
   description: "lists active reminders",
   execute(message, args) {
+    if (message.channel.type !== "text") {
+      return message.author.send(
+        "You can only view the channel reminder list in a server channel"
+      );
+    }
     getListReminders(message);
   }
 };
