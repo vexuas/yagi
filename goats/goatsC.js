@@ -82,6 +82,19 @@ module.exports = {
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
         }
+        if (diff > 86400000) {
+          countArray[0] += 4;
+          countertime = new Date(
+            count.getFullYear(),
+            count.getMonth(),
+            count.getDate(),
+            countArray[0],
+            countArray[1],
+            countArray[2]
+          );
+          countTime = countertime.getTime();
+          diff = parseInt(countTime - gameTime);
+        }
         if (diff > 0) {
           const hours = Math.floor(
             (diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60)

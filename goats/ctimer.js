@@ -2,10 +2,11 @@ const { api } = require("../config.json");
 const { google } = require("googleapis");
 const sheets = google.sheets("v4");
 const { weekday, maps } = require("./variables.js");
-let chimIntervals = [];
+let chimUserIntervals = [];
+let chimChanIntervals = [];
 
-function chimeraTime(response, userid) {
-  chimIntervals.push(
+function chimeraTime(response, id, interval) {
+  interval.push(
     setInterval(() => {
       const d = new Date();
       //Converts date into universal time in milliseconds
@@ -59,16 +60,25 @@ function chimeraTime(response, userid) {
       );
       let countTime = countertime.getTime();
       let diff = parseInt(countTime - gameTime);
-      if (diff < 0 && cdata[2].includes("PM")) {
-        countTime += 24 * 60 * 60 * 1000;
-        diff = parseInt(countTime - gameTime);
-      }
       if (diff > 14400000) {
         countArray[0] += 4;
         countertime = new Date(
           count.getFullYear(),
           count.getMonth(),
           count.getDate() + 1,
+          countArray[0],
+          countArray[1],
+          countArray[2]
+        );
+        countTime = countertime.getTime();
+        diff = parseInt(countTime - gameTime);
+      }
+      if (diff > 86400000) {
+        countArray[0] += 4;
+        countertime = new Date(
+          count.getFullYear(),
+          count.getMonth(),
+          count.getDate(),
           countArray[0],
           countArray[1],
           countArray[2]
@@ -133,23 +143,21 @@ function chimeraTime(response, userid) {
           ]
         };
         if (countdown === "1 hr 00 min 00 sec") {
-          userid.send("`wb starting in 1 hour on Chimera!`");
-          userid.send({ embed });
+          id.send("`wb starting in 1 hour on Chimera!`");
+          id.send({ embed });
         }
         if (countdown === "0 hr 10 mins 00 sec") {
-          userid.send("`wb starting in 10 minutes on Chimera`");
-          userid.send({ embed });
+          id.send("`wb starting in 10 minutes on Chimera`");
+          id.send({ embed });
         }
-        //Every 10 minutes get data from sheet and clears current timer
       }
       console.log(ServerTime);
       console.log(newtime);
     }, 1000)
   );
-  console.log(chimIntervals);
 }
 
-function chimeraTimer(userid) {
+function chimeraTimer(id, interval) {
   let cdata = [];
   console.log("chimtest");
   authorize(function(authClient) {
@@ -161,8 +169,9 @@ function chimeraTimer(userid) {
     sheets.spreadsheets.values.get(request, function(err, response) {
       if (err) {
         console.error(err);
+        chimeraTimer();
       }
-      chimeraTime(response, userid);
+      chimeraTime(response, id, interval);
     });
   });
 
@@ -177,4 +186,5 @@ function chimeraTimer(userid) {
   }
 }
 module.exports.chimeraTimer = chimeraTimer;
-module.exports.chimIntervals = chimIntervals;
+module.exports.chimUserIntervals = chimUserIntervals;
+module.exports.chimChanIntervals = chimChanIntervals;

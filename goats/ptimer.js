@@ -2,10 +2,11 @@ const { api } = require("../config.json");
 const { google } = require("googleapis");
 const sheets = google.sheets("v4");
 const { weekday, maps, phoemaps, ampm } = require("./variables.js");
-let phoeIntervals = [];
+let phoeUserIntervals = [];
+let phoeChanIntervals = [];
 
-function phoenixTime(response, userid) {
-  phoeIntervals.push(
+function phoenixTime(response, id, intervals) {
+  intervals.push(
     setInterval(() => {
       const d = new Date();
       //Converts date into universal time in milliseconds
@@ -37,9 +38,6 @@ function phoenixTime(response, userid) {
         pdata.push(item);
       });
       let countString = pdata[1] + pdata[2];
-      if (countString.includes("U")) {
-        message.channel.send("Currently Unavailable (๑•́ω•̀)");
-      }
       //Taking off unnecesarry characters and converting to array
       countString = countString.replace(/:/g, ",");
       let countArray = countString.split(",").map(Number);
@@ -91,6 +89,21 @@ function phoenixTime(response, userid) {
           count.getFullYear(),
           count.getMonth(),
           count.getDate() + 1,
+          ampm[countArray[0]],
+          countArray[1],
+          countArray[2]
+        );
+        countTime = countertime.getTime();
+        diff = parseInt(countTime - gameTime);
+        timeofday = "AM";
+      }
+      if (diff > 86400000) {
+        countArray[0] += 4;
+        ampmstring = countArray[0].toString();
+        countertime = new Date(
+          count.getFullYear(),
+          count.getMonth(),
+          count.getDate(),
           ampm[countArray[0]],
           countArray[1],
           countArray[2]
@@ -165,22 +178,21 @@ function phoenixTime(response, userid) {
           ]
         };
         if (countdown === "1 hr 00 min 00 sec") {
-          userid.send("`wb starting in 1 hour on Phoenix`");
-          userid.send({ embed });
+          id.send("`wb starting in 1 hour on Phoenix`");
+          id.send({ embed });
         }
         if (countdown === "0 hr 10 mins 00 sec") {
-          userid.send("`wb starting in 10 minutes on Phoenix!`");
-          userid.send({ embed });
+          id.send("`wb starting in 10 minutes on Phoenix!`");
+          id.send({ embed });
         }
         console.log(ServerTime);
         console.log(newtime);
       }
     }, 1000)
   );
-  console.log(phoeIntervals);
 }
 
-function phoenixTimer(userid) {
+function phoenixTimer(id, intervals) {
   let pdata = [];
   console.log("phoetest");
   authorize(function(authClient) {
@@ -192,8 +204,9 @@ function phoenixTimer(userid) {
     sheets.spreadsheets.values.get(request, function(err, response) {
       if (err) {
         console.error(err);
+        phoenixTimer();
       }
-      phoenixTime(response, userid);
+      phoenixTime(response, id, intervals);
     });
   });
 
@@ -208,4 +221,5 @@ function phoenixTimer(userid) {
   }
 }
 module.exports.phoenixTimer = phoenixTimer;
-module.exports.phoeIntervals = phoeIntervals;
+module.exports.phoeUserIntervals = phoeUserIntervals;
+module.exports.phoeChanIntervals = phoeChanIntervals;
