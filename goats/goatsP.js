@@ -65,7 +65,7 @@ module.exports = {
         let ampmstring = countArray[0].toString();
         console.log(ServerTime);
         if (diff < 0) {
-          countArray[0] += 4;
+          countArray[0] += 12;
           ampmstring = countArray[0].toString();
           countertime = new Date(
             count.getFullYear(),
@@ -94,7 +94,7 @@ module.exports = {
           timeofday = "AM";
         }
         if (diff > 14400000) {
-          countArray[0] += 4;
+          countArray[0] -= 8;
           ampmstring = countArray[0].toString();
           countertime = new Date(
             count.getFullYear(),
