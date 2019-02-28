@@ -65,11 +65,13 @@ module.exports = {
         let ampmstring = countArray[0].toString();
         console.log(ServerTime);
         if (diff < 0) {
+          countArray[0] += 4;
+          ampmstring = countArray[0].toString();
           countertime = new Date(
             count.getFullYear(),
             count.getMonth(),
             count.getDate(),
-            countArray[0] + 12,
+            countArray[0],
             countArray[1],
             countArray[2]
           );
@@ -104,7 +106,8 @@ module.exports = {
           );
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
-          timeofday = "AM";
+          timeofday = "PM";
+          console.log("hi");
         }
         if (diff > 86400000) {
           ampmstring = countArray[0].toString();
