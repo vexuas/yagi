@@ -55,7 +55,7 @@ function phoenixTime(response, id, intervals) {
       let timeofday = "AM";
       let ampmstring = countArray[0].toString();
       console.log(ServerTime);
-      if (diff < 0) {
+      if (diff < 0 && ServerTime.includes("AM")) {
         countArray[0] += 12;
         ampmstring = countArray[0].toString();
         countertime = new Date(
@@ -101,6 +101,7 @@ function phoenixTime(response, id, intervals) {
         console.log("hi");
       }
       if (diff > 86400000) {
+        countArray[0] += 4;
         ampmstring = countArray[0].toString();
         countertime = new Date(
           count.getFullYear(),
