@@ -99,8 +99,8 @@ module.exports = {
           countertime = new Date(
             count.getFullYear(),
             count.getMonth(),
-            count.getDate() + 1,
-            ampm[countArray[0]],
+            count.getDate(),
+            countArray[0],
             countArray[1],
             countArray[2]
           );
@@ -108,6 +108,7 @@ module.exports = {
           diff = parseInt(countTime - gameTime);
           timeofday = "PM";
           console.log("hi");
+          console.log(countArray[0]);
         }
         if (diff > 86400000) {
           countArray[4] -= 8;

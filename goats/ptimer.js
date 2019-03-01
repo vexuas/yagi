@@ -91,7 +91,7 @@ function phoenixTime(response, id, intervals) {
           count.getFullYear(),
           count.getMonth(),
           count.getDate(),
-          ampm[countArray[0]],
+          countArray[0],
           countArray[1],
           countArray[2]
         );
