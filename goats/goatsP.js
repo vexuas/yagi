@@ -24,6 +24,11 @@ module.exports = {
       minute: "2-digit",
       second: "2-digit"
     });
+    let timein24 = serverTime.toLocaleTimeString("en-US", {
+      hour12: false
+    });
+    timein24 = timein24.replace(/:/g, ",");
+    const time24 = timein24.split(",").map(Number);
     //Gets day from Date Object, returns a number(0-6)
     const day = serverTime.getDay();
     authorize(function(authClient) {
@@ -80,7 +85,11 @@ module.exports = {
           timeofday = "PM";
           console.log("hello");
         }
-        if (diff < 0 && ServerTime.includes("PM")) {
+        if (diff < 0 && time24[0] === 12) {
+          countArray[0] += 12;
+          console.log("24");
+        }
+        if (diff < 0 && ServerTime.includes("PM") && time24[0] > 20) {
           countertime = new Date(
             count.getFullYear(),
             count.getMonth(),
@@ -92,6 +101,21 @@ module.exports = {
           countTime = countertime.getTime();
           diff = parseInt(countTime - gameTime);
           timeofday = "AM";
+          console.log("hm");
+        }
+        if (diff < 0 && ServerTime.includes("PM")) {
+          countertime = new Date(
+            count.getFullYear(),
+            count.getMonth(),
+            count.getDate(),
+            countArray[0],
+            countArray[1],
+            countArray[2]
+          );
+          countTime = countertime.getTime();
+          diff = parseInt(countTime - gameTime);
+          timeofday = "AM";
+          console.log("hm");
         }
         if (diff > 14400000) {
           countArray[0] -= 8;
@@ -111,7 +135,7 @@ module.exports = {
           console.log(countArray[0]);
         }
         if (diff > 86400000) {
-          countArray[4] -= 8;
+          countArray[4] += 4;
           ampmstring = countArray[0].toString();
           countertime = new Date(
             count.getFullYear(),
