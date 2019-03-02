@@ -92,7 +92,8 @@ function phoenixTime(response, id, intervals) {
         countTime = countertime.getTime();
         diff = parseInt(countTime - gameTime);
         timeofday = "AM";
-        console.log("hm");
+        console.log("hmm");
+        console.log(diff);
       }
       if (diff < 0 && ServerTime.includes("PM")) {
         countertime = new Date(
@@ -114,7 +115,7 @@ function phoenixTime(response, id, intervals) {
         countertime = new Date(
           count.getFullYear(),
           count.getMonth(),
-          count.getDate(),
+          count.getDate() + 1,
           countArray[0],
           countArray[1],
           countArray[2]
@@ -124,6 +125,7 @@ function phoenixTime(response, id, intervals) {
         timeofday = "AM";
         console.log("hi");
         console.log(countArray[0]);
+        console.log(diff);
       }
       if (diff > 86400000) {
         countArray[0] += 4;

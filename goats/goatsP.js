@@ -123,7 +123,7 @@ module.exports = {
           countertime = new Date(
             count.getFullYear(),
             count.getMonth(),
-            count.getDate(),
+            count.getDate() + 1,
             countArray[0],
             countArray[1],
             countArray[2]
