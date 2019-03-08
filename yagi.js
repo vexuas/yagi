@@ -46,7 +46,7 @@ const activitylist = [
   "+info for bot information",
   "+goatsc for Chimera wb",
   "+goatsp for Phoenix wb",
-  "Last update: 27/02/2019"
+  "Last update: 08/03/2019"
 ];
 /**
  * Add and removes user reminders
@@ -164,7 +164,6 @@ yagi.on("ready", () => {
   channel.send("test");
   yagi.users.forEach(item => {
     console.log(item.username);
-    console.log(item.id);
   });
   sendReminders();
   setInterval(() => {
