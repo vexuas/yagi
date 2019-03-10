@@ -46,7 +46,7 @@ const activitylist = [
   "+info for bot information",
   "+goatsc for Chimera wb",
   "+goatsp for Phoenix wb",
-  "Last update: 08/03/2019"
+  "Last update: 10/03/2019"
 ];
 /**
  * Add and removes user reminders
