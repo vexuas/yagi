@@ -1,7 +1,7 @@
 const embed = {
   title: "Yagi | Info",
   description:
-    "Vulture's Vale and Blizzard Berg World Boss Timer For Aura Kingdom. Credits to leads and editors for the up-to-date times.\n[Catalyst Sheet (Chimera)](https://tinyurl.com/catalyst-ak) | [Angel Sheet (Phoenix)](https://tinyurl.com/Angels-WB) | [Website](http://ak-goats.com/)",
+    "Vulture's Vale and Blizzard Berg World Boss Timer For Aura Kingdom. Credits to leads and editors for the up-to-date times.\n[Catalyst Sheet (Chimera)](https://tinyurl.com/catalyst-ak) | [Angel Sheet (Phoenix)](https://tinyurl.com/Angels-WB) | [Website](https://ak-goats.com/)",
   color: 32896,
   thumbnail: {
     url:

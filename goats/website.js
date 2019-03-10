@@ -9,7 +9,7 @@ module.exports = {
   execute(message, args) {
     embed.description = `${
       message.author
-    } | [Come visit my website! (◕ᴗ◕✿)](http://ak-goats.com/)`;
+    } | [Come visit my website! (◕ᴗ◕✿)](https://ak-goats.com/)`;
     message.channel.send({ embed });
   }
 };
