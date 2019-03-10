@@ -12,7 +12,7 @@ module.exports = {
     //Converts date into universal time in milliseconds
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
     // EST = GMT -5
-    const offset = -5;
+    const offset = -4;
     //Game Time in milliseconds, universal time + difference in hours from utc(-5)
     const gameTime = utc + 3600000 * offset;
     //Returns a full Date Object of server time
