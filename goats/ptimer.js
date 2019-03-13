@@ -43,6 +43,9 @@ function phoenixTime(response, id, intervals) {
         pdata.push(item);
       });
       let countString = pdata[1] + pdata[2];
+      if (countString === "") {
+        console.log("Currently Unavailable");
+      }
       //Taking off unnecesarry characters and converting to array
       countString = countString.replace(/:/g, ",");
       let countArray = countString.split(",").map(Number);

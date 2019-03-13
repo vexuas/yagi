@@ -49,7 +49,7 @@ module.exports = {
         });
         let countString = pdata[1] + pdata[2];
         if (countString.includes("U")) {
-          message.channel.send("Currently Unavailable (๑•́ω•̀)");
+          return message.channel.send("Currently Unavailable (๑•́ω•̀)");
         }
         //Taking off unnecesarry characters and converting to array
         countString = countString.replace(/:/g, ",");
