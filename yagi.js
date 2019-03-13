@@ -46,7 +46,9 @@ const activitylist = [
   "+info for bot information",
   "+goatsc for Chimera wb",
   "+goatsp for Phoenix wb",
-  "Last update: 10/03/2019"
+  "Last update: 10/03/2019",
+  "Eternia coming soon (๑•́ω•̀)",
+  "checkout Ama for eidolons!"
 ];
 /**
  * Add and removes user reminders
@@ -159,7 +161,7 @@ function refreshReminders() {
 }
 
 yagi.on("ready", () => {
-  yagi.user.setActivity(activitylist[0]);
+  yagi.user.setActivity(activitylist[5]);
   let channel = yagi.channels.get("491832593529045003");
   channel.send("test");
   yagi.users.forEach(item => {
