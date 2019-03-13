@@ -214,6 +214,8 @@ module.exports = {
             ]
           };
           message.channel.send({ embed });
+        } else {
+          message.channel.send("Hunt currently in progress");
         }
       });
     });
