@@ -161,7 +161,7 @@ function refreshReminders() {
 }
 
 yagi.on("ready", () => {
-  yagi.user.setActivity(activitylist[5]);
+  yagi.user.setActivity(activitylist[0]);
   let channel = yagi.channels.get("491832593529045003");
   channel.send("test");
   yagi.users.forEach(item => {
