@@ -57,7 +57,7 @@ module.exports = {
         let nextSpawn = `${cdata[0].toLowerCase()}, ${cdata[3]}`;
         let timeofSpawn = cdata[3];
 
-        if (cdata[3].includes("PM") && cdata[3].includes("12") === false) {
+        if (cdata[3].includes("PM")) {
           countArray[0] += 12;
         }
         console.log(countArray);
