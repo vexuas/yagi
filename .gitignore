@@ -3,5 +3,14 @@
 # dependencies
 node_modules
 
-#config
+# config
 config.json
+
+# users and channels
+goats/phoeusers.js
+goats/chimusers.js
+goats/chimchannels.js
+goats/phoechannels.js
+
+# system files
+.DS_Store
