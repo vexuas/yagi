@@ -229,8 +229,8 @@ function phoenixTimer(id, intervals) {
   console.log("phoetest");
   authorize(function(authClient) {
     const request = {
-      spreadsheetId: "1MrMwNerILxNK0lvKCBklkYZx_OKAb4io8XdaldRyO_g",
-      range: "B11:D11",
+      spreadsheetId: "1RZ3vEoZVxdd_3lWjy9DidaBmWH1YdPwqXT7i4o9PVbc",
+      range: "B8:D8",
       auth: authClient
     };
     sheets.spreadsheets.values.get(request, function(err, response) {
