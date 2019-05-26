@@ -46,7 +46,7 @@ const activitylist = [
   "+info for bot information",
   "+goatsc for Chimera wb",
   "+goatsp for Phoenix wb",
-  "Last update: 27/05/2019",
+  "Last update: 27/05/2019"
   "Eternia coming soon (๑•́ω•̀)",
   "checkout Ama for eidolons!"
 ];
