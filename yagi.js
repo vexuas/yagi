@@ -1,6 +1,7 @@
-const fs = require('fs');
+// const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
+const commands = require('./commands');
 // const { chimidlist, chimuserlist } = require('./commands/chimusers');
 // const { phoeidlist, phoeuserlist } = require('./commands/phoeusers');
 // const { chimchannelid, chimchannellist } = require('./commands/chimchannels');
@@ -20,8 +21,6 @@ const { prefix, token } = require('./config.json');
 // let phoeIds = Object.values(phoeidlist);
 // let chimchannelIds = Object.values(chimchannelid);
 // let phoechannelIds = Object.values(phoechannelid);
-const yagi = new Discord.Client();
-yagi.commands = new Discord.Collection();
 
 // console.log(chimIds);
 // console.log(Object.keys(chimuserlist));
@@ -29,7 +28,7 @@ yagi.commands = new Discord.Collection();
 // console.log(Object.keys(phoeuserlist));
 // console.log(Object.keys(chimchannellist));
 // console.log(Object.keys(phoeuserlist));
-const commandFolder = fs.readdirSync('./commands/');
+// const commandFolder = fs.readdirSync('./commands/');
 
 // for (const folder of commandFolder) {
 //   const commandFiles = fs
@@ -41,14 +40,21 @@ const commandFolder = fs.readdirSync('./commands/');
 //   }
 // }
 
+const yagi = new Discord.Client();
+
 yagi.once('ready', () => {
-  console.log('Ready!');
+  console.log("I'm ready! (◕ᴗ◕✿)");
+  yagi.users.forEach(item => {
+    console.log(item.username);
+  });
+  yagi.guilds.forEach(item => {
+    console.log(`${item.name} - ${item.region} : ${item.memberCount}`);
+  });
 });
 
 const activitylist = [
   '+info for bot information',
-  '+goatsc for Chimera wb',
-  '+goatsp for Phoenix wb',
+  '+goats for Olympus wb',
   'Last update: 27/05/2019',
   'Eternia coming soon (๑•́ω•̀)',
   'checkout Ama for eidolons!'
@@ -56,32 +62,44 @@ const activitylist = [
 
 yagi.on('ready', () => {
   yagi.user.setActivity(activitylist[0]);
-  let channel = yagi.channels.get('491832593529045003');
+  let channel = yagi.channels.get('582213795942891521');
   channel.send('test');
-  yagi.users.forEach(item => {
-    console.log(item.username);
-  });
-  yagi.guilds.forEach(item => {
-    console.log(`${item.name} - ${item.region} : ${item.memberCount}`);
-  });
   setInterval(() => {
     const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
     yagi.user.setActivity(activitylist[index]);
   }, 120000);
   //Gets data from sheet every 10 minutes
-  setInterval(() => {
-    // refreshReminders();
-    console.log('30 second sheet checkup');
-  }, 30000);
+  // setInterval(() => {
+  //   // refreshReminders();
+  //   console.log('30 second sheet checkup');
+  // }, 30000);
 });
 
 yagi.login(token);
 
 yagi.on('message', message => {
-  if (!message.content.startsWith(prefix)) return;
+  if (message.content.startsWith(prefix)) {
+    const args = message.content.slice(prefix.length).split(); //takes off prefix and returns message as an array
+    const command = args.shift().toLowerCase(); //gets command as a string from array
+
+    switch (command) {
+      case 'info':
+        return commands.info.execute(message);
+
+      case 'release':
+        return commands.release.execute(message);
+
+      case '':
+      default:
+        return message.channel.send(
+          "I'm not sure what you meant by that! （・□・；）"
+        );
+    }
+  } else {
+    return;
+  }
   //get commands
-  const args = message.content.slice(prefix.length).split();
-  const command = args.shift().toLowerCase();
+
   //if command doesn't exist, show error message
   if (message.content === '+remindhere') {
   }
