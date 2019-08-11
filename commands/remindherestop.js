@@ -1,33 +1,33 @@
-const fs = require("fs");
-const { chimchannellist, chimchannelid } = require("./chimchannels.js");
-const { phoechannellist, phoechannelid } = require("./phoechannels.js");
-const reminders = require("../yagi");
+const fs = require('fs');
+const { chimchannellist, chimchannelid } = require('./chimchannels.js');
+const { phoechannellist, phoechannelid } = require('./phoechannels.js');
+const reminders = require('../yagi');
 
 module.exports = {
-  name: "remindhere stop",
-  description: "Stops all channel reminders",
+  name: 'remindhere stop',
+  description: 'Stops all channel reminders',
   execute(message, args) {
     //Updating user files to indicate enabled
     let servername = message.channel.guild.name;
     let channelname = message.channel.name;
     let fullname = `${servername}-${channelname}`;
-    if (message.channel.type !== "text") {
+    if (message.channel.type !== 'text') {
       return message.author.send(
-        "Channel reminders can only be used in a server channel by an administrator"
+        'Channel reminders can only be used in a server channel by an administrator'
       );
-    } else if (message.member.hasPermission("ADMINISTRATOR")) {
+    } else if (message.member.hasPermission('ADMINISTRATOR')) {
       if (
-        (chimchannellist[fullname] === "disable" &&
-          phoechannellist[fullname]) === "disable"
+        (chimchannellist[fullname] === 'disable' &&
+          phoechannellist[fullname]) === 'disable'
       ) {
         return message.channel.send(
-          "There are no reminders in this channel to clear"
+          'There are no reminders in this channel to clear'
         );
       } else {
-        if (chimchannellist[fullname] === "enable") {
+        if (chimchannellist[fullname] === 'enable') {
           reminders.removeChimChannel(fullname);
           delete chimchannelid[fullname];
-          chimchannellist[fullname] = "disable";
+          chimchannellist[fullname] = 'disable';
           const chimchannelkeys = Object.keys(chimchannellist);
           const chimchannelvalues = Object.values(chimchannellist);
           const chimchannelidkeys = Object.keys(chimchannelid);
@@ -45,20 +45,20 @@ module.exports = {
             );
           }
           fs.writeFile(
-            "./goats/chimchannels.js",
+            './commands/chimchannels.js',
             `let chimchannellist = {${chimchannelobject}}\nlet chimchannelid = {${chimchannelidobject}}\n\nmodule.exports = {\n  chimchannellist: chimchannellist,\nchimchannelid: chimchannelid\n}`,
             function(err) {
               if (err) {
                 return console.log(err);
               }
-              console.log("The file was saved!");
+              console.log('The file was saved!');
             }
           );
         }
-        if (phoechannellist[fullname] === "enable") {
+        if (phoechannellist[fullname] === 'enable') {
           reminders.removePhoeChannel(fullname);
           delete phoechannelid[fullname];
-          phoechannellist[fullname] = "disable";
+          phoechannellist[fullname] = 'disable';
           const phoechannelkeys = Object.keys(phoechannellist);
           const phoechannelvalues = Object.values(phoechannellist);
           const phoechannelidkeys = Object.keys(phoechannelid);
@@ -77,21 +77,21 @@ module.exports = {
             );
           }
           fs.writeFile(
-            "./goats/phoechannels.js",
+            './commands/phoechannels.js',
             `let phoechannellist = {${phoechannelobject}}\nlet phoechannelid = {${phoechannelidobject}}\n\nmodule.exports = {\n  phoechannellist: phoechannellist, phoechannelid: phoechannelid\n}`,
             function(err) {
               if (err) {
                 return console.log(err);
               }
-              console.log("The file was saved!");
+              console.log('The file was saved!');
             }
           );
         }
-        message.channel.send("All channel reminders cleared!");
+        message.channel.send('All channel reminders cleared!');
       }
     } else {
       message.channel.send(
-        "You need administrative rights to use this command"
+        'You need administrative rights to use this command'
       );
     }
   }

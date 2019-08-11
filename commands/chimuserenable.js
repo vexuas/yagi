@@ -1,20 +1,20 @@
-const fs = require("fs");
-const { chimuserlist, chimidlist } = require("./chimusers.js");
-const reminders = require("../yagi");
+const fs = require('fs');
+const { chimuserlist, chimidlist } = require('./chimusers.js');
+const reminders = require('../yagi');
 
 module.exports = {
-  name: "remindme goatsc",
-  description: "user enable reminder function",
+  name: 'remindme goatsc',
+  description: 'user enable reminder function',
   execute(message, args) {
     //Updating user files to indicate enabled
     let username = message.author.username;
     let userid = message.author.id;
-    if (chimuserlist[username] === "enable") {
-      return message.channel.send("User reminder is already enabled");
+    if (chimuserlist[username] === 'enable') {
+      return message.channel.send('User reminder is already enabled');
     } else {
       reminders.addChimUser(username, userid);
-      message.channel.send("User reminder enabled!");
-      chimuserlist[username] = "enable";
+      message.channel.send('User reminder enabled!');
+      chimuserlist[username] = 'enable';
       chimidlist[username] = userid; //Setting userID to send message later
       const userkeys = Object.keys(chimuserlist);
       const uservalues = Object.values(chimuserlist);
@@ -29,13 +29,13 @@ module.exports = {
         idobject.push(` ${idkeys[i]} : "${idvalues[i]}"`);
       }
       fs.writeFile(
-        "./goats/chimusers.js",
+        './commands/chimusers.js',
         `let chimuserlist = {${userobject}}\nlet chimidlist = {${idobject}}\n\nmodule.exports = {\n  chimuserlist: chimuserlist, chimidlist: chimidlist\n}`,
         function(err) {
           if (err) {
             return console.log(err);
           }
-          console.log("The file was saved!");
+          console.log('The file was saved!');
         }
       );
     }
