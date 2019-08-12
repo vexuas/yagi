@@ -1,24 +1,24 @@
-const fs = require("fs");
-const { chimuserlist, chimidlist } = require("./chimusers.js");
-const { phoeuserlist, phoeidlist } = require("./phoeusers");
-const reminders = require("../yagi");
+const fs = require('fs');
+const { chimuserlist, chimidlist } = require('./chimusers.js');
+const { phoeuserlist, phoeidlist } = require('./phoeusers');
+const reminders = require('../yagi');
 
 module.exports = {
-  name: "remindme stop",
-  description: "Stops all user reminders",
+  name: 'remindme stop',
+  description: 'Stops all user reminders',
   execute(message, args) {
     //Updating user files to indicate enabled
     let username = message.author.username;
     if (
-      (chimuserlist[username] === "disable" && phoeuserlist[username]) ===
-      "disable"
+      (chimuserlist[username] === 'disable' && phoeuserlist[username]) ===
+      'disable'
     ) {
-      return message.channel.send("You have no reminders to clear");
+      return message.channel.send('You have no reminders to clear');
     } else {
-      if (chimuserlist[username] === "enable") {
+      if (chimuserlist[username] === 'enable') {
         reminders.removeChimUser(username);
         delete chimidlist[username];
-        chimuserlist[username] = "disable";
+        chimuserlist[username] = 'disable';
         const chimuserkeys = Object.keys(chimuserlist);
         const chimuservalues = Object.values(chimuserlist);
         const chimidkeys = Object.keys(chimidlist);
@@ -32,20 +32,20 @@ module.exports = {
           chimidobject.push(` ${chimidkeys[i]} : "${chimidvalues[i]}"`);
         }
         fs.writeFile(
-          "./goats/chimusers.js",
+          './commands/chimusers.js',
           `let chimuserlist = {${chimuserobject}}\nlet chimidlist = {${chimidobject}}\n\nmodule.exports = {\n  chimuserlist: chimuserlist,\nchimidlist: chimidlist\n}`,
           function(err) {
             if (err) {
               return console.log(err);
             }
-            console.log("The file was saved!");
+            console.log('The file was saved!');
           }
         );
       }
-      if (phoeuserlist[username] === "enable") {
+      if (phoeuserlist[username] === 'enable') {
         reminders.removePhoeUser(username);
         delete phoeidlist[username];
-        phoeuserlist[username] = "phoeDisable";
+        phoeuserlist[username] = 'phoeDisable';
         const phoeuserkeys = Object.keys(phoeuserlist);
         const phoeuservalues = Object.values(phoeuserlist);
         const phoeidkeys = Object.keys(phoeidlist);
@@ -60,17 +60,17 @@ module.exports = {
           phoeidobject.push(` ${phoeidkeys[i]} : "${phoeidvalues[i]}"`);
         }
         fs.writeFile(
-          "./goats/phoeusers.js",
+          './commands/phoeusers.js',
           `let phoeuserlist = {${phoeuserobject}}\nlet phoeidlist = {${phoeidobject}}\n\nmodule.exports = {\n  phoeuserlist: phoeuserlist, phoeidlist: phoeidlist\n}`,
           function(err) {
             if (err) {
               return console.log(err);
             }
-            console.log("The file was saved!");
+            console.log('The file was saved!');
           }
         );
       }
-      message.channel.send("All user reminders cleared!");
+      message.channel.send('All user reminders cleared!');
     }
   }
 };

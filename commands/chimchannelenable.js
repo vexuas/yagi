@@ -1,29 +1,29 @@
-const fs = require("fs");
-const { chimchannellist, chimchannelid } = require("./chimchannels.js");
-const reminders = require("../yagi");
+const fs = require('fs');
+const { chimchannellist, chimchannelid } = require('./chimchannels.js');
+const reminders = require('../yagi');
 
 module.exports = {
-  name: "remindhere! goatsc",
-  description: "channel enable reminder function",
+  name: 'remindhere goatsc',
+  description: 'channel enable reminder function',
   execute(message, args) {
-    if (message.channel.type !== "text") {
+    if (message.channel.type !== 'text') {
       return message.author.send(
-        "Channel reminders can only be used in a server channel by an administrator"
+        'Channel reminders can only be used in a server channel by an administrator'
       );
-    } else if (message.member.hasPermission("ADMINISTRATOR")) {
+    } else if (message.member.hasPermission('ADMINISTRATOR')) {
       let servername = message.channel.guild.name;
       let channelname = message.channel.name;
       let fullname = `${servername}-${channelname}`;
       console.log(fullname);
       let channelid = message.channel.id;
       console.log(channelid);
-      if (chimchannellist[fullname] === "disable") {
-        return message.channel.send("Channel reminder is already disabled");
+      if (chimchannellist[fullname] === 'enable') {
+        return message.channel.send('Channel reminder is already enabled');
       } else {
-        reminders.removeChimChannel(fullname, channelid);
-        message.channel.send("Channel reminder disabled!");
-        chimchannellist[fullname] = "disable";
-        delete chimchannelid[fullname];
+        reminders.addChimChannel(fullname);
+        message.channel.send('Channel reminder enabled!');
+        chimchannellist[fullname] = 'enable';
+        chimchannelid[fullname] = channelid; //Setting userID to send message later
         const channelkeys = Object.keys(chimchannellist);
         const channelvalues = Object.values(chimchannellist);
         const channelidkeys = Object.keys(chimchannelid);
@@ -39,20 +39,20 @@ module.exports = {
           );
         }
         fs.writeFile(
-          "./goats/chimchannels.js",
+          './commands/chimchannels.js',
           `let chimchannellist = {${channelobject}}\nlet chimchannelid = {${channelidobject}}\n\nmodule.exports = {\n  chimchannellist: chimchannellist, chimchannelid: chimchannelid\n}`,
           function(err) {
             if (err) {
               return console.log(err);
             }
-            console.log("The file was saved!");
+            console.log('The file was saved!');
           }
         );
       }
       console.log(chimchannellist);
     } else {
       message.channel.send(
-        "You need administrative rights to use this command"
+        'You need administrative rights to use this command'
       );
     }
   }
