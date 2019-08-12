@@ -5,6 +5,7 @@
   "main": "yagi.js",
   "author": "Vexuas",
   "dependencies": {
+    "date-fns": "^1.30.1",
     "discord.js": "^11.4.2",
     "es6-promise": "^4.2.6",
     "googleapis": "27",
