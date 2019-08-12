@@ -82,22 +82,17 @@ yagi.on('message', message => {
     const args = message.content.slice(prefix.length).split(); //takes off prefix and returns message as an array
     const command = args.shift().toLowerCase(); //gets command as a string from array
 
-    switch (command) {
-      case 'info':
-        return commands.info.execute(message);
-
-      case 'release':
-        return commands.release.execute(message);
-
-      case '':
-      default:
-        return message.channel.send(
-          "I'm not sure what you meant by that! （・□・；）"
-        );
+    if (commands[command]) {
+      return commands[command].execute(message);
+    } else {
+      return message.channel.send(
+        "I'm not sure what you meant by that! （・□・；）"
+      );
     }
   } else {
     return;
   }
+
   //get commands
 
   //if command doesn't exist, show error message
