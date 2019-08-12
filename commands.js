@@ -5,18 +5,19 @@
  * Putting them in a object inside the bot honestly just makes it confusing
  */
 
-// Timer
-// ----------
-
-// Reminder
-// ----------
-
-// Miscellaneous
-// ----------
-const info = require('./commands/info');
-const release = require('./commands/release');
-
 module.exports = {
-  info: info,
-  release: release
+  // Timer
+  // ----------
+
+  // Reminder
+  // ----------
+  // Miscellaneous
+  info: require('./commands/misc/info'),
+  release: require('./commands/misc/release'),
+  invite: require('./commands/misc/invite'),
+  sheets: require('./commands/misc/sheets'),
+  loot: require('./commands/misc/loot'),
+  website: require('./commands/misc/website'),
+  contacts: require('./commands/misc/contacts')
+  // ----------
 };
