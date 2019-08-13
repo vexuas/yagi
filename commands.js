@@ -7,6 +7,7 @@
 
 module.exports = {
   // Timer
+  goats: require('./commands/timer/goats'),
   // ----------
 
   // Reminder
