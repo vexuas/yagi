@@ -24,64 +24,65 @@ const getServerTime = function formatsLocalTimeToServerTime() {
   return format(serverTime, 'ddd, hh:mm:ss A'); //To make it readable
 };
 
-const getSpreadSheetValues = function requestToExternalSpreadsheetAndReturnReadableData(
-  callback
+const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(
+  message
 ) {
   const authClient = api;
+  /**
+   * GET request to spreadsheet for values
+   * spreadsheetId is 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'
+   * ranges is which multiple rows/columns/cells you need from the sheet
+   * auth is the oauth token
+   * Since it's a public sheet, I set up a personal api token for use as no authentication required
+   */
+  const request = {
+    spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
-  if (authClient == null) {
-    console.log('authentication failed');
-    return;
-  }
-  callback(authClient);
+    ranges: ['C4', 'C6', 'C8', 'E22', 'H22'],
+
+    auth: authClient
+  };
+
+  sheets.spreadsheets.values.batchGet(request, function(err, response) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    const rawSheetValues = response.data.valueRanges;
+    /**
+     * rawSheetValues is the response which is an array of objects
+     * The data we need is the values key inside each object
+     * First Object: Location
+     * Second Object: Last Spawn
+     * Third Object: Next Spawn
+     * Fourth Object: Banoleth Spawn
+     * Fifth Object: Bisolen Spawn
+     * Below extracts the actual data and pushes them in a new array
+     * Then sets the value to its corresponding data key
+     */
+    let actualSheetValues = [];
+    rawSheetValues.forEach(item => {
+      actualSheetValues.push(item.values[0][0]);
+    });
+    const worldBossData = {
+      location: actualSheetValues[0],
+      lastSpawn: actualSheetValues[1],
+      nextSpawn: actualSheetValues[2],
+      banolethCount: actualSheetValues[3],
+      bisolenCount: actualSheetValues[4]
+    };
+    message.channel.send(getServerTime());
+    message.channel.send(worldBossData.location);
+  });
 };
 
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
   execute(message) {
-    getSpreadSheetValues(function(authClient) {
-      message.channel.startTyping(); //Since it'll take a couple of seconds, I'll add this here
-      //GET request to spreadsheet for values
-      const request = {
-        spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
-
-        ranges: ['C4', 'C6', 'C8', 'E22', 'H22'],
-
-        auth: authClient
-      };
-
-      sheets.spreadsheets.values.batchGet(request, function(err, response) {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        const rawSheetValues = response.data.valueRanges;
-        /**
-         * First Object: Location
-         * Second Object: Last Spawn
-         * Third Object: Next Spawn
-         * Fourth Object: Banoleth Spawn
-         * Fifth Object: Bisolen Spawn
-         * Since the response returns values in an array within an array nested in an object,
-         * the below extracts the actual data and pushes them in a new array
-         * Then sets the value to its corresponding spreadsheetValues key
-         */
-        let actualSheetValues = [];
-        rawSheetValues.forEach(item => {
-          actualSheetValues.push(item.values[0][0]);
-        });
-        const spreadsheetValues = {
-          location: actualSheetValues[0],
-          lastSpawn: actualSheetValues[1],
-          nextSpawn: actualSheetValues[2],
-          banolethCount: actualSheetValues[3],
-          bisolenCount: actualSheetValues[4]
-        };
-        message.channel.send(getServerTime());
-        message.channel.send(spreadsheetValues.location);
-        message.channel.stopTyping();
-      });
-    });
+    //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
+    message.channel.startTyping();
+    getWorldBossData(message);
+    message.channel.stopTyping();
   }
 };
