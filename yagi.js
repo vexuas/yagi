@@ -5,7 +5,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 
 /**
- * TODO | By 19 August 2019 | 7 days
+ * TODO | By 20 August 2019 | 7 days
  * ---------------------------------
  * Add cooldown for commands to avoid spamming bot
  * Add ability to customize prefix
