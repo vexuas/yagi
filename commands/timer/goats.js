@@ -6,6 +6,7 @@ const {
   differenceInHours,
   differenceInMinutes,
   differenceInSeconds,
+  differenceInMilliseconds,
   distanceInWordsStrict,
   subHours,
   subMinutes,
@@ -102,15 +103,25 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
 
   const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
 
-  const countdown = distanceInWordsStrict(serverTime, nextSpawnDate);
-
-  return formatCountdown(serverTime, nextSpawnDate);
+  //To be as accurate as possible
+  const countdownValidity = differenceInMilliseconds(serverTime, nextSpawnDate);
+  /**
+   * Case 1: Normal timer (12am - 7:59pm)
+   * Case 2: Late Night timer (8pm - 11:59pm)
+   * Edge Case: No editor to update sheet
+   */
+  console.log(countdownValidity);
+  if (countdownValidity >= 0) {
+    return formatCountdown(serverTime, nextSpawnDate);
+  } else {
+    //Todo: Last day of month function along with nextday function
+  }
 };
 /**
  * @countdown countdown time in milliseconds
  * date-fns doesn't let you format distanceInWordsStrict yet
  * so can't return X hours, y mins, z seconds and can only get individually
- * The below function tries to achieve this
+ * This function tries to achieve this
  */
 const formatCountdown = function formatCountdownUsingDifference(serverTime, nextSpawnDate) {
   let formattedCountdown = [];
@@ -156,7 +167,7 @@ const formatCountdown = function formatCountdownUsingDifference(serverTime, next
         formattedCountdown.push(`${countdownSeconds} seconds`);
     }
   }
-  return formattedCountdown.join(' ');
+  return `in ${formattedCountdown.join(' ')}`;
 };
 
 module.exports = {
