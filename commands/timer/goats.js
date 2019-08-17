@@ -1,9 +1,18 @@
 const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const { format } = require('date-fns');
+const {
+  format,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  distanceInWordsStrict,
+  subHours,
+  subMinutes,
+  subSeconds
+} = require('date-fns');
 
-const getServerTime = function formatsLocalTimeToServerTime() {
+const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
   //Current Date with Time
   const localTime = new Date();
   //Current time in milliseconds
@@ -21,7 +30,7 @@ const getServerTime = function formatsLocalTimeToServerTime() {
   const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
   const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
 
-  return format(serverTime, 'ddd, hh:mm:ss A'); //To make it readable
+  return serverTime;
 };
 
 const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(message) {
@@ -69,8 +78,9 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       banolethCount: actualSheetValues[3],
       bisolenCount: actualSheetValues[4]
     };
-    message.channel.send(getServerTime());
+    message.channel.send(format(getServerTime(), 'ddd, hh:mm:ss A'));
     message.channel.send(worldBossData.location);
+    message.channel.send(getCountdown(worldBossData.nextSpawn));
   });
 };
 /**
@@ -82,9 +92,73 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
  * and use that to get the date of nextSpawn
  * 1 edge case with this during close midnight since it'll be a different day for nextSpawn then
  * but otherwise, I feel like this is good enough to calculate the countdown
- * Could always extract from sheet itself but I can't use that number for the website
+ * Could always extract from sheet itself. It'll work here but I can't use that number for the website
  */
-const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(nextSpawn) {};
+const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(nextSpawn) {
+  const serverTime = getServerTime();
+  const currentDay = format(serverTime, 'D');
+  const currentMonth = format(serverTime, 'MMMM');
+  const currentYear = format(serverTime, 'YYYY');
+
+  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
+
+  const countdown = distanceInWordsStrict(serverTime, nextSpawnDate);
+
+  return formatCountdown(serverTime, nextSpawnDate);
+};
+/**
+ * @countdown countdown time in milliseconds
+ * date-fns doesn't let you format distanceInWordsStrict yet
+ * so can't return X hours, y mins, z seconds and can only get individually
+ * The below function tries to achieve this
+ */
+const formatCountdown = function formatCountdownUsingDifference(serverTime, nextSpawnDate) {
+  let formattedCountdown = [];
+  let calculatedTime = nextSpawnDate;
+  /**
+   * First checks hours and adds to array if it's over zero
+   * If it is, substracts hours from calculatedTime
+   * Then checks minutes and does the same thing and so on
+   * Wrote additional logic since I'm such a grammar nazi
+   * */
+  const countdownHours = differenceInHours(calculatedTime, serverTime);
+  if (countdownHours > 0) {
+    calculatedTime = subHours(calculatedTime, countdownHours);
+
+    switch (countdownHours) {
+      case 1:
+        formattedCountdown.push(`${countdownHours} hour`);
+        break;
+      default:
+        formattedCountdown.push(`${countdownHours} hours`);
+    }
+  }
+
+  const countdownMinutes = differenceInMinutes(calculatedTime, serverTime);
+  if (countdownMinutes > 0) {
+    calculatedTime = subMinutes(calculatedTime, countdownMinutes);
+    switch (countdownMinutes) {
+      case 1:
+        formattedCountdown.push(`${countdownMinutes} minute`);
+        break;
+      default:
+        formattedCountdown.push(`${countdownMinutes} minutes`);
+    }
+  }
+
+  const countdownSeconds = differenceInSeconds(calculatedTime, serverTime);
+  if (countdownSeconds > 0) {
+    switch (countdownSeconds) {
+      case 1:
+        formattedCountdown.push(`${countdownSeconds} second`);
+        break;
+      default:
+        formattedCountdown.push(`${countdownSeconds} seconds`);
+    }
+  }
+  return formattedCountdown.join(' ');
+};
+
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
