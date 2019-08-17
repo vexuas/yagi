@@ -48,10 +48,10 @@ const formatCountdown = function formatCountdownUsingDifference(serverTime, next
 
     switch (countdownHours) {
       case 1:
-        formattedCountdown.push(`${countdownHours} hour`);
+        formattedCountdown.push(`${countdownHours} hr`);
         break;
       default:
-        formattedCountdown.push(`${countdownHours} hours`);
+        formattedCountdown.push(`${countdownHours} hrs`);
     }
   }
 
@@ -60,10 +60,10 @@ const formatCountdown = function formatCountdownUsingDifference(serverTime, next
     calculatedTime = subMinutes(calculatedTime, countdownMinutes);
     switch (countdownMinutes) {
       case 1:
-        formattedCountdown.push(`${countdownMinutes} minute`);
+        formattedCountdown.push(`${countdownMinutes} min`);
         break;
       default:
-        formattedCountdown.push(`${countdownMinutes} minutes`);
+        formattedCountdown.push(`${countdownMinutes} mins`);
     }
   }
 
@@ -71,13 +71,13 @@ const formatCountdown = function formatCountdownUsingDifference(serverTime, next
   if (countdownSeconds > 0) {
     switch (countdownSeconds) {
       case 1:
-        formattedCountdown.push(`${countdownSeconds} second`);
+        formattedCountdown.push(`${countdownSeconds} sec`);
         break;
       default:
-        formattedCountdown.push(`${countdownSeconds} seconds`);
+        formattedCountdown.push(`${countdownSeconds} secs`);
     }
   }
-  return `in ${formattedCountdown.join(' ')}`;
+  return `${formattedCountdown.join(' ')}`;
 };
 
 module.exports = {

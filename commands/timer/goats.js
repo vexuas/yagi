@@ -4,33 +4,6 @@ const sheets = google.sheets('v4');
 const { getServerTime, formatCountdown } = require('../../helpers');
 const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
 
-// const embed = {
-//   title: 'Chimera | Goats',
-//   description:
-//     'Server Time : `' + weekday[day] + ', ' + ServerTime + '`\nSpawn : `' + nextSpawn + '`',
-//   color: 32896,
-//   thumbnail: {
-//     url:
-//       'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-//   },
-//   fields: [
-//     {
-//       name: 'Location',
-//       value: '```fix\n\n' + maps[cdata[0]] + '```'
-//     },
-//     {
-//       name: 'Countdown',
-//       value: '```xl\n\n' + countdown + '```',
-//       inline: true
-//     },
-//     {
-//       name: 'Time of Spawn',
-//       value: '```xl\n\n' + timeofSpawn + '```',
-//       inline: true
-//     }
-//   ]
-// };
-
 const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(message) {
   const authClient = api;
   /**
@@ -76,9 +49,40 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       banolethCount: actualSheetValues[3],
       bisolenCount: actualSheetValues[4]
     };
-    message.channel.send(format(getServerTime(), 'ddd, hh:mm:ss A'));
-    message.channel.send(worldBossData.location);
-    message.channel.send(getCountdown(worldBossData.nextSpawn));
+    const embed = {
+      title: 'Olympus | World Boss',
+      description:
+        'Server Time : `' +
+        format(getServerTime(), 'dddd') +
+        ', ' +
+        format(getServerTime(), 'h:mm:ss A') +
+        '`\nSpawn : `' +
+        `${worldBossData.location.toLowerCase()}, ${worldBossData.nextSpawn}` +
+        '`',
+      color: 32896,
+      thumbnail: {
+        url:
+          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+      },
+      fields: [
+        {
+          name: 'Location',
+          value: '```fix\n\n' + `Vulture's Vale Ch.1 (X:161, Y:784)` + '```'
+        },
+        {
+          name: 'Countdown',
+          value: '```xl\n\n' + getCountdown(worldBossData.nextSpawn) + '```',
+          inline: true
+        },
+        {
+          name: 'Time of Spawn',
+          value: '```xl\n\n' + worldBossData.nextSpawn + '```',
+          inline: true
+        }
+      ]
+    };
+
+    message.channel.send({ embed });
   });
 };
 
