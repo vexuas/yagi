@@ -1,38 +1,35 @@
 const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const {
-  format,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInSeconds,
-  differenceInMilliseconds,
-  distanceInWordsStrict,
-  subHours,
-  subMinutes,
-  subSeconds
-} = require('date-fns');
+const { getServerTime, formatCountdown } = require('../../helpers');
+const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
 
-const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
-  //Current Date with Time
-  const localTime = new Date();
-  //Current time in milliseconds
-  const localTimeinMs = localTime.getTime();
-  //Difference between your timezone and UTC in hours
-  const localTimezoneOffset = localTime.getTimezoneOffset() / 60;
-  /**
-   * The above is just for context
-   * If you're at UTC +8 timezone, the offset is UTC +0 minus UTC +8
-   * Below is more on how to get what you need
-   * Pretty much you'll just need the server's timezoneoffset
-   * And use that to configure localTime
-   */
-  const serverTimezoneOffset = 4; //EDT offset
-  const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
-  const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
-
-  return serverTime;
-};
+// const embed = {
+//   title: 'Chimera | Goats',
+//   description:
+//     'Server Time : `' + weekday[day] + ', ' + ServerTime + '`\nSpawn : `' + nextSpawn + '`',
+//   color: 32896,
+//   thumbnail: {
+//     url:
+//       'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+//   },
+//   fields: [
+//     {
+//       name: 'Location',
+//       value: '```fix\n\n' + maps[cdata[0]] + '```'
+//     },
+//     {
+//       name: 'Countdown',
+//       value: '```xl\n\n' + countdown + '```',
+//       inline: true
+//     },
+//     {
+//       name: 'Time of Spawn',
+//       value: '```xl\n\n' + timeofSpawn + '```',
+//       inline: true
+//     }
+//   ]
+// };
 
 const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(message) {
   const authClient = api;
@@ -84,8 +81,8 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
     message.channel.send(getCountdown(worldBossData.nextSpawn));
   });
 };
+
 /**
- * @nextSpawn time for the upcoming spawn of goats
  * Such hack, much wow
  * Dealing with time in js seriously will make you insane at some point
  * At least new Date accepts AM/PM so that lessens the voodoo
@@ -104,7 +101,7 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
   const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
 
   //To be as accurate as possible
-  const countdownValidity = differenceInMilliseconds(serverTime, nextSpawnDate);
+  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
   /**
    * Case 1: Normal timer (12am - 7:59pm)
    * Case 2: Late Night timer (8pm - 11:59pm)
@@ -116,58 +113,6 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
   } else {
     //Todo: Last day of month function along with nextday function
   }
-};
-/**
- * @countdown countdown time in milliseconds
- * date-fns doesn't let you format distanceInWordsStrict yet
- * so can't return X hours, y mins, z seconds and can only get individually
- * This function tries to achieve this
- */
-const formatCountdown = function formatCountdownUsingDifference(serverTime, nextSpawnDate) {
-  let formattedCountdown = [];
-  let calculatedTime = nextSpawnDate;
-  /**
-   * First checks hours and adds to array if it's over zero
-   * If it is, substracts hours from calculatedTime
-   * Then checks minutes and does the same thing and so on
-   * Wrote additional logic since I'm such a grammar nazi
-   * */
-  const countdownHours = differenceInHours(calculatedTime, serverTime);
-  if (countdownHours > 0) {
-    calculatedTime = subHours(calculatedTime, countdownHours);
-
-    switch (countdownHours) {
-      case 1:
-        formattedCountdown.push(`${countdownHours} hour`);
-        break;
-      default:
-        formattedCountdown.push(`${countdownHours} hours`);
-    }
-  }
-
-  const countdownMinutes = differenceInMinutes(calculatedTime, serverTime);
-  if (countdownMinutes > 0) {
-    calculatedTime = subMinutes(calculatedTime, countdownMinutes);
-    switch (countdownMinutes) {
-      case 1:
-        formattedCountdown.push(`${countdownMinutes} minute`);
-        break;
-      default:
-        formattedCountdown.push(`${countdownMinutes} minutes`);
-    }
-  }
-
-  const countdownSeconds = differenceInSeconds(calculatedTime, serverTime);
-  if (countdownSeconds > 0) {
-    switch (countdownSeconds) {
-      case 1:
-        formattedCountdown.push(`${countdownSeconds} second`);
-        break;
-      default:
-        formattedCountdown.push(`${countdownSeconds} seconds`);
-    }
-  }
-  return `in ${formattedCountdown.join(' ')}`;
 };
 
 module.exports = {
