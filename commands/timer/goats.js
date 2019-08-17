@@ -24,9 +24,7 @@ const getServerTime = function formatsLocalTimeToServerTime() {
   return format(serverTime, 'ddd, hh:mm:ss A'); //To make it readable
 };
 
-const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(
-  message
-) {
+const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(message) {
   const authClient = api;
   /**
    * GET request to spreadsheet for values
@@ -75,7 +73,18 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
     message.channel.send(worldBossData.location);
   });
 };
-
+/**
+ * @nextSpawn time for the upcoming spawn of goats
+ * Such hack, much wow
+ * Dealing with time in js seriously will make you insane at some point
+ * At least new Date accepts AM/PM so that lessens the voodoo
+ * Esentially what this function does is extract the month, year & day of serverTime
+ * and use that to get the date of nextSpawn
+ * 1 edge case with this during close midnight since it'll be a different day for nextSpawn then
+ * but otherwise, I feel like this is good enough to calculate the countdown
+ * Could always extract from sheet itself but I can't use that number for the website
+ */
+const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(nextSpawn) {};
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
