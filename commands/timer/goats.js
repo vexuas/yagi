@@ -98,13 +98,17 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
  */
 const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   const grvAcnt = '`'; //Making this a variable to make use of concatenation
+
   const serverTimeDesc = `Server Time: ${grvAcnt}${format(
     getServerTime(),
     'dddd, h:mm:ss A'
   )}${grvAcnt}`;
-  const spawnDesc = `Spawn: ${worldBossData.location.toLowerCase()}, ${worldBossData.nextSpawn}`;
 
-  const embed = {
+  const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
+    worldBossData.nextSpawn
+  }${grvAcnt}`;
+
+  const embedData = {
     title: 'Olympus | World Boss',
     description: `${serverTimeDesc}\n${spawnDesc}`,
     color: 32896,
@@ -129,7 +133,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
       }
     ]
   };
-  return embed;
+  return embedData;
 };
 //----------
 /**
@@ -137,8 +141,8 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
  * Passed in another function as a parameter so it gets called after everything else is done
  * */
 const sendMessage = function sendMessageToUser(message, embedData) {
-  const embedToBeSent = embedData;
-  message.channel.send({ embedToBeSent });
+  const embed = embedData;
+  message.channel.send({ embed });
 };
 //----------
 module.exports = {
