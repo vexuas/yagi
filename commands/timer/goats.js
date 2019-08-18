@@ -20,7 +20,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
-    ranges: ['C4', 'C6', 'C8', 'E22', 'H22'],
+    ranges: ['C4', 'C6', 'C8', 'E22', 'H22', 'C10'],
 
     auth: authClient
   };
@@ -51,9 +51,10 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       lastSpawn: actualSheetValues[1],
       nextSpawn: actualSheetValues[2],
       banolethCount: actualSheetValues[3],
-      bisolenCount: actualSheetValues[4]
+      bisolenCount: actualSheetValues[4],
+      countdown: actualSheetValues[5]
     };
-
+    console.log(worldBossData.countdown);
     sendMessageCallback(message, generateEmbed(worldBossData));
   });
 };
@@ -107,7 +108,14 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
     worldBossData.nextSpawn
   }${grvAcnt}`;
-
+  /** 
+   * This is far easier to get countdown but it isn't as reliable and accurate
+   * I'll just leave it here for reference
+  const countdownSheet = worldBossData.countdown.split(':');
+  const countdownString = `${countdownSheet[0]} hrs ${countdownSheet[1]} mins ${
+    countdownSheet[2]
+  } secs`;
+  **/
   const embedData = {
     title: 'Olympus | World Boss',
     description: `${serverTimeDesc}\n${spawnDesc}`,
