@@ -1,9 +1,9 @@
 module.exports = {
-  name: "contacts",
-  description: "platforms to where to contact owner",
-  execute(message, args) {
+  name: 'contacts',
+  description: 'platforms to where to contact owner',
+  execute(message) {
     const contactlist =
-      "```• DiscordID: Vexuas#8141\n• In-game(Chimera): Vexuas\n• AKUS Discord Server```";
+      '```• DiscordID: Vexuas#8141\n• In-game(Chimera): Vexuas\n• AKUS Discord Server```';
     const contact = `If you encounter any problems with the timers or have feedback about the bot, feel free to message me through any of the platforms listed.\n${contactlist}`;
     const embed = {
       description: `${contact}`,
