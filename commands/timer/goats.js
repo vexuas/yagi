@@ -1,18 +1,22 @@
 const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const { getServerTime, formatCountdown } = require('../../helpers');
+const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
 const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
-
-const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(message) {
+//----------
+/**
+ * GET request to spreadsheet for values
+ * spreadsheetId is 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'
+ * ranges is which multiple rows/columns/cells you need from the sheet
+ * auth is the oauth token
+ * Since it's a public sheet, I set up a personal api token for use as no authentication required
+ * Passed in a callback function to send the message to user after everything is done
+ */
+const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(
+  message,
+  sendMessageCallback
+) {
   const authClient = api;
-  /**
-   * GET request to spreadsheet for values
-   * spreadsheetId is 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'
-   * ranges is which multiple rows/columns/cells you need from the sheet
-   * auth is the oauth token
-   * Since it's a public sheet, I set up a personal api token for use as no authentication required
-   */
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
@@ -49,43 +53,11 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       banolethCount: actualSheetValues[3],
       bisolenCount: actualSheetValues[4]
     };
-    const embed = {
-      title: 'Olympus | World Boss',
-      description:
-        'Server Time : `' +
-        format(getServerTime(), 'dddd') +
-        ', ' +
-        format(getServerTime(), 'h:mm:ss A') +
-        '`\nSpawn : `' +
-        `${worldBossData.location.toLowerCase()}, ${worldBossData.nextSpawn}` +
-        '`',
-      color: 32896,
-      thumbnail: {
-        url:
-          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-      },
-      fields: [
-        {
-          name: 'Location',
-          value: '```fix\n\n' + `Vulture's Vale Ch.1 (X:161, Y:784)` + '```'
-        },
-        {
-          name: 'Countdown',
-          value: '```xl\n\n' + getCountdown(worldBossData.nextSpawn) + '```',
-          inline: true
-        },
-        {
-          name: 'Time of Spawn',
-          value: '```xl\n\n' + worldBossData.nextSpawn + '```',
-          inline: true
-        }
-      ]
-    };
 
-    message.channel.send({ embed });
+    sendMessageCallback(message, generateEmbed(worldBossData));
   });
 };
-
+//----------
 /**
  * Such hack, much wow
  * Dealing with time in js seriously will make you insane at some point
@@ -118,14 +90,64 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
     //Todo: Last day of month function along with nextday function
   }
 };
+//----------
+/**
+ * Designing part of what to send back to user
+ * Not too sure if it's better using discord's .RichEmbed()
+ * but sticking to this since I got used to it
+ */
+const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
+  const grvAcnt = '`'; //Making this a variable to make use of concatenation
+  const serverTimeDesc = `Server Time: ${grvAcnt}${format(
+    getServerTime(),
+    'dddd, h:mm:ss A'
+  )}${grvAcnt}`;
+  const spawnDesc = `Spawn: ${worldBossData.location.toLowerCase()}, ${worldBossData.nextSpawn}`;
 
+  const embed = {
+    title: 'Olympus | World Boss',
+    description: `${serverTimeDesc}\n${spawnDesc}`,
+    color: 32896,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+    },
+    fields: [
+      {
+        name: 'Location',
+        value: '```fix\n\n' + formatLocation(worldBossData.location) + '```'
+      },
+      {
+        name: 'Countdown',
+        value: '```xl\n\n' + getCountdown(worldBossData.nextSpawn) + '```',
+        inline: true
+      },
+      {
+        name: 'Time of Spawn',
+        value: '```xl\n\n' + worldBossData.nextSpawn + '```',
+        inline: true
+      }
+    ]
+  };
+  return embed;
+};
+//----------
+/**
+ * Used as a callback function since this should be the last thing to be triggered
+ * Passed in another function as a parameter so it gets called after everything else is done
+ * */
+const sendMessage = function sendMessageToUser(message, embedData) {
+  const embedToBeSent = embedData;
+  message.channel.send({ embedToBeSent });
+};
+//----------
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
   execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
-    getWorldBossData(message);
+    getWorldBossData(message, sendMessage);
     message.channel.stopTyping();
   }
 };
