@@ -1,3 +1,8 @@
+/**
+ * Any functions that aren't directly related to commands are here
+ * This is just to improve readability
+ * Don't really want to shove everything in its command file and make those messy
+ */
 const {
   differenceInHours,
   differenceInMinutes,
@@ -80,7 +85,23 @@ const formatCountdown = function formatCountdownUsingDifference(serverTime, next
   return `${formattedCountdown.join(' ')}`;
 };
 
+/**
+ * Sheet only returns short version of location (v1, b2 etc)
+ * I want to show full version and this achieves that
+ */
+const formatLocation = function formatRawLocationDataIntoFullMapAndChannel(rawLocation) {
+  const prefixLocation = rawLocation.slice(0, 1).toLowerCase(); //Extracts the v/b in v1/b1
+  const suffixLocation = rawLocation.slice(1, 2); //Extracts the 1/1 in v1/b1
+
+  if (prefixLocation === 'v') {
+    return `Vulture's Vale Ch.${suffixLocation} (X:161, Y:784)`;
+  } else if (prefixLocation === 'b') {
+    return `Blizzard Berg Ch.${suffixLocation} (X:264, Y:743)`;
+  }
+};
+
 module.exports = {
   getServerTime: getServerTime,
-  formatCountdown: formatCountdown
+  formatCountdown: formatCountdown,
+  formatLocation: formatLocation
 };
