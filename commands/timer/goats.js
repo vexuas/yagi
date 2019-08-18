@@ -1,40 +1,22 @@
 const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const { format } = require('date-fns');
-
-const getServerTime = function formatsLocalTimeToServerTime() {
-  //Current Date with Time
-  const localTime = new Date();
-  //Current time in milliseconds
-  const localTimeinMs = localTime.getTime();
-  //Difference between your timezone and UTC in hours
-  const localTimezoneOffset = localTime.getTimezoneOffset() / 60;
-  /**
-   * The above is just for context
-   * If you're at UTC +8 timezone, the offset is UTC +0 minus UTC +8
-   * Below is more on how to get what you need
-   * Pretty much you'll just need the server's timezoneoffset
-   * And use that to configure localTime
-   */
-  const serverTimezoneOffset = 4; //EDT offset
-  const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
-  const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
-
-  return format(serverTime, 'ddd, hh:mm:ss A'); //To make it readable
-};
-
+const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
+const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
+//----------
+/**
+ * GET request to spreadsheet for values
+ * spreadsheetId is 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'
+ * ranges is which multiple rows/columns/cells you need from the sheet
+ * auth is the oauth token
+ * Since it's a public sheet, I set up a personal api token for use as no authentication required
+ * Passed in a callback function to send the message to user after everything is done
+ */
 const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableData(
-  message
+  message,
+  sendMessageCallback
 ) {
   const authClient = api;
-  /**
-   * GET request to spreadsheet for values
-   * spreadsheetId is 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'
-   * ranges is which multiple rows/columns/cells you need from the sheet
-   * auth is the oauth token
-   * Since it's a public sheet, I set up a personal api token for use as no authentication required
-   */
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
@@ -71,18 +53,105 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       banolethCount: actualSheetValues[3],
       bisolenCount: actualSheetValues[4]
     };
-    message.channel.send(getServerTime());
-    message.channel.send(worldBossData.location);
+
+    sendMessageCallback(message, generateEmbed(worldBossData));
   });
 };
+//----------
+/**
+ * Such hack, much wow
+ * Dealing with time in js seriously will make you insane at some point
+ * At least new Date accepts AM/PM so that lessens the voodoo
+ * Esentially what this function does is extract the month, year & day of serverTime
+ * and use that to get the date of nextSpawn
+ * 1 edge case with this during close midnight since it'll be a different day for nextSpawn then
+ * but otherwise, I feel like this is good enough to calculate the countdown
+ * Could always extract from sheet itself. It'll work here but I can't use that number for the website
+ */
+const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(nextSpawn) {
+  const serverTime = getServerTime();
+  const currentDay = format(serverTime, 'D');
+  const currentMonth = format(serverTime, 'MMMM');
+  const currentYear = format(serverTime, 'YYYY');
 
+  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
+
+  //To be as accurate as possible
+  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
+  /**
+   * Case 1: Normal timer (12am - 7:59pm)
+   * Case 2: Late Night timer (8pm - 11:59pm)
+   * Edge Case: No editor to update sheet
+   */
+  console.log(countdownValidity);
+  if (countdownValidity >= 0) {
+    return formatCountdown(serverTime, nextSpawnDate);
+  } else {
+    //Todo: Last day of month function along with nextday function
+  }
+};
+//----------
+/**
+ * Designing part of what to send back to user
+ * Not too sure if it's better using discord's .RichEmbed()
+ * but sticking to this since I got used to it
+ */
+const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
+  const grvAcnt = '`'; //Making this a variable to make use of concatenation
+
+  const serverTimeDesc = `Server Time: ${grvAcnt}${format(
+    getServerTime(),
+    'dddd, h:mm:ss A'
+  )}${grvAcnt}`;
+
+  const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
+    worldBossData.nextSpawn
+  }${grvAcnt}`;
+
+  const embedData = {
+    title: 'Olympus | World Boss',
+    description: `${serverTimeDesc}\n${spawnDesc}`,
+    color: 32896,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+    },
+    fields: [
+      {
+        name: 'Location',
+        value: '```fix\n\n' + formatLocation(worldBossData.location) + '```'
+      },
+      {
+        name: 'Countdown',
+        value: '```xl\n\n' + getCountdown(worldBossData.nextSpawn) + '```',
+        inline: true
+      },
+      {
+        name: 'Time of Spawn',
+        value: '```xl\n\n' + worldBossData.nextSpawn + '```',
+        inline: true
+      }
+    ]
+  };
+  return embedData;
+};
+//----------
+/**
+ * Used as a callback function since this should be the last thing to be triggered
+ * Passed in another function as a parameter so it gets called after everything else is done
+ * */
+const sendMessage = function sendMessageToUser(message, embedData) {
+  const embed = embedData;
+  message.channel.send({ embed });
+};
+//----------
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
   execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
-    getWorldBossData(message);
+    getWorldBossData(message, sendMessage);
     message.channel.stopTyping();
   }
 };
