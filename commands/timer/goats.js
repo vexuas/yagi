@@ -2,7 +2,14 @@ const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
-const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
+const {
+  format,
+  differenceInMilliseconds,
+  distanceInWordsStrict,
+  addHours,
+  addDays,
+  isAfter
+} = require('date-fns');
 //----------
 /**
  * GET request to spreadsheet for values
@@ -75,20 +82,30 @@ const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(ne
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
 
-  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
+  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`; //August 19, 2019 9:56:21 PM
+  const eightPMCutOff = `${currentMonth} ${currentDay}, ${currentYear} 8:00:00 PM`; //August 19, 2019 8:00:00 PM
 
   //To be as accurate as possible
   const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
-  /**
-   * Case 1: Normal timer (12am - 7:59pm)
-   * Case 2: Late Night timer (8pm - 11:59pm)
-   * Edge Case: No editor to update sheet
-   */
   console.log(countdownValidity);
+  /**
+   * Normal timer: (12am - 7:59pm)
+   * Late Night timer: (8pm - 11:59pm)
+   * Edge Case: No editor to update sheet
+   * Using 8pm cuz wb spawns every 4 hours so anything after 8 is already past midnight
+   */
   if (countdownValidity >= 0) {
-    return formatCountdown(serverTime, nextSpawnDate);
-  } else {
-    //Todo: Last day of month function along with nextday function
+    //Countdown still counting down
+    return formatCountdown(nextSpawnDate, serverTime);
+  } else if (isAfter(nextSpawnDate, eightPMCutOff) && countdownValidity < 0) {
+    //servertime is over 8pm and no editor updated sheet
+    return formatCountdown(addDays(addHours(nextSpawnDate, 4), 1), serverTime); //+4 hours and +1 day to current nextSpawnDate
+  } else if (isAfter(nextSpawnDate, eightPMCutOff) && nextSpawnDate.includes('AM')) {
+    //midnight timer; servertime is over 8pm and sheet is updated
+    return formatCountdown(addDays(nextSpawnDate, 1), serverTime); //+1 day to current nextSpawnDate
+  } else if (countdownValidity < 0) {
+    //normal timer and no editor updated sheet
+    return formatCountdown(addHours(nextSpawnDate, 4), serverTime); //+4 hours to current nextSpawnDate
   }
 };
 //----------

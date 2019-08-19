@@ -8,8 +8,7 @@ const {
   differenceInMinutes,
   differenceInSeconds,
   subHours,
-  subMinutes,
-  subSeconds
+  subMinutes
 } = require('date-fns');
 
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
@@ -38,7 +37,7 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
  * so can't return X hours, y mins, z seconds and can only get individually
  * This function tries to achieve this
  */
-const formatCountdown = function formatCountdownUsingDifference(serverTime, nextSpawnDate) {
+const formatCountdown = function formatCountdownUsingDifference(nextSpawnDate, serverTime) {
   let formattedCountdown = [];
   let calculatedTime = nextSpawnDate;
   /**
