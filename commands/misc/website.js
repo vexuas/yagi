@@ -4,9 +4,9 @@ const embed = {
 };
 
 module.exports = {
-  name: "website",
-  description: "website link",
-  execute(message, args) {
+  name: 'website',
+  description: 'website link',
+  execute(message) {
     embed.description = `${
       message.author
     } | [Come visit my website! (◕ᴗ◕✿)](https://ak-goats.com/)`;

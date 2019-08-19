@@ -4,9 +4,9 @@ const embed = {
 };
 
 module.exports = {
-  name: "invite",
-  description: "invite link",
-  execute(message, args) {
+  name: 'invite',
+  description: 'invite link',
+  execute(message) {
     embed.description = `${
       message.author
     } | [Add me to your servers! (◕ᴗ◕✿)](https://tinyurl.com/ak-goats-bot)`;
