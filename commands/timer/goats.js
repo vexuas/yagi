@@ -101,17 +101,17 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
   if (countdownValidity >= 0) {
     //Countdown still counting down
     return validatedSpawn;
-  } else if (isAfter(nextSpawnDate, eightPMCutOff) && countdownValidity < 0) {
-    //servertime is over 8pm and no editor updated sheet
-    //+4 hours and +1 day to current nextSpawnDate
-    validatedSpawn.nextSpawn = format(addDays(addHours(nextSpawnDate, 4)), 'h:mm:ss A');
-    validatedSpawn.countdown = formatCountdown(addDays(addHours(nextSpawnDate, 4), 1), serverTime);
-    return validatedSpawn;
-  } else if (isAfter(nextSpawnDate, eightPMCutOff) && nextSpawnDate.includes('AM')) {
+  } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
     //midnight timer; servertime is over 8pm and sheet is updated
     //+1 day to current nextSpawnDate
     validatedSpawn.nextSpawn = worldBossData.nextSpawn;
-    validateSpawn.countdown = formatCountdown(addDays(nextSpawnDate, 1), serverTime);
+    validatedSpawn.countdown = formatCountdown(addDays(nextSpawnDate, 1), serverTime);
+    return validatedSpawn;
+  } else if (isAfter(serverTime, eightPMCutOff) && countdownValidity < 0) {
+    //servertime is over 8pm and no editor updated sheet
+    //+4 hours and +1 day to current nextSpawnDate
+    validatedSpawn.nextSpawn = format(addDays(addHours(nextSpawnDate, 4), 1), 'h:mm:ss A');
+    validatedSpawn.countdown = formatCountdown(addDays(addHours(nextSpawnDate, 4), 1), serverTime);
     return validatedSpawn;
   } else if (countdownValidity < 0) {
     //normal timer and no editor updated sheet
