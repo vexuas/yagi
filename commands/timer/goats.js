@@ -76,8 +76,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
  * but otherwise, I feel like this is good enough to calculate the countdown
  * Could always extract from sheet itself. It'll work here but I can't use that number for the website
  */
-const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBossData) {
-  const serverTime = getServerTime();
+const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBossData, serverTime) {
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
@@ -162,12 +161,12 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
       },
       {
         name: 'Countdown',
-        value: '```xl\n\n' + validateSpawn(worldBossData).countdown + '```',
+        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).countdown + '```',
         inline: true
       },
       {
         name: 'Time of Spawn',
-        value: '```xl\n\n' + validateSpawn(worldBossData).nextSpawn + '```',
+        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).nextSpawn + '```',
         inline: true
       }
     ]

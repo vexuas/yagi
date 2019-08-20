@@ -4,6 +4,9 @@
   "description": "Vulture's Vale/Blizzard Berg World Boss Timer for Aura Kingdom",
   "main": "yagi.js",
   "author": "Vexuas",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "chai": "^4.2.0",
     "date-fns": "^1.30.1",
