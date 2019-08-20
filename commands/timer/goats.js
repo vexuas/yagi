@@ -107,14 +107,8 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     validatedSpawn.nextSpawn = worldBossData.nextSpawn;
     validatedSpawn.countdown = formatCountdown(addDays(nextSpawnDate, 1), serverTime);
     return validatedSpawn;
-  } else if (isAfter(serverTime, eightPMCutOff) && countdownValidity < 0) {
-    //servertime is over 8pm and no editor updated sheet
-    //+4 hours and +1 day to current nextSpawnDate
-    validatedSpawn.nextSpawn = format(addDays(addHours(nextSpawnDate, 4), 1), 'h:mm:ss A');
-    validatedSpawn.countdown = formatCountdown(addDays(addHours(nextSpawnDate, 4), 1), serverTime);
-    return validatedSpawn;
   } else if (countdownValidity < 0) {
-    //normal timer and no editor updated sheet
+    //no editor updated sheet
     //+4 hours to current nextSpawnDate
     validatedSpawn.nextSpawn = format(addHours(nextSpawnDate, 4), 'h:mm:ss A');
     validatedSpawn.countdown = formatCountdown(addHours(nextSpawnDate, 4), serverTime);
