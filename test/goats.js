@@ -43,12 +43,24 @@ describe('goats', function() {
       const lateNightNonUpdatedWorldBossData = {
         nextSpawn: '9:45:00 PM'
       };
-      const serverTime = 'August 22, 2019 11:00:45 PM';
+      const serverTime = 'August 21, 2019 11:00:45 PM';
 
       const result = validateSpawn(lateNightNonUpdatedWorldBossData, serverTime);
 
       assert.equal(result.nextSpawn, '1:45:00 AM');
       assert.equal(result.countdown, '2 hrs 44 mins 15 secs');
+    });
+
+    it('should return correct nextSpawn and countdown values when in late night flow and no editor updated sheet and serverTime has gone to next day', function() {
+      const midNightNonUpdatedWorldBossData = {
+        nextSpawn: '9:45:00 PM'
+      };
+      const serverTime = 'August 22, 2019 1:00:45 AM';
+
+      const result = validateSpawn(midNightNonUpdatedWorldBossData, serverTime);
+
+      assert.equal(result.nextSpawn, '1:45:00 AM');
+      assert.equal(result.countdown, '44 mins 15 secs');
     });
   });
 });
