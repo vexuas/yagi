@@ -2,7 +2,18 @@ const { api } = require('../../config.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
-const { format, differenceInMilliseconds, distanceInWordsStrict } = require('date-fns');
+const {
+  format,
+  differenceInMilliseconds,
+  distanceInWordsStrict,
+  addHours,
+  addDays,
+  subDays,
+  isAfter,
+  isWithinRange,
+  startOfDay,
+  endOfDay
+} = require('date-fns');
 //----------
 /**
  * GET request to spreadsheet for values
@@ -65,30 +76,65 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
  * At least new Date accepts AM/PM so that lessens the voodoo
  * Esentially what this function does is extract the month, year & day of serverTime
  * and use that to get the date of nextSpawn
- * 1 edge case with this during close midnight since it'll be a different day for nextSpawn then
- * but otherwise, I feel like this is good enough to calculate the countdown
+ * Some complications during close midnight since it'll be a different day for nextSpawn then
+ * but otherwise, I feel like this is good enough to calculate a reliable countdown
  * Could always extract from sheet itself. It'll work here but I can't use that number for the website
+ * ----------
+ * ToDo(?):
+ * Add hourCountdownValidity to update values if editors miss updating sheet more than once in a row
+ * So 1 miss is +4 hours(implemented), 2 miss + 8 hours and so on
+ * It seems farfetched for more than 2 to happen, even just 2 misses in a row is pushing it already
+ * Tho 1 miss would definitely happen most of the time
  */
-const getCountdown = function calculateCountdownThroughNextSpawnAndServerTime(nextSpawn) {
-  const serverTime = getServerTime();
+const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBossData, serverTime) {
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
 
-  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${nextSpawn}`;
+  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${worldBossData.nextSpawn}`; //August 19, 2019 9:56:21 PM
+  //Using 8pm cuz wb spawns every 4 hours so anything after 8 is already past midnight
+  const eightPMCutOff = `${currentMonth} ${currentDay}, ${currentYear} 8:00:00 PM`; //August 19, 2019 8:00:00 PM
 
   //To be as accurate as possible
   const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
-  /**
-   * Case 1: Normal timer (12am - 7:59pm)
-   * Case 2: Late Night timer (8pm - 11:59pm)
-   * Edge Case: No editor to update sheet
-   */
+
   console.log(countdownValidity);
-  if (countdownValidity >= 0) {
-    return formatCountdown(serverTime, nextSpawnDate);
-  } else {
-    //Todo: Last day of month function along with nextday function
+
+  if (
+    isWithinRange(serverTime, startOfDay(serverTime), addHours(startOfDay(serverTime), 4)) &&
+    isWithinRange(nextSpawnDate, eightPMCutOff, endOfDay(nextSpawnDate))
+  ) {
+    /**
+     * Edge case - midnight timer; servertime is over 12am but spawnTime is before 12am; no editor updated sheet
+     * -1 day and +4 hours to current nextSpawnDate
+     * Putting this as first logic since the nature of how I calculate countdown requires it to be tested first for it to work
+     * Any place other than here would result logic always firing countdownValidity >= 0
+     */
+    return {
+      nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss A'),
+      countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime)
+    };
+  } else if (countdownValidity >= 0) {
+    //normal timer (12am - 7:59pm server time) with updated sheet
+    //Countdown still counting down
+    return {
+      nextSpawn: worldBossData.nextSpawn,
+      countdown: formatCountdown(nextSpawnDate, serverTime)
+    };
+  } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
+    //late night timer; servertime is over 8pm and sheet is updated
+    //+1 day to current nextSpawnDate
+    return {
+      nextSpawn: worldBossData.nextSpawn,
+      countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime)
+    };
+  } else if (countdownValidity < 0) {
+    //Edge case - no editor updated sheet for both normal and late night flow
+    //+4 hours to current nextSpawnDate
+    return {
+      nextSpawn: format(addHours(nextSpawnDate, 4), 'h:mm:ss A'),
+      countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime)
+    };
   }
 };
 //----------
@@ -106,7 +152,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   )}${grvAcnt}`;
 
   const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
-    worldBossData.nextSpawn
+    validateSpawn(worldBossData, getServerTime()).nextSpawn
   }${grvAcnt}`;
   /** 
    * This is far easier to get countdown but it isn't as reliable and accurate
@@ -131,12 +177,12 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
       },
       {
         name: 'Countdown',
-        value: '```xl\n\n' + getCountdown(worldBossData.nextSpawn) + '```',
+        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).countdown + '```',
         inline: true
       },
       {
         name: 'Time of Spawn',
-        value: '```xl\n\n' + worldBossData.nextSpawn + '```',
+        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).nextSpawn + '```',
         inline: true
       }
     ]
@@ -156,6 +202,7 @@ const sendMessage = function sendMessageToUser(message, embedData) {
 module.exports = {
   name: 'goats',
   description: 'Olympus World Boss Time',
+  validateSpawn: validateSpawn,
   execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
