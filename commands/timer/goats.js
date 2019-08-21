@@ -76,8 +76,8 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
  * At least new Date accepts AM/PM so that lessens the voodoo
  * Esentially what this function does is extract the month, year & day of serverTime
  * and use that to get the date of nextSpawn
- * 1 edge case with this during close midnight since it'll be a different day for nextSpawn then
- * but otherwise, I feel like this is good enough to calculate the countdown
+ * Some complications during close midnight since it'll be a different day for nextSpawn then
+ * but otherwise, I feel like this is good enough to calculate a reliable countdown
  * Could always extract from sheet itself. It'll work here but I can't use that number for the website
  * ----------
  * ToDo(?):
