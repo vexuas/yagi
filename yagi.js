@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 const commands = require('./commands');
-
+const fs = require('fs');
 const yagi = new Discord.Client();
+const guildConfig = require('./guild-config.json');
 
 /**
  * TODO | By 23 August 2019 | 3 days
@@ -34,6 +35,25 @@ yagi.once('ready', () => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of users: ${yagi.users.size}\nNumber of guilds: ${yagi.guilds.size}`);
+  //Saves guild data if it's not in file
+  yagi.guilds.forEach(guild => {
+    if (!guildConfig[guild.id]) {
+      guildConfig[guild.id] = {
+        name: guild.name,
+        owner: guild.owner.user.tag,
+        memberCount: guild.memberCount,
+        region: guild.region,
+        prefix: prefix
+      };
+      fs.writeFileSync('./guild-config.json', JSON.stringify(guildConfig, null, 2), function(err) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log('Guild-config-json was updated!');
+      });
+    }
+  });
+  console.log(guildConfig);
 });
 
 const activitylist = [
