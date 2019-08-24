@@ -4,6 +4,7 @@ const commands = require('./commands');
 const fs = require('fs');
 const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
+const { serverEmbed } = require('./helpers');
 
 /**
  * TODO | By 23 August 2019 | 3 days
@@ -89,10 +90,11 @@ yagi.on('guildCreate', guild => {
       return console.log(err);
     }
   });
-
   // Send new guild info to yagi discord server
+  const embed = serverEmbed(yagi, guild, 'join');
   const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send(`New server: ${guild.name} with ${guild.memberCount} users`);
+  serversChannel.send({ embed });
+  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 
 // When kicked from a server
@@ -105,8 +107,10 @@ yagi.on('guildDelete', guild => {
   });
 
   // Send updated data to yagi discord server
+  const embed = serverEmbed(yagi, guild, 'leave');
   const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send(`Left ${guild.name} with ${guild.memberCount} users`);
+  serversChannel.send({ embed });
+  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 yagi.on('message', message => {
   const serverPrefix = guildConfig[message.guild.id].prefix;
