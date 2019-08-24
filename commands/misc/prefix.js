@@ -36,8 +36,12 @@ module.exports = {
     if (args.length === 0) {
       const embed = generateEmbed(currentPrefix);
       message.channel.send({ embed });
-    } else {
-      message.channel.send('what');
+    } else if (args.length >= 1 && !message.member.hasPermission('ADMINISTRATOR')) {
+      message.channel.send('Sorry, only admins can use this command :c');
+    } else if (args.length === 1 && message.member.hasPermission('ADMINISTRATOR')) {
+      message.channel.send(
+        "Oops, you're missing an argument （・□・；）\n1st Argument: `Your custom prefix`\n2nd Argument: `Whether you want a space after your prefix; accepts true or false`"
+      );
     }
   }
 };
