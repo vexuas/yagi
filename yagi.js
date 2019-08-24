@@ -116,19 +116,19 @@ yagi.on('message', message => {
   const serverPrefix = guildConfig[message.guild.id].prefix;
   //Ignores messages without a prefix
   if (message.content.startsWith(serverPrefix)) {
-    const args = message.content.slice(serverPrefix.length).split(' '); //takes off prefix and returns message as an array
+    const args = message.content.slice(serverPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
     const command = args.shift().toLowerCase(); //gets command as a string from array
-    console.log(args);
+    const arguments = message.content.slice(serverPrefix.length + command.length + 1); //gets arguments if there are any
     /**
      * If command exists in command file, send command reply
      * Also checks if command has arguments
      * Else send error message
      */
     if (commands[command]) {
-      if (args.length > 0 && !commands[command].hasArguments) {
+      if (arguments.length > 0 && !commands[command].hasArguments) {
         return message.channel.send("That command doesn't accept arguments （・□・；）");
       } else {
-        return commands[command].execute(message, args);
+        return commands[command].execute(message, arguments);
       }
     } else {
       return message.channel.send("I'm not sure what you meant by that! （・□・；）");
