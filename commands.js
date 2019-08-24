@@ -19,6 +19,7 @@ module.exports = {
   sheets: require('./commands/misc/sheets'),
   loot: require('./commands/misc/loot'),
   website: require('./commands/misc/website'),
-  contacts: require('./commands/misc/contacts')
+  contacts: require('./commands/misc/contacts'),
+  prefix: require('./commands/misc/prefix')
   // ----------
 };
