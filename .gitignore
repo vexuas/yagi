@@ -4,13 +4,7 @@
 node_modules
 
 # config
-config.json
-
-# users and channels
-# commands/phoeusers.js
-# commands/chimusers.js
-# commands/chimchannels.js
-# commands/phoechannels.js
+config
 
 # system files
 .DS_Store
