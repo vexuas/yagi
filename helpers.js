@@ -111,6 +111,8 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
 ) {
   let embedTitle;
   let embedColor;
+  const defaultIcon =
+    'https://cdn.discordapp.com/attachments/248430185463021569/614789995596742656/Wallpaper2.png';
   if (status === 'join') {
     embedTitle = 'Joined a new server';
     embedColor = 55296;
@@ -125,7 +127,7 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
     }** users!`,
     color: embedColor,
     thumbnail: {
-      url: guild.iconURL.replace(/jpeg|jpg/gi, 'png')
+      url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon
     },
     fields: [
       {
