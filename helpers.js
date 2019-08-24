@@ -11,6 +11,7 @@ const {
   subMinutes
 } = require('date-fns');
 
+//----------
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
   //Current Date with Time
   const localTime = new Date();
@@ -31,7 +32,7 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
 
   return serverTime;
 };
-
+//----------
 /**
  * date-fns doesn't let you format distanceInWordsStrict yet
  * so can't return X hours, y mins, z seconds and can only get individually
@@ -83,7 +84,7 @@ const formatCountdown = function formatCountdownUsingDifference(nextSpawnDate, s
   }
   return `${formattedCountdown.join(' ')}`;
 };
-
+//----------
 /**
  * Sheet only returns short version of location (v1, b2 etc)
  * I want to show full version and this achieves that
@@ -98,9 +99,73 @@ const formatLocation = function formatRawLocationDataIntoFullMapAndChannel(rawLo
     return `Blizzard Berg Ch.${suffixLocation} (X:264, Y:743)`;
   }
 };
-
+//----------
+/**
+ * Server Embed for when bot joining and leaving a server
+ * Add iconURL logic to always return a png extension
+ */
+const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
+  yagi,
+  guild,
+  status
+) {
+  let embedTitle;
+  let embedColor;
+  const defaultIcon =
+    'https://cdn.discordapp.com/attachments/248430185463021569/614789995596742656/Wallpaper2.png';
+  if (status === 'join') {
+    embedTitle = 'Joined a new server';
+    embedColor = 55296;
+  } else if (status === 'leave') {
+    embedTitle = 'Left a server';
+    embedColor = 16711680;
+  }
+  const embed = {
+    title: embedTitle,
+    description: `I'm now in **${yagi.guilds.size}** servers and serving **${
+      yagi.users.size
+    }** users!`,
+    color: embedColor,
+    thumbnail: {
+      url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon
+    },
+    fields: [
+      {
+        name: 'Name',
+        value: guild.name,
+        inline: true
+      },
+      {
+        name: 'Owner',
+        value: guild.owner.user.tag,
+        inline: true
+      },
+      {
+        name: 'Members',
+        value: guild.memberCount,
+        inline: true
+      },
+      {
+        name: 'Region',
+        value: capitalize(guild.region),
+        inline: true
+      }
+    ]
+  };
+  return embed;
+};
+//----------
+/**
+ * Formats first letter of string to uppercase
+ */
+const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+//----------
 module.exports = {
   getServerTime: getServerTime,
   formatCountdown: formatCountdown,
-  formatLocation: formatLocation
+  formatLocation: formatLocation,
+  serverEmbed: serverEmbed,
+  capitalize: capitalize
 };

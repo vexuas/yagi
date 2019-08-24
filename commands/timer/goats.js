@@ -1,4 +1,4 @@
-const { api } = require('../../config.json');
+const { api } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
