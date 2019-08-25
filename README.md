@@ -2,10 +2,10 @@
 
 Really need to refactor all this along with ama
 
- TODO | By 23 August 2019 | 3 days 
- ---------------------------------
+ TODO | By 31 August 2019 | 11 days | 3/13
+ -----------------------------------------
  * Add cooldown for commands to avoid spamming bot
- * Add ability to customize prefix
+ * ~~Add ability to customize prefix~~
  * ~~Revamp timer and countdown~~
  * Revamp contacts
  * ~~Remove legacy code~~
@@ -18,4 +18,5 @@ Really need to refactor all this along with ama
  * Set up API
  * Have a drink with nami
 
-giving myself a couple more days extra kek but seems like I wont make it orz
+
+~~giving myself a couple more days extra kek but seems like I wont make it orz~~ IM PUTTING THIS TILL END OF AUGUST FCK IT
