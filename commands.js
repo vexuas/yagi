@@ -12,6 +12,9 @@ module.exports = {
 
   // Reminder
   // ----------
+  // Dev Tools
+  reply: require('./commands/developer/reply'),
+  // ----------
   // Miscellaneous
   info: require('./commands/misc/info'),
   release: require('./commands/misc/release'),

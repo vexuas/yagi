@@ -113,12 +113,17 @@ yagi.on('guildDelete', guild => {
   serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 yagi.on('message', message => {
-  const serverPrefix = guildConfig[message.guild.id].prefix;
+  let yagiPrefix;
+  if (message.channel.type === 'dm' || message.channel.type === 'group') {
+    yagiPrefix = defaultPrefix;
+  } else if (message.channel.type === 'text') {
+    yagiPrefix = guildConfig[message.guild.id].prefix;
+  }
   //Ignores messages without a prefix
-  if (message.content.startsWith(serverPrefix)) {
-    const args = message.content.slice(serverPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
+  if (message.content.startsWith(yagiPrefix)) {
+    const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
     const command = args.shift().toLowerCase(); //gets command as a string from array
-    const arguments = message.content.slice(serverPrefix.length + command.length + 1); //gets arguments if there are any
+    const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
     /**
      * If command exists in command file, send command reply
      * Also checks if command has arguments
@@ -128,7 +133,7 @@ yagi.on('message', message => {
       if (arguments.length > 0 && !commands[command].hasArguments) {
         return message.channel.send("That command doesn't accept arguments （・□・；）");
       } else {
-        return commands[command].execute(message, arguments);
+        return commands[command].execute(message, arguments, yagi);
       }
     } else {
       return message.channel.send("I'm not sure what you meant by that! （・□・；）");
