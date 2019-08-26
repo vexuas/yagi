@@ -16,7 +16,7 @@ const generateEmbed = function designOfPrefixEmbed(currentPrefix) {
       },
       {
         name: 'Usage Example',
-        value: `${currentPrefix} help`,
+        value: `${currentPrefix}help`,
         inline: true
       },
       {
@@ -59,16 +59,14 @@ module.exports = {
         message.channel.send(`Can't update to the same prefix（・□・；)`);
       } else {
         guildConfig[message.guild.id].prefix = newPrefix;
-        fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(
-          err
-        ) {
+        fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
           if (err) {
             return console.log(err);
           }
+          message.channel.send(
+            `Update successful!\n• New prefix: ${grvAcnt}${newPrefix}${grvAcnt}\n• Example Usage: ${grvAcnt}${newPrefix}help${grvAcnt}`
+          );
         });
-        message.channel.send(
-          `Prefix updated to **${newPrefix}**\nExample Usage: ${grvAcnt}${newPrefix}help${grvAcnt}`
-        );
       }
     } else {
       message.channel.send('Please wrap your custom prefix between `""`');

@@ -46,12 +46,7 @@ yagi.once('ready', () => {
         region: guild.region,
         prefix: defaultPrefix
       };
-      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
-        if (err) {
-          return console.log(err);
-        }
-        console.log('Guild-config-json was updated!');
-      });
+      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
     }
   });
   console.log(guildConfig);
@@ -85,32 +80,31 @@ yagi.on('guildCreate', guild => {
     region: guild.region,
     prefix: defaultPrefix
   };
-  fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
     if (err) {
       return console.log(err);
     }
+    //Send new guild info to yagi discord server
+    const embed = serverEmbed(yagi, guild, 'join');
+    const serversChannel = yagi.channels.get('614749682849021972');
+    serversChannel.send({ embed });
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
-  // Send new guild info to yagi discord server
-  const embed = serverEmbed(yagi, guild, 'join');
-  const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 
 // When kicked from a server
 yagi.on('guildDelete', guild => {
   delete guildConfig[guild.id];
-  fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
     if (err) {
       return console.log(err);
     }
+    //Send updated data to yagi discord server
+    const embed = serverEmbed(yagi, guild, 'leave');
+    const serversChannel = yagi.channels.get('614749682849021972');
+    serversChannel.send({ embed });
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
-
-  // Send updated data to yagi discord server
-  const embed = serverEmbed(yagi, guild, 'leave');
-  const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 yagi.on('message', message => {
   let yagiPrefix;
