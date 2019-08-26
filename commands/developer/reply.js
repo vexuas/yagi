@@ -1,3 +1,22 @@
+const generateEmbed = function designOfReplyEmbed(message, replyContent) {
+  const embed = {
+    title: 'Successfully delivered!',
+    description:
+      'Replies are sent through direct message so make sure you allow DMs from server members!',
+    color: 55296,
+    thumbnail: {
+      url: message.author.displayAvatarURL
+    },
+    fields: [
+      {
+        name: 'Your Message:',
+        value: replyContent
+      }
+    ]
+  };
+  return embed;
+};
+
 module.exports = {
   name: 'reply',
   description: "reply to a user's message",
@@ -8,7 +27,8 @@ module.exports = {
       const userID = arguments.split(' ', 1).toString(); //Gets ID of user who used command
       const replyContent = arguments.slice(userID.length + 1); //What to send to user
       const currentUser = yagi.users.get(userID);
-      currentUser.send(replyContent);
+      const embed = generateEmbed(message, replyContent);
+      currentUser.send({ embed });
     } else {
       return;
     }
