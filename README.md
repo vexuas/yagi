@@ -2,7 +2,7 @@
 
 Really need to refactor all this along with ama
 
- TODO | By 31 August 2019 | 11 days | 3/13
+ TODO | By 31 August 2019 | 5 days | 3/13
  -----------------------------------------
  * Add cooldown for commands to avoid spamming bot
  * ~~Add ability to customize prefix~~
