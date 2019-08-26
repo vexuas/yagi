@@ -7,10 +7,10 @@ const guildConfig = require('./config/guild.json');
 const { serverEmbed } = require('./helpers');
 
 /**
- * TODO | By 23 August 2019 | 3 days
+ * TODO | By 31 August 2019 | 5 days
  * ---------------------------------
  * Add cooldown for commands to avoid spamming bot
- * Add ability to customize prefix
+ * Add ability to customize prefix ✔
  * Revamp timer and countdown ✔
  * Revamp contacts
  * Remove legacy code ✔
