@@ -14,6 +14,7 @@ module.exports = {
   // ----------
   // Dev Tools
   reply: require('./commands/developer/reply'),
+  message: require('./commands/developer/message'),
   // ----------
   // Miscellaneous
   info: require('./commands/misc/info'),
