@@ -12,7 +12,7 @@ const { serverEmbed } = require('./helpers');
  * Add cooldown for commands to avoid spamming bot
  * Add ability to customize prefix ✔
  * Revamp timer and countdown ✔
- * Revamp contacts
+ * Revamp contacts ✔
  * Remove legacy code ✔
  * Rethink the amount of use for mentions
  * Refactor info command to be an actual information hub
