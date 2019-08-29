@@ -7,12 +7,12 @@ const guildConfig = require('./config/guild.json');
 const { serverEmbed } = require('./helpers');
 
 /**
- * TODO | By 23 August 2019 | 3 days
+ * TODO | By 31 August 2019 | 5 days
  * ---------------------------------
  * Add cooldown for commands to avoid spamming bot
- * Add ability to customize prefix
+ * Add ability to customize prefix ✔
  * Revamp timer and countdown ✔
- * Revamp contacts
+ * Revamp contacts ✔
  * Remove legacy code ✔
  * Rethink the amount of use for mentions
  * Refactor info command to be an actual information hub
@@ -46,12 +46,7 @@ yagi.once('ready', () => {
         region: guild.region,
         prefix: defaultPrefix
       };
-      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
-        if (err) {
-          return console.log(err);
-        }
-        console.log('Guild-config-json was updated!');
-      });
+      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
     }
   });
   console.log(guildConfig);
@@ -85,40 +80,44 @@ yagi.on('guildCreate', guild => {
     region: guild.region,
     prefix: defaultPrefix
   };
-  fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
     if (err) {
       return console.log(err);
     }
+    //Send new guild info to yagi discord server
+    const embed = serverEmbed(yagi, guild, 'join');
+    const serversChannel = yagi.channels.get('614749682849021972');
+    serversChannel.send({ embed });
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
-  // Send new guild info to yagi discord server
-  const embed = serverEmbed(yagi, guild, 'join');
-  const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 
 // When kicked from a server
 yagi.on('guildDelete', guild => {
   delete guildConfig[guild.id];
-  fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
     if (err) {
       return console.log(err);
     }
+    //Send updated data to yagi discord server
+    const embed = serverEmbed(yagi, guild, 'leave');
+    const serversChannel = yagi.channels.get('614749682849021972');
+    serversChannel.send({ embed });
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
-
-  // Send updated data to yagi discord server
-  const embed = serverEmbed(yagi, guild, 'leave');
-  const serversChannel = yagi.channels.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
 });
 yagi.on('message', message => {
-  const serverPrefix = guildConfig[message.guild.id].prefix;
+  let yagiPrefix;
+  if (message.channel.type === 'dm' || message.channel.type === 'group') {
+    yagiPrefix = defaultPrefix;
+  } else if (message.channel.type === 'text') {
+    yagiPrefix = guildConfig[message.guild.id].prefix;
+  }
   //Ignores messages without a prefix
-  if (message.content.startsWith(serverPrefix)) {
-    const args = message.content.slice(serverPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
+  if (message.content.startsWith(yagiPrefix)) {
+    const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
     const command = args.shift().toLowerCase(); //gets command as a string from array
-    const arguments = message.content.slice(serverPrefix.length + command.length + 1); //gets arguments if there are any
+    const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
     /**
      * If command exists in command file, send command reply
      * Also checks if command has arguments
@@ -128,7 +127,7 @@ yagi.on('message', message => {
       if (arguments.length > 0 && !commands[command].hasArguments) {
         return message.channel.send("That command doesn't accept arguments （・□・；）");
       } else {
-        return commands[command].execute(message, arguments);
+        return commands[command].execute(message, arguments, yagi);
       }
     } else {
       return message.channel.send("I'm not sure what you meant by that! （・□・；）");

@@ -2,12 +2,12 @@
 
 Really need to refactor all this along with ama
 
- TODO | By 31 August 2019 | 5 days | 3/13
+ TODO | By 31 August 2019 | 2 days | 4/13
  -----------------------------------------
  * Add cooldown for commands to avoid spamming bot
  * ~~Add ability to customize prefix~~
  * ~~Revamp timer and countdown~~
- * Revamp contacts
+ * ~~Revamp contacts~~
  * ~~Remove legacy code~~
  * Rethink the amount of use for mentions
  * Refactor info command to be an actual information hub
