@@ -1,5 +1,20 @@
 const { format } = require('date-fns');
-
+const sendSuccessEmbed = function designOfSuccessNotificationEmbed(message, replyContent) {
+  const embed = {
+    title: 'Successfully delivered!',
+    color: 55296,
+    thumbnail: {
+      url: message.author.displayAvatarURL
+    },
+    fields: [
+      {
+        name: 'Your Message:',
+        value: replyContent
+      }
+    ]
+  };
+  return message.channel.send({ embed });
+};
 const sendReplyEmbedUser = function designOfReplyEmbedAndSendToUser(
   message,
   replyContent,
@@ -41,10 +56,12 @@ module.exports = {
         case 'channel':
           const channelID = yagi.channels.get(platformID);
           sendReplyEmbedUser(message, replyContent, channelID);
+          sendSuccessEmbed(message, replyContent);
           break;
         case 'user':
           const userID = yagi.users.get(platformID);
           sendReplyEmbedUser(message, replyContent, userID);
+          sendSuccessEmbed(message, replyContent);
           break;
         default:
           return message.channel.send('Please specify which platform to send reply!');
