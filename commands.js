@@ -18,6 +18,7 @@ module.exports = {
   // ----------
   // Miscellaneous
   info: require('./commands/misc/info'),
+  about: require('./commands/misc/about'),
   release: require('./commands/misc/release'),
   invite: require('./commands/misc/invite'),
   sheets: require('./commands/misc/sheets'),
