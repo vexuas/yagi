@@ -9,7 +9,7 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi) {
       yagi.users.size
     } people in ${
       yagi.guilds.size
-    } servers!\n\nMy prefix  is ${grvAcnt}biso!${grvAcnt} | For a detailed list of my commands, type ${grvAcnt}biso! help${grvAcnt}`,
+    } servers!\n\nMy timer data is extracted from the player-run [Olympus WB Sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/edit#gid=585652389). Kudos to the hardwork of the editors and leads in the team!\n\nMy prefix  is ${grvAcnt}biso!${grvAcnt} | For a detailed list of my commands, type ${grvAcnt}biso! help${grvAcnt}`,
     color: 32896,
     thumbnail: {
       url:
@@ -48,7 +48,7 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi) {
 };
 
 module.exports = {
-  name: 'about',
+  name: 'info',
   description: 'story of yagi',
   execute(message, arguments, yagi) {
     sendInfoEmbed(message, yagi);
