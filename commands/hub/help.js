@@ -6,7 +6,32 @@ module.exports = {
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix) {
     if (arguments.length === 0) {
-      return message.channel.send('hi'); //all commands
+      //all commands
+      const embed = {
+        color: 32896,
+        description:
+          'Below you can see all the commands that I know!\n\nMy current prefix is `' +
+          yagiPrefix +
+          '`',
+        fields: [
+          {
+            name: 'Timer',
+            value: '`goats`'
+          },
+          {
+            name: 'Information',
+            value: '`info`, `help`, `prefix`, `invite`, `sheets`, `release`'
+          },
+          {
+            name: 'Miscellaneous',
+            value:
+              '`loot`, `contacts`, `message`, `website`\n\nFor more detailed information about a command, use `' +
+              yagiPrefix +
+              'help <Command>`'
+          }
+        ]
+      };
+      return message.channel.send({ embed });
     }
     try {
       if (!commands[arguments].devOnly) {
