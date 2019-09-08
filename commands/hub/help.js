@@ -1,13 +1,22 @@
+const { descriptionEmbed } = require('../../helpers');
+
 module.exports = {
   name: 'help',
   description: 'directory hub of commands',
   hasArguments: true,
-  execute(message, arguments, yagi, commands) {
+  execute(message, arguments, yagi, commands, yagiPrefix) {
     if (arguments.length === 0) {
       return message.channel.send('hi'); //all commands
     }
     try {
-      return message.channel.send(commands[arguments].description);
+      const embed = descriptionEmbed(
+        arguments,
+        commands[arguments].description,
+        yagiPrefix,
+        commands[arguments].hasArguments,
+        commands[arguments].exampleArgument
+      );
+      return message.channel.send({ embed });
     } catch (e) {
       const argsArray = arguments.split(' ');
 

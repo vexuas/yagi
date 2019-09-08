@@ -32,6 +32,7 @@ module.exports = {
   name: 'prefix',
   description: 'all things prefixes',
   hasArguments: true,
+  exampleArgument: '$',
   execute(message, arguments) {
     const currentPrefix = guildConfig[message.guild.id].prefix;
     /**

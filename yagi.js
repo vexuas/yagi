@@ -117,7 +117,7 @@ yagi.on('message', message => {
     const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
     const command = args.shift().toLowerCase(); //gets command as a string from array
     const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
-    console.log(arguments);
+
     /**
      * If command exists in command file, send command reply
      * Also checks if command has arguments
@@ -127,7 +127,7 @@ yagi.on('message', message => {
       if (arguments.length > 0 && !commands[command].hasArguments) {
         return message.channel.send("That command doesn't accept arguments （・□・；）");
       } else {
-        return commands[command].execute(message, arguments, yagi, commands);
+        return commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
       }
     } else {
       return message.channel.send("I'm not sure what you meant by that! （・□・；）");
