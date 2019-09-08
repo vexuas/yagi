@@ -1,9 +1,8 @@
 module.exports = {
   name: 'release',
-  description: 'latest release information',
+  description: 'Displays the latest version information and changelog',
   execute(message) {
-    const release =
-      '```• Minor fix to phoenix timer    \n• Update sheets list```';
+    const release = '```• Minor fix to phoenix timer    \n• Update sheets list```';
     const embed = {
       description: `${
         message.author

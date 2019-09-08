@@ -5,7 +5,7 @@ const embed = {
 
 module.exports = {
   name: 'website',
-  description: 'website link',
+  description: 'Generates a link to the website version of Yagi (outdated)',
   execute(message) {
     embed.description = `${
       message.author

@@ -17,7 +17,7 @@ const embed = {
 
 module.exports = {
   name: 'loot',
-  description: 'loot list',
+  description: 'Displays the loot you can get from hunting the World Bosses',
   execute(message) {
     message.channel.send({ embed });
   }

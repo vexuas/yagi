@@ -2,7 +2,7 @@ const guildConfig = require('../../config/guild.json');
 
 module.exports = {
   name: 'contacts',
-  description: 'platforms to where to contact owner',
+  description: 'Shows platforms in which you can contact the owner',
   execute(message) {
     const currentPrefix = guildConfig[message.guild.id].prefix;
     const embed = {

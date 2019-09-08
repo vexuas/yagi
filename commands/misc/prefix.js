@@ -30,7 +30,8 @@ const generateEmbed = function designOfPrefixEmbed(currentPrefix) {
 
 module.exports = {
   name: 'prefix',
-  description: 'all things prefixes',
+  description:
+    'Shows current prefix. Can also accept one argument to customize the prefix. This argument should be wrapped within `""` and cannot be empty. Only admins have the ability to change prefixes',
   hasArguments: true,
   exampleArgument: '$',
   execute(message, arguments) {
