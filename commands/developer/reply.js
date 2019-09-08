@@ -42,6 +42,7 @@ module.exports = {
   name: 'reply',
   description: "reply to a user's message",
   hasArguments: true,
+  devOnly: true,
   execute(message, arguments, yagi) {
     //Only responds to my id
     if (message.author.id === '183444648360935424') {

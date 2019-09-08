@@ -10,6 +10,7 @@ const {
   subHours,
   subMinutes
 } = require('date-fns');
+const grvAcnt = '`';
 
 //----------
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
@@ -156,6 +157,35 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
 };
 //----------
 /**
+ * Description embed for help command
+ */
+const descriptionEmbed = function generatesDescriptionEmbedForCommands(
+  command,
+  description,
+  currentPrefix,
+  hasArguments,
+  exampleArgument
+) {
+  const commandName = `${grvAcnt}${currentPrefix}${command}${grvAcnt}`;
+  const argumentUsage = `${grvAcnt}${currentPrefix}${command} ${exampleArgument}${grvAcnt}`;
+
+  const embed = {
+    color: 32896,
+    fields: [
+      {
+        name: commandName,
+        value: description
+      },
+      {
+        name: 'Usage',
+        value: hasArguments ? `${commandName} | ${argumentUsage}` : commandName
+      }
+    ]
+  };
+  return embed;
+};
+//----------
+/**
  * Formats first letter of string to uppercase
  */
 const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
@@ -167,5 +197,6 @@ module.exports = {
   formatCountdown: formatCountdown,
   formatLocation: formatLocation,
   serverEmbed: serverEmbed,
+  descriptionEmbed: descriptionEmbed,
   capitalize: capitalize
 };

@@ -5,7 +5,7 @@ const embed = {
 
 module.exports = {
   name: 'invite',
-  description: 'invite link',
+  description: 'Generates an invite link for Yagi',
   execute(message) {
     embed.description = `${
       message.author

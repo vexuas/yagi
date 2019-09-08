@@ -5,7 +5,6 @@ const { getServerTime, formatCountdown, formatLocation } = require('../../helper
 const {
   format,
   differenceInMilliseconds,
-  distanceInWordsStrict,
   addHours,
   addDays,
   subDays,
@@ -201,7 +200,7 @@ const sendMessage = function sendMessageToUser(message, embedData) {
 //----------
 module.exports = {
   name: 'goats',
-  description: 'Olympus World Boss Time',
+  description: "Shows the timer for the Olympus World Boss in Vulture's Vale and Blizzard Berg",
   validateSpawn: validateSpawn,
   execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress

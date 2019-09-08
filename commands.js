@@ -15,12 +15,15 @@ module.exports = {
   // Dev Tools
   reply: require('./commands/developer/reply'),
   message: require('./commands/developer/message'),
+  // Hub
+  // ----------
+  info: require('./commands/hub/info'),
+  help: require('./commands/hub/help'),
+  release: require('./commands/hub/release'),
+  sheets: require('./commands/hub/sheets'),
   // ----------
   // Miscellaneous
-  info: require('./commands/misc/info'),
-  release: require('./commands/misc/release'),
   invite: require('./commands/misc/invite'),
-  sheets: require('./commands/misc/sheets'),
   loot: require('./commands/misc/loot'),
   website: require('./commands/misc/website'),
   contacts: require('./commands/misc/contacts'),

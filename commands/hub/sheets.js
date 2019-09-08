@@ -20,7 +20,8 @@ const embed = {
 
 module.exports = {
   name: 'sheets',
-  description: 'sheet link',
+  description:
+    'A collection of current and previous sheets used by leads/editors to keep track of World Boss',
   execute(message) {
     embed.description = `${message.author} | Public Sheets`;
     message.channel.send({ embed });

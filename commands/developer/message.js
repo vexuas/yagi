@@ -85,8 +85,10 @@ const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, r
 
 module.exports = {
   name: 'message',
-  description: 'hit up owner with a message!',
+  description:
+    'Sends a message to the owner of the bot! Anything typed after the command is treated as your message.',
   hasArguments: true,
+  exampleArgument: 'Hi there!',
   execute(message, arguments, yagi) {
     const embed = generateEmbedUser(message, arguments);
     message.channel.send({ embed });

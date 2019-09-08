@@ -49,7 +49,7 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi) {
 
 module.exports = {
   name: 'info',
-  description: 'story of yagi',
+  description: 'The story and information hub of yagi',
   execute(message, arguments, yagi) {
     sendInfoEmbed(message, yagi);
   }
