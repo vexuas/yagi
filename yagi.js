@@ -105,7 +105,8 @@ yagi.on('guildDelete', guild => {
     serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
 });
-yagi.on('message', message => {
+yagi.on('message', async message => {
+  const logChannel = yagi.channels.get('620621811142492172');
   let yagiPrefix;
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
     yagiPrefix = defaultPrefix;
@@ -113,27 +114,31 @@ yagi.on('message', message => {
     yagiPrefix = guildConfig[message.guild.id].prefix;
   }
   //Ignores messages without a prefix
-  if (message.content.startsWith(yagiPrefix)) {
-    const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
-    const command = args.shift().toLowerCase(); //gets command as a string from array
-    const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
-
-    /**
-     * If command exists in command file, send command reply
-     * Also checks if command has arguments
-     * Else send error message
-     */
-    if (commands[command]) {
-      if (arguments.length > 0 && !commands[command].hasArguments) {
-        return message.channel.send("That command doesn't accept arguments （・□・；）");
+  try {
+    if (message.content.startsWith(yagiPrefix)) {
+      const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
+      const command = args.shift().toLowerCase(); //gets command as a string from array
+      const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
+      /**
+       * If command exists in command file, send command reply
+       * Also checks if command has arguments
+       * Else send error message
+       */
+      if (commands[command]) {
+        if (arguments.length > 0 && !commands[command].hasArguments) {
+          await message.channel.send("That command doesn't accept arguments （・□・；）");
+        } else {
+          await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
+        }
       } else {
-        return commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
+        await message.channel.send("I'm not sure what you meant by that! （・□・；）");
       }
     } else {
-      return message.channel.send("I'm not sure what you meant by that! （・□・；）");
+      return;
     }
-  } else {
-    return;
+  } catch (e) {
+    console.log(e);
+    logChannel.send(e.message);
   }
 });
 
