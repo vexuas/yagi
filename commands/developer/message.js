@@ -20,6 +20,22 @@ const generateEmbedUser = function designOfReplyEmbedForUser(message, replyConte
   };
   return embed;
 };
+const sendErrorEmbed = function designOfErrorNotificationEmbed(message, error) {
+  const embed = {
+    title: 'Failed to deliver!',
+    color: 16711680,
+    thumbnail: {
+      url: message.author.displayAvatarURL
+    },
+    fields: [
+      {
+        name: 'Reason:',
+        value: error.message
+      }
+    ]
+  };
+  return message.channel.send({ embed });
+};
 const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, replyContent, yagi) {
   let currentPrefix, channelName, channelID, guildName, guildID;
 
@@ -89,9 +105,14 @@ module.exports = {
     'Sends a message to the owner of the bot! Anything typed after the command is treated as your message.',
   hasArguments: true,
   exampleArgument: 'Hi there!',
-  execute(message, arguments, yagi) {
-    const embed = generateEmbedUser(message, arguments);
-    message.channel.send({ embed });
-    sendEmbedDev(message, arguments, yagi);
+  async execute(message, arguments, yagi) {
+    try {
+      await sendEmbedDev(message, arguments, yagi);
+      const embed = generateEmbedUser(message, arguments);
+      message.channel.send({ embed });
+    } catch (e) {
+      console.log(e);
+      sendErrorEmbed(message, e);
+    }
   }
 };

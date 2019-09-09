@@ -202,10 +202,15 @@ module.exports = {
   name: 'goats',
   description: "Shows the timer for the Olympus World Boss in Vulture's Vale and Blizzard Berg",
   validateSpawn: validateSpawn,
-  execute(message) {
+  async execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
-    getWorldBossData(message, sendMessage);
+    try {
+      await getWorldBossData(message, sendMessage);
+    } catch (e) {
+      console.log(e);
+      message.channel.send(e.message);
+    }
     message.channel.stopTyping();
   }
 };
