@@ -36,7 +36,11 @@ const sendErrorEmbed = function designOfErrorNotificationEmbed(message, error) {
   };
   return message.channel.send({ embed });
 };
-const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, replyContent, yagi) {
+const sendEmbedDev = async function designOfReplyEmbedForDevAndSendToServer(
+  message,
+  replyContent,
+  yagi
+) {
   let currentPrefix, channelName, channelID, guildName, guildID;
 
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
@@ -96,7 +100,7 @@ const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, r
   };
   const messageServer = yagi.channels.get('615640139678351557');
 
-  return messageServer.send({ embed });
+  messageServer.send({ embed });
 };
 
 module.exports = {
@@ -107,9 +111,15 @@ module.exports = {
   exampleArgument: 'Hi there!',
   async execute(message, arguments, yagi) {
     try {
+      if (arguments.length === 0) {
+        const emptyMessageError = {
+          message: 'Cannot send an empty message'
+        };
+        return sendErrorEmbed(message, emptyMessageError);
+      }
       await sendEmbedDev(message, arguments, yagi);
       const embed = generateEmbedUser(message, arguments);
-      message.channel.send({ embed });
+      await message.channel.send({ embed });
     } catch (e) {
       console.log(e);
       sendErrorEmbed(message, e);

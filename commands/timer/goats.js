@@ -35,7 +35,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
     auth: authClient
   };
 
-  sheets.spreadsheets.values.batchGet(request, function(response) {
+  sheets.spreadsheets.values.batchGet(request, function(err, response) {
     try {
       const rawSheetValues = response.data.valueRanges;
       /**
