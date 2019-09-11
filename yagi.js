@@ -141,5 +141,10 @@ yagi.on('message', async message => {
     logChannel.send(e.message);
   }
 });
+yagi.on('error', error => {
+  const logChannel = yagi.channels.get('620621811142492172');
+  console.log(error);
+  logChannel.send(error.message);
+});
 
 yagi.login(token);
