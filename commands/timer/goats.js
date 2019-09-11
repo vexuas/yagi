@@ -35,37 +35,42 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
     auth: authClient
   };
 
-  sheets.spreadsheets.values.batchGet(request, function(err, response) {
-    if (err) {
-      console.error(err);
-      return;
+  sheets.spreadsheets.values.batchGet(request, function(response) {
+    try {
+      const rawSheetValues = response.data.valueRanges;
+      /**
+       * rawSheetValues is the response which is an array of objects
+       * The data we need is the values key inside each object
+       * First Object: Location
+       * Second Object: Last Spawn
+       * Third Object: Next Spawn
+       * Fourth Object: Banoleth Spawn
+       * Fifth Object: Bisolen Spawn
+       * Below extracts the actual data and pushes them in a new array
+       * Then sets the value to its corresponding data key
+       */
+      let actualSheetValues = [];
+      rawSheetValues.forEach(item => {
+        actualSheetValues.push(item.values[0][0]);
+      });
+      const worldBossData = {
+        location: actualSheetValues[0],
+        lastSpawn: actualSheetValues[1],
+        nextSpawn: actualSheetValues[2],
+        banolethCount: actualSheetValues[3],
+        bisolenCount: actualSheetValues[4],
+        countdown: actualSheetValues[5]
+      };
+      console.log(worldBossData.countdown);
+      sendMessageCallback(message, generateEmbed(worldBossData));
+    } catch (e) {
+      console.log(e);
+      //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
+      //Altho definitely have to add cases here in the future
+      message.channel.send(
+        'Servers are currently on maintenance! No eta but please be patient! (˶◕‿◕˶✿)'
+      );
     }
-    const rawSheetValues = response.data.valueRanges;
-    /**
-     * rawSheetValues is the response which is an array of objects
-     * The data we need is the values key inside each object
-     * First Object: Location
-     * Second Object: Last Spawn
-     * Third Object: Next Spawn
-     * Fourth Object: Banoleth Spawn
-     * Fifth Object: Bisolen Spawn
-     * Below extracts the actual data and pushes them in a new array
-     * Then sets the value to its corresponding data key
-     */
-    let actualSheetValues = [];
-    rawSheetValues.forEach(item => {
-      actualSheetValues.push(item.values[0][0]);
-    });
-    const worldBossData = {
-      location: actualSheetValues[0],
-      lastSpawn: actualSheetValues[1],
-      nextSpawn: actualSheetValues[2],
-      banolethCount: actualSheetValues[3],
-      bisolenCount: actualSheetValues[4],
-      countdown: actualSheetValues[5]
-    };
-    console.log(worldBossData.countdown);
-    sendMessageCallback(message, generateEmbed(worldBossData));
   });
 };
 //----------
