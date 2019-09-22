@@ -36,36 +36,41 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
   };
 
   sheets.spreadsheets.values.batchGet(request, function(err, response) {
-    if (err) {
-      console.error(err);
-      return;
+    try {
+      const rawSheetValues = response.data.valueRanges;
+      /**
+       * rawSheetValues is the response which is an array of objects
+       * The data we need is the values key inside each object
+       * First Object: Location
+       * Second Object: Last Spawn
+       * Third Object: Next Spawn
+       * Fourth Object: Banoleth Spawn
+       * Fifth Object: Bisolen Spawn
+       * Below extracts the actual data and pushes them in a new array
+       * Then sets the value to its corresponding data key
+       */
+      let actualSheetValues = [];
+      rawSheetValues.forEach(item => {
+        actualSheetValues.push(item.values[0][0]);
+      });
+      const worldBossData = {
+        location: actualSheetValues[0],
+        lastSpawn: actualSheetValues[1],
+        nextSpawn: actualSheetValues[2],
+        banolethCount: actualSheetValues[3],
+        bisolenCount: actualSheetValues[4],
+        countdown: actualSheetValues[5]
+      };
+      console.log(worldBossData.countdown);
+      sendMessageCallback(message, generateEmbed(worldBossData));
+    } catch (e) {
+      console.log(e);
+      //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
+      //Altho definitely have to add cases here in the future
+      message.channel.send(
+        'Opps! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
+      );
     }
-    const rawSheetValues = response.data.valueRanges;
-    /**
-     * rawSheetValues is the response which is an array of objects
-     * The data we need is the values key inside each object
-     * First Object: Location
-     * Second Object: Last Spawn
-     * Third Object: Next Spawn
-     * Fourth Object: Banoleth Spawn
-     * Fifth Object: Bisolen Spawn
-     * Below extracts the actual data and pushes them in a new array
-     * Then sets the value to its corresponding data key
-     */
-    let actualSheetValues = [];
-    rawSheetValues.forEach(item => {
-      actualSheetValues.push(item.values[0][0]);
-    });
-    const worldBossData = {
-      location: actualSheetValues[0],
-      lastSpawn: actualSheetValues[1],
-      nextSpawn: actualSheetValues[2],
-      banolethCount: actualSheetValues[3],
-      bisolenCount: actualSheetValues[4],
-      countdown: actualSheetValues[5]
-    };
-    console.log(worldBossData.countdown);
-    sendMessageCallback(message, generateEmbed(worldBossData));
   });
 };
 //----------
@@ -202,10 +207,15 @@ module.exports = {
   name: 'goats',
   description: "Shows the timer for the Olympus World Boss in Vulture's Vale and Blizzard Berg",
   validateSpawn: validateSpawn,
-  execute(message) {
+  async execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
-    getWorldBossData(message, sendMessage);
+    try {
+      await getWorldBossData(message, sendMessage);
+    } catch (e) {
+      console.log(e);
+      message.channel.send(e.message);
+    }
     message.channel.stopTyping();
   }
 };

@@ -20,7 +20,27 @@ const generateEmbedUser = function designOfReplyEmbedForUser(message, replyConte
   };
   return embed;
 };
-const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, replyContent, yagi) {
+const sendErrorEmbed = function designOfErrorNotificationEmbed(message, error) {
+  const embed = {
+    title: 'Failed to deliver!',
+    color: 16711680,
+    thumbnail: {
+      url: message.author.displayAvatarURL
+    },
+    fields: [
+      {
+        name: 'Reason:',
+        value: error.message
+      }
+    ]
+  };
+  return message.channel.send({ embed });
+};
+const sendEmbedDev = async function designOfReplyEmbedForDevAndSendToServer(
+  message,
+  replyContent,
+  yagi
+) {
   let currentPrefix, channelName, channelID, guildName, guildID;
 
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
@@ -80,7 +100,7 @@ const sendEmbedDev = function designOfReplyEmbedForDevAndSendToServer(message, r
   };
   const messageServer = yagi.channels.get('615640139678351557');
 
-  return messageServer.send({ embed });
+  messageServer.send({ embed });
 };
 
 module.exports = {
@@ -89,9 +109,20 @@ module.exports = {
     'Sends a message to the owner of the bot! Anything typed after the command is treated as your message.',
   hasArguments: true,
   exampleArgument: 'Hi there!',
-  execute(message, arguments, yagi) {
-    const embed = generateEmbedUser(message, arguments);
-    message.channel.send({ embed });
-    sendEmbedDev(message, arguments, yagi);
+  async execute(message, arguments, yagi) {
+    try {
+      if (arguments.length === 0) {
+        const emptyMessageError = {
+          message: 'Cannot send an empty message'
+        };
+        return sendErrorEmbed(message, emptyMessageError);
+      }
+      await sendEmbedDev(message, arguments, yagi);
+      const embed = generateEmbedUser(message, arguments);
+      await message.channel.send({ embed });
+    } catch (e) {
+      console.log(e);
+      sendErrorEmbed(message, e);
+    }
   }
 };
