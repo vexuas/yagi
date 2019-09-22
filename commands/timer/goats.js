@@ -68,7 +68,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
       //Altho definitely have to add cases here in the future
       message.channel.send(
-        'Servers are currently on maintenance! No eta but please be patient! (˶◕‿◕˶✿)'
+        'Opps! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
       );
     }
   });
