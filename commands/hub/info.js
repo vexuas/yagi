@@ -35,12 +35,6 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi) {
         name: 'Library',
         value: 'discord.js',
         inline: true
-      },
-      {
-        name: 'Other Links',
-        value:
-          '[• Github](https://github.com/vexuas/yagi)\n[• Discord Bots Profile](https://discordbots.org/bot/510980011008983060)',
-        inline: true
       }
     ]
   };

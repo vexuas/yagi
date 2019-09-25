@@ -55,7 +55,7 @@ const sendEmbedDev = async function designOfReplyEmbedForDevAndSendToServer(
   }
   const embed = {
     title: 'New Message Received!',
-    description: `To reply: ${grvAcnt}${currentPrefix} {user/channel/server ID} {yourReply}${grvAcnt}`,
+    description: `${grvAcnt}${currentPrefix}reply {user/channel} {platformID} {yourReply}${grvAcnt}`,
     color: 55296,
     footer: { text: `Sent on ${format(new Date(), 'dddd MMM D YYYY, h:mm:ss A')}` },
     thumbnail: {

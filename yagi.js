@@ -46,16 +46,20 @@ yagi.once('ready', () => {
         prefix: defaultPrefix
       };
       fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
+      const embed = serverEmbed(yagi, guild, 'join');
+      const serversChannel = yagi.channels.get('614749682849021972');
+      serversChannel.send({ embed });
+      serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
     }
   });
   console.log(guildConfig);
 });
 
 const activitylist = [
-  '+info for bot information',
-  '+goats for Olympus wb',
+  'info | bot information',
+  'goats | Olympus wb',
+  'help | command list',
   'Last update: 27/05/2019',
-  'Eternia coming soon (๑•́ω•̀)',
   'checkout Ama for eidolons!'
 ];
 
