@@ -56,10 +56,10 @@ yagi.once('ready', () => {
 });
 
 const activitylist = [
-  '+info for bot information',
-  '+goats for Olympus wb',
+  'info | bot information',
+  'goats | Olympus wb',
+  'help | command list',
   'Last update: 27/05/2019',
-  'Eternia coming soon (๑•́ω•̀)',
   'checkout Ama for eidolons!'
 ];
 
