@@ -46,6 +46,10 @@ yagi.once('ready', () => {
         prefix: defaultPrefix
       };
       fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
+      const embed = serverEmbed(yagi, guild, 'join');
+      const serversChannel = yagi.channels.get('614749682849021972');
+      serversChannel.send({ embed });
+      serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
     }
   });
   console.log(guildConfig);
