@@ -30,7 +30,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
-    ranges: ['C4', 'C6', 'C8', 'E22', 'H22', 'C10'],
+    ranges: ['C4', 'C6', 'C8', 'C10'],
 
     auth: authClient
   };
@@ -44,22 +44,19 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
        * First Object: Location
        * Second Object: Last Spawn
        * Third Object: Next Spawn
-       * Fourth Object: Banoleth Spawn
-       * Fifth Object: Bisolen Spawn
        * Below extracts the actual data and pushes them in a new array
        * Then sets the value to its corresponding data key
        */
       let actualSheetValues = [];
       rawSheetValues.forEach(item => {
+        console.log(item.values);
         actualSheetValues.push(item.values[0][0]);
       });
       const worldBossData = {
         location: actualSheetValues[0],
         lastSpawn: actualSheetValues[1],
         nextSpawn: actualSheetValues[2],
-        banolethCount: actualSheetValues[3],
-        bisolenCount: actualSheetValues[4],
-        countdown: actualSheetValues[5]
+        countdown: actualSheetValues[3]
       };
       console.log(worldBossData.countdown);
       sendMessageCallback(message, generateEmbed(worldBossData));
@@ -68,7 +65,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
       //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
       //Altho definitely have to add cases here in the future
       message.channel.send(
-        'Opps! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
+        'Oops! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
       );
     }
   });
