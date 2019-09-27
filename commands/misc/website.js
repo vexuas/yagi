@@ -4,9 +4,9 @@ const embed = {
 };
 
 module.exports = {
-  name: "website",
-  description: "website link",
-  execute(message, args) {
+  name: 'website',
+  description: 'Generates a link to the website version of Yagi (outdated)',
+  execute(message) {
     embed.description = `${
       message.author
     } | [Come visit my website! (◕ᴗ◕✿)](https://ak-goats.com/)`;
