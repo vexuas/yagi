@@ -7,7 +7,7 @@ module.exports = {
     const embed = {
       description: `${
         message.author
-      } | Latest Release: [v2.0.0](https://github.com/Vexuas/yagi/releases)\n${release}`,
+      } | Latest Release: [v2.0.1](https://github.com/Vexuas/yagi/releases)\n${release}`,
       color: 32896
     };
     message.channel.send({ embed });
