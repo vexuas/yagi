@@ -6,21 +6,21 @@ const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
 const { serverEmbed } = require('./helpers');
 /**
- * TODO | By 31 August 2019 | 5 days
+ * TODO | By 31 August 2019 | (Almost a month late but got it out HAH)
  * ---------------------------------
- * Add cooldown for commands to avoid spamming bot
+ * Add cooldown for commands to avoid spamming bot ✖ (2.1.0)
  * Add ability to customize prefix ✔
  * Revamp timer and countdown ✔
  * Revamp contacts ✔
  * Remove legacy code ✔
- * Rethink the amount of use for mentions
- * Refactor info command to be an actual information hub
- * Add help command for command list
- * Make help command as a dm, info too?
- * Create a database
- * Rework how reminders work
- * Set up API
- * Have a drink with nami
+ * Rethink the amount of use for mentions ✖ (It's fine as it is)
+ * Refactor info command to be an actual information hub ✔
+ * Add help command for command list ✔
+ * Make help command as a dm, info too? ✖ (2.1.0? Don't see a problem with it atm unless we get bigger)
+ * Create a database ✖ (somewhere in 2.0.0^ Too much hassle to do since we're only supporting 7 servers at most right now)
+ * Rework how reminders work ✖ (2.0.0^ too probably, need an actual backend with this)
+ * Set up API ✖ (2.0.0^ same as above)
+ * Have a drink with nami ✔ (went out for some coffee)
  */
 
 yagi.once('ready', () => {
@@ -59,7 +59,7 @@ const activitylist = [
   'info | bot information',
   'goats | Olympus wb',
   'help | command list',
-  'Last update: 27/05/2019',
+  'Last update: 28/09/2019',
   'checkout Ama for eidolons!'
 ];
 
