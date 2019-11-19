@@ -59,7 +59,7 @@ const activitylist = [
   'info | bot information',
   'goats | Olympus wb',
   'help | command list',
-  'Last update: 28/09/2019',
+  'Last update: 19/11/2019',
   'checkout Ama for eidolons!'
 ];
 
