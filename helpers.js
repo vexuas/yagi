@@ -26,8 +26,10 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
    * Below is more on how to get what you need
    * Pretty much you'll just need the server's timezoneoffset
    * And use that to configure localTime
+   * With Dayllight Savings EDT offset: 5
+   * Without: 4
    */
-  const serverTimezoneOffset = 4; //EDT offset
+  const serverTimezoneOffset = 5; //EDT offset
   const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
   const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
 
@@ -123,9 +125,7 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
   }
   const embed = {
     title: embedTitle,
-    description: `I'm now in **${yagi.guilds.size}** servers and serving **${
-      yagi.users.size
-    }** users!`,
+    description: `I'm now in **${yagi.guilds.size}** servers and serving **${yagi.users.size}** users!`,
     color: embedColor,
     thumbnail: {
       url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon
