@@ -8,7 +8,7 @@ const {
   differenceInMinutes,
   differenceInSeconds,
   subHours,
-  subMinutes
+  subMinutes,
 } = require('date-fns');
 const grvAcnt = '`';
 
@@ -29,7 +29,7 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
    * With Dayllight Savings EDT offset: 5
    * Without: 4
    */
-  const serverTimezoneOffset = 5; //EDT offset
+  const serverTimezoneOffset = 4; //EDT offset
   const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
   const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
 
@@ -128,30 +128,30 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
     description: `I'm now in **${yagi.guilds.size}** servers and serving **${yagi.users.size}** users!`,
     color: embedColor,
     thumbnail: {
-      url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon
+      url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon,
     },
     fields: [
       {
         name: 'Name',
         value: guild.name,
-        inline: true
+        inline: true,
       },
       {
         name: 'Owner',
         value: guild.owner.user.tag,
-        inline: true
+        inline: true,
       },
       {
         name: 'Members',
         value: guild.memberCount,
-        inline: true
+        inline: true,
       },
       {
         name: 'Region',
         value: capitalize(guild.region),
-        inline: true
-      }
-    ]
+        inline: true,
+      },
+    ],
   };
   return embed;
 };
@@ -174,13 +174,13 @@ const descriptionEmbed = function generatesDescriptionEmbedForCommands(
     fields: [
       {
         name: commandName,
-        value: description
+        value: description,
       },
       {
         name: 'Usage',
-        value: hasArguments ? `${commandName} | ${argumentUsage}` : commandName
-      }
-    ]
+        value: hasArguments ? `${commandName} | ${argumentUsage}` : commandName,
+      },
+    ],
   };
   return embed;
 };
@@ -198,5 +198,5 @@ module.exports = {
   formatLocation: formatLocation,
   serverEmbed: serverEmbed,
   descriptionEmbed: descriptionEmbed,
-  capitalize: capitalize
+  capitalize: capitalize,
 };
