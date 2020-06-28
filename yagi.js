@@ -28,22 +28,22 @@ yagi.once('ready', () => {
   /**
    * Displays people and guilds using yagi
    */
-  yagi.users.forEach(user => {
+  yagi.users.forEach((user) => {
     console.log(user.username);
   });
-  yagi.guilds.forEach(guild => {
+  yagi.guilds.forEach((guild) => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of users: ${yagi.users.size}\nNumber of guilds: ${yagi.guilds.size}`);
   //Saves guild data if it's not in file
-  yagi.guilds.forEach(guild => {
+  yagi.guilds.forEach((guild) => {
     if (!guildConfig[guild.id]) {
       guildConfig[guild.id] = {
         name: guild.name,
         owner: guild.owner.user.tag,
         memberCount: guild.memberCount,
         region: guild.region,
-        prefix: defaultPrefix
+        prefix: defaultPrefix,
       };
       fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
       const embed = serverEmbed(yagi, guild, 'join');
@@ -57,10 +57,11 @@ yagi.once('ready', () => {
 
 const activitylist = [
   'info | bot information',
+  'ping me for prefix!',
   'goats | Olympus wb',
   'help | command list',
   'Last update: 19/11/2019',
-  'checkout Ama for eidolons!'
+  'checkout Ama for eidolons!',
 ];
 
 yagi.on('ready', () => {
@@ -75,15 +76,15 @@ yagi.on('ready', () => {
   }, 120000);
 });
 // When invited to a server
-yagi.on('guildCreate', guild => {
+yagi.on('guildCreate', (guild) => {
   guildConfig[guild.id] = {
     name: guild.name,
     owner: guild.owner.user.tag,
     memberCount: guild.memberCount,
     region: guild.region,
-    prefix: defaultPrefix
+    prefix: defaultPrefix,
   };
-  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function (err) {
     if (err) {
       return console.log(err);
     }
@@ -96,9 +97,9 @@ yagi.on('guildCreate', guild => {
 });
 
 // When kicked from a server
-yagi.on('guildDelete', guild => {
+yagi.on('guildDelete', (guild) => {
   delete guildConfig[guild.id];
-  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function(err) {
+  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function (err) {
     if (err) {
       return console.log(err);
     }
@@ -109,7 +110,7 @@ yagi.on('guildDelete', guild => {
     serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
   });
 });
-yagi.on('message', async message => {
+yagi.on('message', async (message) => {
   const logChannel = yagi.channels.get('620621811142492172');
   let yagiPrefix;
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
@@ -119,6 +120,13 @@ yagi.on('message', async message => {
   }
   //Ignores messages without a prefix
   try {
+    message.mentions.users.forEach((user) => {
+      //shows current prefix when @
+      if (user === yagi.user) {
+        return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`');
+      }
+    });
+
     if (message.content.startsWith(yagiPrefix)) {
       const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
       const command = args.shift().toLowerCase(); //gets command as a string from array
@@ -145,7 +153,7 @@ yagi.on('message', async message => {
     logChannel.send(e.message);
   }
 });
-yagi.on('error', error => {
+yagi.on('error', (error) => {
   const logChannel = yagi.channels.get('620621811142492172');
   console.log(error);
   logChannel.send(error.message);
