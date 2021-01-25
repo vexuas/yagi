@@ -34,9 +34,15 @@ yagi.once('ready', () => {
   yagi.guilds.forEach((guild) => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
-  console.log(`Number of users: ${yagi.users.size}\nNumber of guilds: ${yagi.guilds.size}`);
+  console.log(`Number of guilds: ${yagi.guilds.size}`);
   //Saves guild data if it's not in file
   yagi.guilds.forEach((guild) => {
+    /**
+     * IMPORTANT
+     * It seems that the member and user collections are not accessible.
+     * Not too sure how to fix for now, maybe updating discord.js to v12? Glancing through the release notes it looks like there would be a lot of breaking changes if I update
+     * Either way, I'll remove all instances of them for now
+     */
     if (!guildConfig[guild.id]) {
       guildConfig[guild.id] = {
         name: guild.name,
@@ -49,7 +55,7 @@ yagi.once('ready', () => {
       const embed = serverEmbed(yagi, guild, 'join');
       const serversChannel = yagi.channels.get('614749682849021972');
       serversChannel.send({ embed });
-      serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
+      serversChannel.setTopic(`Servers: ${yagi.guilds.size}`);
     }
   });
   console.log(guildConfig);
@@ -92,7 +98,7 @@ yagi.on('guildCreate', (guild) => {
     const embed = serverEmbed(yagi, guild, 'join');
     const serversChannel = yagi.channels.get('614749682849021972');
     serversChannel.send({ embed });
-    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
   });
 });
 
@@ -107,7 +113,7 @@ yagi.on('guildDelete', (guild) => {
     const embed = serverEmbed(yagi, guild, 'leave');
     const serversChannel = yagi.channels.get('614749682849021972');
     serversChannel.send({ embed });
-    serversChannel.setTopic(`Servers: ${yagi.guilds.size} | Users: ${yagi.users.size}`);
+    serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
   });
 });
 yagi.on('message', async (message) => {

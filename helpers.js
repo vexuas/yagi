@@ -125,7 +125,7 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
   }
   const embed = {
     title: embedTitle,
-    description: `I'm now in **${yagi.guilds.size}** servers and serving **${yagi.users.size}** users!`,
+    description: `I'm now in **${yagi.guilds.size}** servers!`, //Removed users for now
     color: embedColor,
     thumbnail: {
       url: guild.iconURL ? guild.iconURL.replace(/jpeg|jpg/gi, 'png') : defaultIcon,
