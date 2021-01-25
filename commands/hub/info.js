@@ -31,6 +31,10 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi, yagiP
         name: 'Library',
         value: 'discord.js',
         inline: true
+      },
+      {
+        name: 'Dev Update | 26 Jan 2021',
+        value: `Happy 2021! Man I can't believe I had yagi down for half a year, so much has happened in 2020 that I just forgot and lost motivation in this project. But hey, it's a new year which means a new start! Won't go in detail here in what I have planned but for now, my first priority is to get this guy up and running again.`
       }
     ]
   };
