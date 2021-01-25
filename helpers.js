@@ -29,7 +29,9 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
    * With Dayllight Savings EDT offset: 5
    * Without: 4
    */
-  const serverTimezoneOffset = 4; //EDT offset
+  
+  //Maybe look into ways in making this automated instead of always having to manually change, would solve the delay in updating the timer everytime daylight savings comes around
+  const serverTimezoneOffset = 5; //EDT offset
   const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
   const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
 
