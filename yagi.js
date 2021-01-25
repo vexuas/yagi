@@ -40,7 +40,7 @@ yagi.once('ready', () => {
     if (!guildConfig[guild.id]) {
       guildConfig[guild.id] = {
         name: guild.name,
-        owner: guild.owner.user.tag,
+        // owner: guild.owner.user.tag,
         memberCount: guild.memberCount,
         region: guild.region,
         prefix: defaultPrefix,
@@ -79,7 +79,7 @@ yagi.on('ready', () => {
 yagi.on('guildCreate', (guild) => {
   guildConfig[guild.id] = {
     name: guild.name,
-    owner: guild.owner.user.tag,
+    // owner: guild.owner.user.tag,
     memberCount: guild.memberCount,
     region: guild.region,
     prefix: defaultPrefix,
