@@ -29,7 +29,8 @@ module.exports = {
   devOnly: true,
   async execute(message) {
     if (message.author.id === '183444648360935424') {
-      message.channel.send({ embed })
+      return message.channel.send({ embed });
     }
+    return;
   }
 };
