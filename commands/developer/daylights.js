@@ -1,4 +1,4 @@
-const { offset, start, end } = require('../../config/offset.json');
+const { currentOffset, dstOffset, normalOffset, start, end } = require('../../config/offset.json');
 
 const embed = {
   description: 'Daylight Savings Information',
@@ -9,17 +9,34 @@ const embed = {
   },
   fields: [
     {
+      name: 'Usage',
+      value: 'When Daylights is active. switch offset to the DST offset and to the normal offset when clocks are switched back.'
+    },
+    {
       name: 'Current Offset',
-      value: offset
+      value: currentOffset,
+      inline: true
+    },
+    {
+      name: 'Normal Offset',
+      value: normalOffset,
+      inline: true
+    },
+    {
+      name: 'DST Offset',
+      value: dstOffset,
+      inline: true
     },
     {
       name: 'Start Date',
-      value: start
+      value: start,
+      inline: true
     },
     {
       name: 'End Date',
-      value: end
-    }
+      value: end,
+      inline: true
+    },
   ]
 };
 
