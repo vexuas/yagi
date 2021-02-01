@@ -151,7 +151,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
     getServerTime(),
     'dddd, h:mm:ss A'
   )}${grvAcnt}`;
-
+    console.log('hello');
   const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
     validateSpawn(worldBossData, getServerTime()).nextSpawn
   }${grvAcnt}`;

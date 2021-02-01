@@ -10,7 +10,7 @@ const {
   subHours,
   subMinutes,
 } = require('date-fns');
-const { offset } = require('./config/offset.json');
+const { currentOffset } = require('./config/offset.json');
 const grvAcnt = '`';
 
 //----------
@@ -32,7 +32,7 @@ const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
    */
   
   //Maybe look into ways in making this automated instead of always having to manually change, would solve the delay in updating the timer everytime daylight savings comes around
-  const serverTimezoneOffset = offset; //EDT offset
+  const serverTimezoneOffset = currentOffset; //EDT offset
   const timezoneDifference = localTimezoneOffset - serverTimezoneOffset;
   const serverTime = localTimeinMs + timezoneDifference * 3600000; //serverTime in milliseconds
 
