@@ -15,6 +15,8 @@ module.exports = {
   // Dev Tools
   reply: require('./commands/developer/reply'),
   message: require('./commands/developer/message'),
+  daylights: require('./commands/developer/daylights'),
+  offset: require('./commands/developer/offset'),
   // Hub
   // ----------
   info: require('./commands/hub/info'),

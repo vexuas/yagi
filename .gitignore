@@ -4,7 +4,8 @@
 node_modules
 
 # config
-config
+/config/guild.json
+/config/yagi.json
 
 # system files
 .DS_Store
