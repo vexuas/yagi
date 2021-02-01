@@ -2,13 +2,28 @@ const { currentOffset, dstOffset, normalOffset, start, end } = require('../../co
 const fs = require('fs');
 
 const generateEmbed = (offset) => {
+  let offsetType;
+  if(offset === dstOffset){
+    offsetType = 'In Daylight Savings Time'
+  } else if(offset === normalOffset){
+    offsetType = 'In Normal Time'
+  }
+
   const embed = {
     title: 'Offset Changed!',
     color: 32896,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+    },
     fields: [
       {
         name: 'Current Offset',
         value: offset
+      },
+      {
+        name: 'Timer Information',
+        value: offsetType
       }
     ]
   };
@@ -25,10 +40,10 @@ const generateEmbed = (offset) => {
 const toggleOffset = (message) => {
   let offset;
 
-  if(currentOffset === 4){
-    offset = 5;
-  } else if(currentOffset === 5){
-    offset = 4;
+  if(currentOffset === dstOffset){
+    offset = normalOffset;
+  } else if(currentOffset === normalOffset){
+    offset = dstOffset;
   }
 
   const updatedOffsetInfo = {
