@@ -1,3 +1,33 @@
+# v2.3.0 (Mon Feb 01 2021)
+
+### Release Notes
+
+#### Investigate simpler dst offset changes ([#43](https://github.com/vexuas/yagi/pull/43))
+
+Add dev command to show Daylight Saving Time information
+Add dev command to toggle between normal offset and dst offset
+
+---
+
+#### 🚀 Enhancement
+
+- Investigate simpler dst offset changes [#43](https://github.com/vexuas/yagi/pull/43) ([@vexuas](https://github.com/vexuas))
+
+#### 🐛 Bug Fix
+
+- Release/26 01 2021 [#42](https://github.com/vexuas/yagi/pull/42) ([@vexuas](https://github.com/vexuas))
+
+#### ⚠️ Pushed to `master`
+
+- v2.3.0 (rodriguezgab1601@gmail.com)
+
+#### Authors: 2
+
+- Gabe R (rodriguezgab1601@gmail.com)
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.2.0 (Tue Jan 26 2021)
 
 ### Release Notes
