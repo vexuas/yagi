@@ -35,6 +35,9 @@ module.exports = {
   hasArguments: true,
   exampleArgument: '$',
   execute(message, arguments) {
+    if(message){
+      return message.channel.send(`Sorry there's something wrong with this command for now (◕︿◕✿) Currently working on a fix, will get it up and running next patch!`)
+    }
     const currentPrefix = guildConfig[message.guild.id].prefix;
     /**
      * First logic sends default prefix embed
