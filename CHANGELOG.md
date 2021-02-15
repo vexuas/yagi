@@ -1,3 +1,24 @@
+# v2.3.1 (Tue Feb 16 2021)
+
+### Release Notes
+
+#### Add temporary warning to custom prefix command ([#45](https://github.com/vexuas/yagi/pull/45))
+
+Add temporary warning to the prefix command
+
+---
+
+#### 🐛 Bug Fix
+
+- Add temporary warning to custom prefix command [#45](https://github.com/vexuas/yagi/pull/45) ([@vexuas](https://github.com/vexuas))
+- Release/2020 02 01 [#44](https://github.com/vexuas/yagi/pull/44) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.3.0 (Mon Feb 01 2021)
 
 ### Release Notes
