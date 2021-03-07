@@ -17,6 +17,7 @@ module.exports = {
   message: require('./commands/developer/message'),
   daylights: require('./commands/developer/daylights'),
   offset: require('./commands/developer/offset'),
+  psa: require('./commands/developer/psa'),
   // Hub
   // ----------
   info: require('./commands/hub/info'),
