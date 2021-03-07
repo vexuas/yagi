@@ -41,7 +41,7 @@ const showPSA = (message) => {
 const generateEmbed = (type, descriptionInfo, updatedInfo) => {
   let description;
   const PSAtext = PSA ? 'On' : 'Off';
-  const updatedPSAtext = updatedInfo.PSA ? 'On' : 'Off';
+  const updatedPSAtext = updatedInfo && updatedInfo.PSA ? 'On' : 'Off';
 
   switch(type){
     case 'show':
@@ -72,7 +72,7 @@ module.exports = {
   devOnly: true,
   async execute(message) {
     if (message.author.id === '183444648360935424') {
-      return stopPSA(message);
+      return showPSA(message);
       // return setPSA(message, 'Hello', true);
     }
     return;
