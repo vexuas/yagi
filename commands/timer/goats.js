@@ -2,6 +2,7 @@ const { api } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
+const { PSA, PSAmessage } = require('../../config/psa.json');
 const {
   format,
   differenceInMilliseconds,
@@ -208,7 +209,11 @@ module.exports = {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
     try {
-      await getWorldBossData(message, sendMessage);
+      if(PSA){
+        message.channel.send(PSAmessage);
+      }else {
+        getWorldBossData(message, sendMessage);
+      }
     } catch (e) {
       console.log(e);
       message.channel.send(e.message);
