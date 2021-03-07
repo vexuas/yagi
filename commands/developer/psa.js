@@ -8,49 +8,64 @@ const startPSA = (message, messageInfo) => {
   //Checks what message to show to user
   // if()
 }
-
+/**
+ * Turns off PSA
+ * Also switches the message back to the default one
+ */
 const stopPSA = (message) => {
   if(!PSA){
-    return message.channel.send('PSA is already turned off');
+    const embed = generateEmbed('stop', 'PSA is already turned off!');
+    return message.channel.send({ embed });
   }
   const updatedPSAInfo = {
     PSA: false,
     PSAmessage: defaultMessage
   }
+
   fs.writeFile('./config/psa.json', JSON.stringify(updatedPSAInfo, null, 2), function (err) {
     if (err) {
       return console.log(err);
     }
-    return message.channel.send('Turned off PSA');
+    const embed = generateEmbed('stop', null, updatedPSAInfo);
+    message.channel.send({ embed });
   });
 }
 /**
  * Shows if PSA is activated
  **/
 const showPSA = (message) => {
-  const showMessage = PSA ? 'PSA is turned on' : 'PSA is turned off';
-  return message.channel.send(showMessage);
+  const embed = generateEmbed('show');
+  return message.channel.send({ embed });
 }
 
-// const generateEmbed = (type) => {
-//   if(type){
+const generateEmbed = (type, descriptionInfo, updatedInfo) => {
+  let description;
+  const PSAtext = PSA ? 'On' : 'Off';
+  const updatedPSAtext = updatedInfo.PSA ? 'On' : 'Off';
 
-//   }
-//   const embed = {
-//     color: 32896,
-//     fields: [
-//       {
-//         name: 'PSA',
-//         value: PSA ? 'on' : 'off'
-//       },
-//       {
-//         name: 'PSA Message',
-//         value: PSAmessage
-//       }
-//     ]
-//   }
-//   return embed;
-// }
+  switch(type){
+    case 'show':
+    description = PSA ? 'PSA is turned on' : 'PSA is turned off';
+    break;
+    case 'stop':
+    description = descriptionInfo ? descriptionInfo : 'Turned off PSA!';
+  }
+  const embed = {
+    description,
+    color: 32896,
+    fields: [
+      {
+        name: 'PSA',
+        value: updatedInfo ? updatedPSAtext : PSAtext
+      },
+      {
+        name: 'PSA Message',
+        value: PSAmessage
+      }
+    ]
+  }
+  return embed;
+}
 module.exports = {
   name: "psa",
   description: "Toggles a trigger that sends a public service announcement when using the timer. Only to be used in extreme cases where timer data is experiencing problems",
