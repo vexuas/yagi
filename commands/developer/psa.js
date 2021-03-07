@@ -3,11 +3,21 @@ const fs = require('fs');
 
 const defaultMessage = "Oopsie!"
 
+/**
+ * Shows if PSA is activated
+ */
+const showPSA = (message) => {
+  const embed = generateEmbed('show');
+  return message.channel.send({ embed });
+}
+//-----
+
 const startPSA = (message, messageInfo) => {
   let psa;
   //Checks what message to show to user
   // if()
 }
+//-----
 /**
  * Turns off PSA
  * Also switches the message back to the default one
@@ -30,14 +40,13 @@ const stopPSA = (message) => {
     message.channel.send({ embed });
   });
 }
+//-----
 /**
- * Shows if PSA is activated
- **/
-const showPSA = (message) => {
-  const embed = generateEmbed('show');
-  return message.channel.send({ embed });
-}
-
+ * Reusable embed to use for this command
+ * @param {string} type - whether argument is show, start, stop
+ * @param {string} descriptionInfo - if we want to add a custom description
+ * @param {object} updatedInfo - additional updated info to display
+ */
 const generateEmbed = (type, descriptionInfo, updatedInfo) => {
   let description;
   const PSAtext = PSA ? 'On' : 'Off';
