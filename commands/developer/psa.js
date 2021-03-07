@@ -11,11 +11,28 @@ const showPSA = (message) => {
   return message.channel.send({ embed });
 }
 //-----
+/**
+ * Turns on the PSA
+ * This would send the PSA message when users try to use the goat timer
+ * @param {string} customPSA - optional message if you want to change the message of the PSA
+ */
+const startPSA = (message, customPSA) => {
+  if(PSA){
+    const embed = generateEmbed('start', 'PSA is already turned on!');
+    return message.channel.send({ embed });
+  }
+  const updatedPSAInfo = {
+    PSA: true,
+    PSAmessage: customPSA ? customPSA : defaultMessage
+  }
 
-const startPSA = (message, messageInfo) => {
-  let psa;
-  //Checks what message to show to user
-  // if()
+  fs.writeFile('./config/psa.json', JSON.stringify(updatedPSAInfo, null, 2), function (err) {
+    if (err) {
+      return console.log(err);
+    }
+    const embed = generateEmbed('start', null, updatedPSAInfo);
+    message.channel.send({ embed });
+  });
 }
 //-----
 /**
@@ -54,10 +71,14 @@ const generateEmbed = (type, descriptionInfo, updatedInfo) => {
 
   switch(type){
     case 'show':
-    description = PSA ? 'PSA is turned on' : 'PSA is turned off';
-    break;
+      description = PSA ? 'PSA is turned on' : 'PSA is turned off';
+      break;
     case 'stop':
-    description = descriptionInfo ? descriptionInfo : 'Turned off PSA!';
+      description = descriptionInfo ? descriptionInfo : 'Turned off PSA!';
+      break;
+    case 'start':
+      description = descriptionInfo ? descriptionInfo : 'Turned on PSA!';
+      break;
   }
   const embed = {
     description,
@@ -69,7 +90,7 @@ const generateEmbed = (type, descriptionInfo, updatedInfo) => {
       },
       {
         name: 'PSA Message',
-        value: PSAmessage
+        value: updatedInfo && updatedInfo.PSAmessage ? updatedInfo.PSAmessage : PSAmessage
       }
     ]
   }
@@ -81,7 +102,7 @@ module.exports = {
   devOnly: true,
   async execute(message) {
     if (message.author.id === '183444648360935424') {
-      return showPSA(message);
+      return startPSA(message, 'Lets gooo');
       // return setPSA(message, 'Hello', true);
     }
     return;
