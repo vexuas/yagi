@@ -17,7 +17,6 @@ const showPSA = (message) => {
  * @param {string} customPSA - optional message if you want to change the message of the PSA
  */
 const startPSA = (message, customPSA) => {
-  console.log('start')
   if(PSA){
     const embed = generateEmbed('start', 'PSA is already turned on!');
     return message.channel.send({ embed });
