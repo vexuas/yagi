@@ -6,6 +6,7 @@ node_modules
 # config
 /config/guild.json
 /config/yagi.json
+/config/psa.json
 
 # system files
 .DS_Store

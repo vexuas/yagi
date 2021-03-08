@@ -17,6 +17,7 @@ const showPSA = (message) => {
  * @param {string} customPSA - optional message if you want to change the message of the PSA
  */
 const startPSA = (message, customPSA) => {
+  console.log('start')
   if(PSA){
     const embed = generateEmbed('start', 'PSA is already turned on!');
     return message.channel.send({ embed });
@@ -99,11 +100,20 @@ const generateEmbed = (type, descriptionInfo, updatedInfo) => {
 module.exports = {
   name: "psa",
   description: "Toggles a trigger that sends a public service announcement when using the timer. Only to be used in extreme cases where timer data is experiencing problems",
+  hasArguments: true,
   devOnly: true,
-  async execute(message) {
+  async execute(message, arguments) {
     if (message.author.id === '183444648360935424') {
-      return startPSA(message, 'Lets gooo');
-      // return setPSA(message, 'Hello', true);
+      const type = arguments.split(' ', 1).toString();
+      switch(type){
+        case 'show':
+          return showPSA(message);
+        case 'start':
+          const customMessage = arguments.slice(type.length + 1);
+          return startPSA(message, customMessage);
+        case 'stop':
+          return stopPSA(message);
+      }
     }
     return;
   }
