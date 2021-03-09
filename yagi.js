@@ -66,7 +66,7 @@ const activitylist = [
   'ping me for prefix!',
   'goats | Olympus wb',
   'help | command list',
-  'Last update: 16/02/2021',
+  'Last update: 10/03/2021',
   'checkout Ama for eidolons!',
 ];
 
