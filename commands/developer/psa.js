@@ -1,7 +1,7 @@
 const { PSA, PSAmessage } = require('../../config/psa.json');
 const fs = require('fs');
 
-const defaultMessage = "Oopsie!"
+const defaultMessage = "There looks to be a problem with the timer at the moment, sorry! （・□・；)"
 
 /**
  * Shows if PSA is activated
