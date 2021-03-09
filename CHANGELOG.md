@@ -1,3 +1,28 @@
+# v2.4.0 (Wed Mar 10 2021)
+
+### Release Notes
+
+#### Add PSA command ([#47](https://github.com/vexuas/yagi/pull/47))
+
+Add PSA command for extreme cases where timer is experiencing data discrepancies
+
+---
+
+#### 🚀 Enhancement
+
+- Dev Update 10-03-2021 [#48](https://github.com/vexuas/yagi/pull/48) ([@vexuas](https://github.com/vexuas))
+- Add PSA command [#47](https://github.com/vexuas/yagi/pull/47) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2020 02 16 [#46](https://github.com/vexuas/yagi/pull/46) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.3.1 (Tue Feb 16 2021)
 
 ### Release Notes
