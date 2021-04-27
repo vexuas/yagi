@@ -17,7 +17,8 @@
     "js-yaml": "^3.12.1",
     "mocha": "^6.2.0",
     "node.js": "^0.0.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "auto": "^10.13.1"
