@@ -5,23 +5,6 @@ const fs = require('fs');
 const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
 const { serverEmbed } = require('./helpers');
-/**
- * TODO | By 31 August 2019 | (Almost a month late but got it out HAH)
- * ---------------------------------
- * Add cooldown for commands to avoid spamming bot ✖ (2.1.0)
- * Add ability to customize prefix ✔
- * Revamp timer and countdown ✔
- * Revamp contacts ✔
- * Remove legacy code ✔
- * Rethink the amount of use for mentions ✖ (It's fine as it is)
- * Refactor info command to be an actual information hub ✔
- * Add help command for command list ✔
- * Make help command as a dm, info too? ✖ (2.1.0? Don't see a problem with it atm unless we get bigger)
- * Create a database ✖ (somewhere in 2.0.0^ Too much hassle to do since we're only supporting 7 servers at most right now)
- * Rework how reminders work ✖ (2.0.0^ too probably, need an actual backend with this)
- * Set up API ✖ (2.0.0^ same as above)
- * Have a drink with nami ✔ (went out for some coffee)
- */
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
@@ -34,7 +17,7 @@ yagi.once('ready', () => {
   yagi.guilds.cache.forEach((guild) => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
-  console.log(`Number of guilds: ${yagi.guilds.size}`);
+  console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
   //Saves guild data if it's not in file
   yagi.guilds.cache.forEach((guild) => {
     /**
@@ -58,7 +41,7 @@ yagi.once('ready', () => {
       serversChannel.setTopic(`Servers: ${yagi.guilds.size}`);
     }
   });
-  console.log(guildConfig);
+  // console.log(guildConfig);
 });
 
 const activitylist = [
