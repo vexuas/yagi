@@ -28,15 +28,15 @@ yagi.once('ready', () => {
   /**
    * Displays people and guilds using yagi
    */
-  yagi.users.forEach((user) => {
+  yagi.users.cache.forEach((user) => {
     console.log(user.username);
   });
-  yagi.guilds.forEach((guild) => {
+  yagi.guilds.cache.forEach((guild) => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of guilds: ${yagi.guilds.size}`);
   //Saves guild data if it's not in file
-  yagi.guilds.forEach((guild) => {
+  yagi.guilds.cache.forEach((guild) => {
     /**
      * IMPORTANT
      * It seems that the member and user collections are not accessible.
@@ -53,7 +53,7 @@ yagi.once('ready', () => {
       };
       fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
       const embed = serverEmbed(yagi, guild, 'join');
-      const serversChannel = yagi.channels.get('614749682849021972');
+      const serversChannel = yagi.channels.cache.get('614749682849021972');
       serversChannel.send({ embed });
       serversChannel.setTopic(`Servers: ${yagi.guilds.size}`);
     }
@@ -73,7 +73,7 @@ const activitylist = [
 yagi.on('ready', () => {
   yagi.user.setActivity(activitylist[0]);
   //Sends to test bot channel in yagi's den
-  const testChannel = yagi.channels.get('582213795942891521');
+  const testChannel = yagi.channels.cache.get('582213795942891521');
   testChannel.send("I'm booting up! (◕ᴗ◕✿)");
   setInterval(() => {
     //Changes games activity every 2 minutes on random
@@ -96,7 +96,7 @@ yagi.on('guildCreate', (guild) => {
     }
     //Send new guild info to yagi discord server
     const embed = serverEmbed(yagi, guild, 'join');
-    const serversChannel = yagi.channels.get('614749682849021972');
+    const serversChannel = yagi.channels.cache.get('614749682849021972');
     serversChannel.send({ embed });
     serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
   });
@@ -111,13 +111,13 @@ yagi.on('guildDelete', (guild) => {
     }
     //Send updated data to yagi discord server
     const embed = serverEmbed(yagi, guild, 'leave');
-    const serversChannel = yagi.channels.get('614749682849021972');
+    const serversChannel = yagi.channels.cache.get('614749682849021972');
     serversChannel.send({ embed });
     serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
   });
 });
 yagi.on('message', async (message) => {
-  const logChannel = yagi.channels.get('620621811142492172');
+  const logChannel = yagi.channels.cache.get('620621811142492172');
   let yagiPrefix;
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
     yagiPrefix = defaultPrefix;
