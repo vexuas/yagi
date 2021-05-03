@@ -41,7 +41,7 @@ yagi.once('ready', () => {
       serversChannel.setTopic(`Servers: ${yagi.guilds.size}`);
     }
   });
-  // console.log(guildConfig);
+  console.log(guildConfig);
 });
 
 const activitylist = [
