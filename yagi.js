@@ -4,6 +4,7 @@ const commands = require('./commands');
 const fs = require('fs');
 const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
+const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
 
 yagi.once('ready', () => {
