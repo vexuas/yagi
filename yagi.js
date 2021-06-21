@@ -19,31 +19,6 @@ yagi.once('ready', () => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
-  //Saves guild data if it's not in file
-  yagi.guilds.cache.forEach((guild) => {
-    console.log(guild);
-    /**
-     * IMPORTANT
-     * It seems that the member and user collections are not accessible.
-     * Not too sure how to fix for now, maybe updating discord.js to v12? Glancing through the release notes it looks like there would be a lot of breaking changes if I update
-     * Either way, I'll remove all instances of them for now
-     */
-    if (!guildConfig[guild.id]) {
-      guildConfig[guild.id] = {
-        name: guild.name,
-        // owner: guild.owner.user.tag,
-        memberCount: guild.memberCount,
-        region: guild.region,
-        prefix: defaultPrefix,
-      };
-      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
-      const embed = serverEmbed(yagi, guild, 'join');
-      const serversChannel = yagi.channels.cache.get('614749682849021972');
-      serversChannel.send({ embed });
-      serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`);
-    }
-  });
-  console.log(guildConfig);
   //Database stuff
   const yagiDatabase = createYagiDatabase();
   createGuildTable(yagiDatabase, yagi.guilds.cache);
@@ -149,7 +124,7 @@ yagi.on('message', async (message) => {
   }
 });
 yagi.on('error', (error) => {
-  const logChannel = yagi.channels.get('620621811142492172');
+  const logChannel = yagi.channels.cache.get('620621811142492172');
   console.log(error);
   logChannel.send(error.message);
 });
@@ -164,26 +139,31 @@ const createYagiDatabase = () => {
 const createGuildTable = (database, guilds) => {
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => { 
-    //Don't create the table if it already exists in the database
-    database.run('DROP TABLE IF EXISTS Guild', error => {
-      if(error){
-        console.log(error);
-      }
-    })
     //Creates Guild Table with the relevant columns
-    database.run('CREATE TABLE Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, region TEXT NOT NULL, owner_id TEXT NOT NULL)');
+    database.run('CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, region TEXT NOT NULL, owner_id TEXT NOT NULL)');
     
     //Populate Guild Table with existing guilds
     guilds.forEach(guild => {
-      database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
-        $uuid: guild.id,
-        $name: guild.name,
-        $member_count: guild.memberCount,
-        $region: guild.region,
-        $owner_id: guild.ownerID
-      }, err => {
-        if(err){
-          console.log(err);
+      database.get(`SELECT * FROM Guild WHERE uuid = ${guild.id}`, (error, row) => {
+        if(error){
+          console.log(error);
+        }
+        if(!row){
+          database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
+            $uuid: guild.id,
+            $name: guild.name,
+            $member_count: guild.memberCount,
+            $region: guild.region,
+            $owner_id: guild.ownerID
+          }, err => {
+            if(err){
+              console.log(err);
+            }
+            const embed = serverEmbed(yagi, guild, 'join');
+            const serversChannel = yagi.channels.cache.get('614749682849021972');
+            serversChannel.send({ embed });
+            serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
+          })
         }
       })
     })
