@@ -74,7 +74,7 @@ yagi.on('message', async (message) => {
     message.mentions.users.forEach((user) => {
       //shows current prefix when @
       if (user === yagi.user) {
-        return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`');
+        return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '. For list of commands, type '+ '`' + `${yagiPrefix}help` + '`');
       }
     });
     //Ignores messages without a prefix
