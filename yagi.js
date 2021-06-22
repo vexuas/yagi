@@ -1,10 +1,11 @@
 const Discord = require('discord.js');
 const { defaultPrefix, token } = require('./config/yagi.json');
 const commands = require('./commands');
-const fs = require('fs');
 const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
+const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
+const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
@@ -18,30 +19,9 @@ yagi.once('ready', () => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
-  //Saves guild data if it's not in file
-  yagi.guilds.cache.forEach((guild) => {
-    /**
-     * IMPORTANT
-     * It seems that the member and user collections are not accessible.
-     * Not too sure how to fix for now, maybe updating discord.js to v12? Glancing through the release notes it looks like there would be a lot of breaking changes if I update
-     * Either way, I'll remove all instances of them for now
-     */
-    if (!guildConfig[guild.id]) {
-      guildConfig[guild.id] = {
-        name: guild.name,
-        // owner: guild.owner.user.tag,
-        memberCount: guild.memberCount,
-        region: guild.region,
-        prefix: defaultPrefix,
-      };
-      fs.writeFileSync('./config/guild.json', JSON.stringify(guildConfig, null, 2));
-      const embed = serverEmbed(yagi, guild, 'join');
-      const serversChannel = yagi.channels.cache.get('614749682849021972');
-      serversChannel.send({ embed });
-      serversChannel.setTopic(`Servers: ${yagi.guilds.size}`);
-    }
-  });
-  console.log(guildConfig);
+  //Database stuff
+  const yagiDatabase = createYagiDatabase();
+  createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
 });
 
 const activitylist = [
@@ -66,40 +46,24 @@ yagi.on('ready', () => {
 });
 // When invited to a server
 yagi.on('guildCreate', (guild) => {
-  guildConfig[guild.id] = {
-    name: guild.name,
-    // owner: guild.owner.user.tag,
-    memberCount: guild.memberCount,
-    region: guild.region,
-    prefix: defaultPrefix,
-  };
-  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    //Send new guild info to yagi discord server
-    const embed = serverEmbed(yagi, guild, 'join');
-    const serversChannel = yagi.channels.cache.get('614749682849021972');
-    serversChannel.send({ embed });
-    serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
-  });
+  insertNewGuild(guild);
+  const embed = serverEmbed(yagi, guild, 'join');
+  const serversChannel = yagi.channels.cache.get('614749682849021972');
+  serversChannel.send({ embed });
+  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
 });
 
 // When kicked from a server
 yagi.on('guildDelete', (guild) => {
-  delete guildConfig[guild.id];
-  fs.writeFile('./config/guild.json', JSON.stringify(guildConfig, null, 2), function (err) {
-    if (err) {
-      return console.log(err);
-    }
-    //Send updated data to yagi discord server
-    const embed = serverEmbed(yagi, guild, 'leave');
-    const serversChannel = yagi.channels.cache.get('614749682849021972');
-    serversChannel.send({ embed });
-    serversChannel.setTopic(`Servers: ${yagi.guilds.size}`); //Removed users for now
-  });
+  deleteGuild(guild);
+  //Send updated data to yagi discord server
+  const embed = serverEmbed(yagi, guild, 'leave');
+  const serversChannel = yagi.channels.cache.get('614749682849021972');
+  serversChannel.send({ embed });
+  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
 });
 yagi.on('message', async (message) => {
+  if (message.author.bot) return; //Ignore messages made my yagi
   const logChannel = yagi.channels.cache.get('620621811142492172');
   let yagiPrefix;
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
@@ -143,9 +107,15 @@ yagi.on('message', async (message) => {
   }
 });
 yagi.on('error', (error) => {
-  const logChannel = yagi.channels.get('620621811142492172');
+  const logChannel = yagi.channels.cache.get('620621811142492172');
   console.log(error);
   logChannel.send(error.message);
 });
 
 yagi.login(token);
+
+//Creates Yagi Database under database folder
+const createYagiDatabase = () => {
+  let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+  return db;
+}
