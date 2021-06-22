@@ -5,7 +5,7 @@ const yagi = new Discord.Client();
 const guildConfig = require('./config/guild.json');
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
-const { createYagiDatabase, createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
+const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
@@ -63,7 +63,7 @@ yagi.on('guildDelete', (guild) => {
   serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
 });
 yagi.on('message', async (message) => {
-  if (message.author.bot) return;
+  if (message.author.bot) return; //Ignore messages made my yagi
   const logChannel = yagi.channels.cache.get('620621811142492172');
   let yagiPrefix;
   if (message.channel.type === 'dm' || message.channel.type === 'group') {
@@ -113,3 +113,9 @@ yagi.on('error', (error) => {
 });
 
 yagi.login(token);
+
+//Creates Yagi Database under database folder
+const createYagiDatabase = () => {
+  let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+  return db;
+}

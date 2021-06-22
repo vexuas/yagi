@@ -1,15 +1,17 @@
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('../helpers');
 
-//Creates Yagi Database under database folder
-const createYagiDatabase = () => {
-  let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-  return db;
-}
+/**
+ * Creates Guild table inside the Yagi Database
+ * Gets called in the client.once("ready") hook
+ * @param database - yagi database
+ * @param guilds - guilds that yagi is in
+ * @param client - yagi client
+ */
 const createGuildTable = (database, guilds, client) => {
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => { 
-    //Creates Guild Table with the relevant columns
+    //Creates Guild Table with the relevant columns if it does not exist
     database.run('CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, region TEXT NOT NULL, owner_id TEXT NOT NULL)');
     
     //Populate Guild Table with existing guilds
@@ -18,6 +20,7 @@ const createGuildTable = (database, guilds, client) => {
         if(error){
           console.log(error);
         }
+        //Only runs statement and insert into guild table if the guild hasn't been created yet
         if(!row){
           database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
             $uuid: guild.id,
@@ -29,6 +32,7 @@ const createGuildTable = (database, guilds, client) => {
             if(err){
               console.log(err);
             }
+            //Sends info in guild server channel
             const embed = serverEmbed(client, guild, 'join');
             const serversChannel = client.channels.cache.get('614749682849021972');
             serversChannel.send({ embed });
@@ -39,6 +43,10 @@ const createGuildTable = (database, guilds, client) => {
     })
   })
 }
+/**
+ * Adds new guild to Guild table
+ * @param guild - guild that yagi is newly invited in
+ */
 const insertNewGuild = (guild) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
@@ -53,6 +61,10 @@ const insertNewGuild = (guild) => {
     }
   })
 }
+/**
+ * Deletes guild from Guild table
+ * @param guild  - guild that yagi is removed in
+ */
 const deleteGuild = (guild) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run(`DELETE FROM Guild WHERE uuid = ${guild.id}`, err => {
@@ -62,8 +74,7 @@ const deleteGuild = (guild) => {
   })
 }
 
-module.exports = {
-  createYagiDatabase, 
+module.exports = { 
   createGuildTable,
   insertNewGuild,
   deleteGuild
