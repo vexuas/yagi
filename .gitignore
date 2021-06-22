@@ -8,6 +8,9 @@ node_modules
 /config/yagi.json
 /config/psa.json
 
+#database
+/database/yagi.db
+
 # system files
 .DS_Store
 .env
