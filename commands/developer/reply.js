@@ -1,3 +1,9 @@
+/**
+ * DEPRECATED 
+ * Was a good idea but user adoption has been minimal
+ * Its infancy stemmed from trying to reinvent the wheel when I could have just invited users to a dedicated discord server for interactions
+ * Keeping this file to serve as a reminder of past mistakes and inspiration since despite all, it was fun creating this feature
+ */
 const { format } = require('date-fns');
 const sendSuccessEmbed = function designOfSuccessNotificationEmbed(message, replyContent) {
   const embed = {

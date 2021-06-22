@@ -25,7 +25,7 @@ module.exports = {
           {
             name: 'Miscellaneous',
             value:
-              '`loot`, `contacts`, `message`, `website`\n\nFor more detailed information about a command, use `' +
+              '`loot`, `contacts`, `website`\n\nFor more detailed information about a command, use `' +
               yagiPrefix +
               'help <Command>`'
           }

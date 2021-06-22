@@ -13,8 +13,6 @@ module.exports = {
   // Reminder
   // ----------
   // Dev Tools
-  reply: require('./commands/developer/reply'),
-  message: require('./commands/developer/message'),
   daylights: require('./commands/developer/daylights'),
   offset: require('./commands/developer/offset'),
   psa: require('./commands/developer/psa'),
