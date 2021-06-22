@@ -84,23 +84,6 @@ yagi.on('message', async (message) => {
       const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
       const command = args.shift().toLowerCase(); //gets command as a string from array
       const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
-
-      //Database stuff
-      let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-    
-      let userId = message.author.id;
-      let uName = message.author.tag;
-      if(command === 'getdata'){
-        let query = `SELECT * FROM Guild where rowid = 1`;
-        db.get(query, (err, row) => {
-          if(err){
-            console.log(err);
-            return;
-          }
-          console.log(row);
-        });
-      }
-
       /**
        * If command exists in command file, send command reply
        * Also checks if command has arguments
