@@ -1,4 +1,4 @@
-const guildConfig = require('../../config/guild.json');
+// const guildConfig = require('../../config/guild.json');
 
 module.exports = {
   name: 'contacts',

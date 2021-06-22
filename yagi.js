@@ -2,7 +2,6 @@ const Discord = require('discord.js');
 const { defaultPrefix, token } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
-const guildConfig = require('./config/guild.json');
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
@@ -65,21 +64,20 @@ yagi.on('guildDelete', (guild) => {
 yagi.on('message', async (message) => {
   if (message.author.bot) return; //Ignore messages made my yagi
   const logChannel = yagi.channels.cache.get('620621811142492172');
-  let yagiPrefix;
-  if (message.channel.type === 'dm' || message.channel.type === 'group') {
-    yagiPrefix = defaultPrefix;
-  } else if (message.channel.type === 'text') {
-    yagiPrefix = guildConfig[message.guild.id].prefix;
-  }
-  //Ignores messages without a prefix
+  const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
+
   try {
+    /**
+     * Yagi checks if messages contains any mentions
+     * If it does and if one of the mentions contains yagi's user, returns a message with the current prefix
+     */
     message.mentions.users.forEach((user) => {
       //shows current prefix when @
       if (user === yagi.user) {
         return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`');
       }
     });
-
+    //Ignores messages without a prefix
     if (message.content.startsWith(yagiPrefix)) {
       const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
       const command = args.shift().toLowerCase(); //gets command as a string from array

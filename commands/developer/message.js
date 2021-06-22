@@ -1,4 +1,4 @@
-const guildConfig = require('../../config/guild.json');
+// const guildConfig = require('../../config/guild.json');
 const { defaultPrefix } = require('../../config/yagi.json');
 const grvAcnt = '`';
 const { format } = require('date-fns');
