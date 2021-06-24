@@ -8,6 +8,10 @@ const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/gu
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
+  yagi.channels.cache.forEach(channel => {
+    console.log(`${channel.id} - ${channel.name} - ${channel.type} - ${channel.createdAt} - ${channel.deleted} - ${channel.guild.id}`);
+  })
+  
   /**
    * Displays people and guilds using yagi
    */
