@@ -5,7 +5,7 @@ const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
-const { createChannelTable } = require('./database/channel-db.js');
+const { createChannelTable, insertNewChannel } = require('./database/channel-db.js');
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
@@ -60,9 +60,9 @@ yagi.on('guildCreate', (guild) => {
   serversChannel.send({ embed });
   serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
 });
+
 yagi.on('channelCreate', (channel) => {
-  console.log('wtf');
-  console.log(channel);
+  insertNewChannel(channel);
 })
 
 // When kicked from a server

@@ -38,7 +38,29 @@ const createChannelTable = (database, channels, client) => {
     })
   })
 }
-
+/**
+ * Adds new channel to Channel table
+ * Called either when yagi is invited to a new guild
+ * Or when a channel is newly created within a guild
+ * @param channel - new channel
+ */
+ const insertNewChannel = (channel) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run('INSERT INTO Channel (uuid, name, type, created_at, is_deleted, guild_id, owner_id) VALUES ($uuid, $name, $type, $created_at, $is_deleted, $guild_id, $owner_id)', {
+    $uuid: channel.id,
+    $name: channel.name,
+    $type: channel.type,
+    $created_at: channel.createdAt,
+    $is_deleted: channel.deleted,
+    $guild_id: channel.guild.id,
+    $owner_id: channel.guild.ownerID
+  }, err => {
+    if(err){
+      console.log(err);
+    }
+  })
+}
 module.exports = { 
-  createChannelTable
+  createChannelTable,
+  insertNewChannel
 }
