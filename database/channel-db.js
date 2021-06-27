@@ -85,10 +85,24 @@ const deleteAllChannels = (guild) => {
     })
   })
 }
+/**
+ * Updates data of existing channel with new details in database
+ * Only setting name as that's the only parameter we're saving in our database that can be edited by a user
+ * @param channel - new updated details of channel
+ */
+const updateChannel = (channel) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`UPDATE Channel SET name = "${channel.name}" WHERE uuid = ${channel.id}`, err => {
+    if(err){
+      console.log(err);
+    }
+  })
+}
 
 module.exports = { 
   createChannelTable,
   insertNewChannel,
   deleteChannel,
-  deleteAllChannels
+  deleteAllChannels,
+  updateChannel
 }
