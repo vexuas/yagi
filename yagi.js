@@ -5,9 +5,14 @@ const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
+const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels } = require('./database/channel-db.js');
 
 yagi.once('ready', () => {
   console.log("I'm ready! (◕ᴗ◕✿)");
+  yagi.channels.cache.forEach(channel => {
+    console.log(`${channel.id} - ${channel.name} - ${channel.type} - ${channel.createdAt} - ${channel.deleted} - ${channel.guild.id} - ${channel.guild.ownerID}`);
+  })
+  
   /**
    * Displays people and guilds using yagi
    */
@@ -21,6 +26,7 @@ yagi.once('ready', () => {
   //Database stuff
   const yagiDatabase = createYagiDatabase();
   createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
+  createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
 });
 
 const activitylist = [
@@ -43,18 +49,27 @@ yagi.on('ready', () => {
     yagi.user.setActivity(activitylist[index]);
   }, 120000);
 });
+yagi.on('channelCreate', (channel) => {
+  insertNewChannel(channel);
+})
+yagi.on('channelDelete', (channel) => {
+  deleteChannel(channel);
+})
 // When invited to a server
 yagi.on('guildCreate', (guild) => {
   insertNewGuild(guild);
+  guild.channels.cache.forEach(channel => {
+    insertNewChannel(channel);
+  })
   const embed = serverEmbed(yagi, guild, 'join');
   const serversChannel = yagi.channels.cache.get('614749682849021972');
   serversChannel.send({ embed });
   serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
 });
-
 // When kicked from a server
 yagi.on('guildDelete', (guild) => {
   deleteGuild(guild);
+  deleteAllChannels(guild);
   //Send updated data to yagi discord server
   const embed = serverEmbed(yagi, guild, 'leave');
   const serversChannel = yagi.channels.cache.get('614749682849021972');
