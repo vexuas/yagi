@@ -73,9 +73,17 @@ const deleteGuild = (guild) => {
     }
   })
 }
-
+const updateGuild = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`UPDATE Guild SET name = "${guild.name}" WHERE uuid = ${guild.id}`, err => {
+    if(err){
+      console.log(err);
+    }
+  })
+}
 module.exports = { 
   createGuildTable,
   insertNewGuild,
-  deleteGuild
+  deleteGuild,
+  updateGuild
 }
