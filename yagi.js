@@ -7,12 +7,22 @@ const { serverEmbed } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels } = require('./database/channel-db.js');
 
+const activitylist = [
+  'info | bot information',
+  'ping me for prefix!',
+  'goats | Olympus wb',
+  'help | command list',
+  'Last update: 10/03/2021',
+  'checkout Ama for eidolons!',
+];
+/**
+ * Event handler that fires only once when yagi is done booting up
+ * Houses function initialisations such as database creation and activity list randomizer
+ */
 yagi.once('ready', () => {
+  const testChannel = yagi.channels.cache.get('582213795942891521');
+  testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
   console.log("I'm ready! (◕ᴗ◕✿)");
-  yagi.channels.cache.forEach(channel => {
-    console.log(`${channel.id} - ${channel.name} - ${channel.type} - ${channel.createdAt} - ${channel.deleted} - ${channel.guild.id} - ${channel.guild.ownerID}`);
-  })
-  
   /**
    * Displays people and guilds using yagi
    */
@@ -23,39 +33,48 @@ yagi.once('ready', () => {
     console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
   });
   console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
-  //Database stuff
+  /**
+   * Initialise Database and its tables
+   * Will create them if they don't exist
+   * See relevant files under database/* for more information
+   */
   const yagiDatabase = createYagiDatabase();
   createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
   createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
-});
-
-const activitylist = [
-  'info | bot information',
-  'ping me for prefix!',
-  'goats | Olympus wb',
-  'help | command list',
-  'Last update: 10/03/2021',
-  'checkout Ama for eidolons!',
-];
-
-yagi.on('ready', () => {
+  /**
+   * Changes Yagi's activity every 2 minutes on random
+   * Starts on the first index of the activityList array and then sets to a different one after
+   */
   yagi.user.setActivity(activitylist[0]);
-  //Sends to test bot channel in yagi's den
-  const testChannel = yagi.channels.cache.get('582213795942891521');
-  testChannel.send("I'm booting up! (◕ᴗ◕✿)");
   setInterval(() => {
-    //Changes games activity every 2 minutes on random
     const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
     yagi.user.setActivity(activitylist[index]);
   }, 120000);
 });
+/**
+ * Event handlers for when a channel is created, deleted and updated in servers where yagi is in
+ * Used mainly for database updates to keep track of
+ * channelCreate - called when new channel is created in a server yagi is in
+ * channelDelete - called when channel is deleted in a server yagi is in
+ * 
+ */
 yagi.on('channelCreate', (channel) => {
   insertNewChannel(channel);
 })
 yagi.on('channelDelete', (channel) => {
   deleteChannel(channel);
 })
-// When invited to a server
+yagi.on('channelUpdate', (channel) => {
+
+})
+//------
+/**
+ * Event handlers for when yagi is invited to a new server, when he is kicked or when the guild he is in is updated
+ * Sends notification to channel in Yagi's Den
+ * guildCreate - called when yagi is invited to a server
+ * guildDelete - called when yagi is kicked from server
+ * guildUpdate - called when updating details (e.g name change) in server yagi is in
+ */
 yagi.on('guildCreate', (guild) => {
   insertNewGuild(guild);
   guild.channels.cache.forEach(channel => {
@@ -64,20 +83,25 @@ yagi.on('guildCreate', (guild) => {
   const embed = serverEmbed(yagi, guild, 'join');
   const serversChannel = yagi.channels.cache.get('614749682849021972');
   serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
+  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`);
 });
-// When kicked from a server
 yagi.on('guildDelete', (guild) => {
   deleteGuild(guild);
   deleteAllChannels(guild);
-  //Send updated data to yagi discord server
   const embed = serverEmbed(yagi, guild, 'leave');
   const serversChannel = yagi.channels.cache.get('614749682849021972');
   serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`); //Removed users for now
+  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`);
 });
+yagi.on('guildUpdate', (guild) => {
+
+})
+//-----
+/**
+ * Event handler for when a message is sent in a channel that yagi is in
+ */
 yagi.on('message', async (message) => {
-  if (message.author.bot) return; //Ignore messages made my yagi
+  if (message.author.bot) return; //Ignore messages made by yagi
   const logChannel = yagi.channels.cache.get('620621811142492172');
   const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
 
