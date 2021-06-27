@@ -43,9 +43,9 @@ const createChannelTable = (database, channels, client) => {
  * Or when a channel is newly created within a guild
  * @param channel - new channel
  */
- const insertNewChannel = (channel) => {
+const insertNewChannel = (channel) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run('INSERT INTO Channel (uuid, name, type, created_at, is_deleted, guild_id, owner_id) VALUES ($uuid, $name, $type, $created_at, $is_deleted, $guild_id, $owner_id)', {
+  database.run('INSERT INTO Channel (uuid, name, type, created_at, guild_id, owner_id) VALUES ($uuid, $name, $type, $created_at, $guild_id, $owner_id)', {
     $uuid: channel.id,
     $name: channel.name,
     $type: channel.type,
@@ -64,7 +64,7 @@ const createChannelTable = (database, channels, client) => {
  * Or when a channel is deleted
  * @param channel - deleted channel
  */
- const deleteChannel = (channel) => {
+const deleteChannel = (channel) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run(`DELETE FROM Channel WHERE uuid = ${channel.id}`, err => {
     if(err){
@@ -72,8 +72,23 @@ const createChannelTable = (database, channels, client) => {
     }
   })
 }
+const deleteAllChannels = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.each(`SELECT * FROM Channel WHERE guild_id = ${guild.id}`, (error, row) => {
+    if(error){
+      console.log(error);
+    }
+    database.run(`DELETE FROM Channel WHERE uuid = ${row.uuid}`, err => {
+      if(err){
+        console.log(err);
+      }
+    })
+  })
+}
+
 module.exports = { 
   createChannelTable,
   insertNewChannel,
-  deleteChannel
+  deleteChannel,
+  deleteAllChannels
 }
