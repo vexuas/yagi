@@ -73,6 +73,11 @@ const deleteGuild = (guild) => {
     }
   })
 }
+/**
+ * Updates data of existing guild with new details in database
+ * Only setting name as that's the only parameter we're saving in our database that can be edited by a user
+ * @param guild - new updated details of guild
+ */
 const updateGuild = (guild) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run(`UPDATE Guild SET name = "${guild.name}" WHERE uuid = ${guild.id}`, err => {
@@ -81,9 +86,37 @@ const updateGuild = (guild) => {
     }
   })
 }
+/**
+ * Updates member count of guild when a new user joins the server
+ * Function gets current member count of guild and adds 1 to it before updating
+ * @param member = new member that's invited to guild
+ */
+const addGuildMemberCount = (member) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  let count = 1;
+  database.get(`SELECT * FROM Guild WHERE uuid = ${member.guild.id}`, (error, row) => {
+    if(error){
+      console.log(error);
+    }
+    if(row){
+      count += row.member_count //Adds 1 to current member count
+      database.run(`UPDATE Guild SET member_count = ${count} WHERE uuid = ${row.uuid}`, err => {
+        if(err){
+          console.log(err)
+        }
+      })
+    }
+  })
+}
+const substractGuildMemberCount = (member) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  let count;
+}
 module.exports = { 
   createGuildTable,
   insertNewGuild,
   deleteGuild,
-  updateGuild
+  updateGuild,
+  addGuildMemberCount,
+  substractGuildMemberCount
 }
