@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const { serverEmbed } = require('./helpers');
-const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, addGuildMemberCount, substractGuildMemberCount } = require('./database/guild-db.js');
+const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 
 const activitylist = [
@@ -97,10 +97,10 @@ yagi.on('guildUpdate', (_, newGuild) => {
   updateGuild(newGuild);
 });
 yagi.on('guildMemberAdd', (member) => {
-  addGuildMemberCount(member);
+  updateGuildMemberCount(member, 'add');
 });
 yagi.on('guildMemberRemove', (member) => {
-  // subsctractGuildMemberCount(member);
+  updateGuildMemberCount(member, 'remove');
 })
 //-----
 /**

@@ -87,19 +87,29 @@ const updateGuild = (guild) => {
   })
 }
 /**
- * Updates member count of guild when a new user joins the server
- * Function gets current member count of guild and adds 1 to it before updating
- * @param member = new member that's invited to guild
+ * Updates member count of guild whenever a user joins or leaves a server
+ * Function gets current member count of guild first
+ * Depending on the type, it either adds or substracts from the member count before updating the database row
+ * @param member - member that joins/leaves
+ * @param type - parameter to know if user joined or left
  */
-const addGuildMemberCount = (member) => {
+const updateGuildMemberCount = (member, type) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  let count = 1;
+  let count;
   database.get(`SELECT * FROM Guild WHERE uuid = ${member.guild.id}`, (error, row) => {
     if(error){
       console.log(error);
     }
+    //Only run statement if row exists
     if(row){
-      count += row.member_count //Adds 1 to current member count
+      switch(type){
+        case 'add':
+          count = row.member_count + 1 //Adds 1 to current member count if type is add
+          break;
+        case 'remove':
+          count = row.member_count - 1 //Substracts 1 to current member count if type is remove
+          break;
+      }
       database.run(`UPDATE Guild SET member_count = ${count} WHERE uuid = ${row.uuid}`, err => {
         if(err){
           console.log(err)
@@ -108,15 +118,10 @@ const addGuildMemberCount = (member) => {
     }
   })
 }
-const substractGuildMemberCount = (member) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  let count;
-}
 module.exports = { 
   createGuildTable,
   insertNewGuild,
   deleteGuild,
   updateGuild,
-  addGuildMemberCount,
-  substractGuildMemberCount
+  updateGuildMemberCount
 }
