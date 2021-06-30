@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { serverEmbed } = require('../helpers');
+const { sendGuildUpdateNotification } = require('../helpers');
 
 /**
  * Creates Guild table inside the Yagi Database
@@ -32,11 +32,7 @@ const createGuildTable = (database, guilds, client) => {
             if(err){
               console.log(err);
             }
-            //Sends info in guild server channel
-            const embed = serverEmbed(client, guild, 'join');
-            const serversChannel = client.channels.cache.get('614749682849021972');
-            serversChannel.send({ embed });
-            serversChannel.setTopic(`Servers: ${client.guilds.cache.size}`); //Removed users for now
+            sendGuildUpdateNotification(client, guild);
           })
         }
       })
@@ -73,9 +69,55 @@ const deleteGuild = (guild) => {
     }
   })
 }
-
+/**
+ * Updates data of existing guild with new details in database
+ * Only setting name as that's the only parameter we're saving in our database that can be edited by a user
+ * @param guild - new updated details of guild
+ */
+const updateGuild = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`UPDATE Guild SET name = "${guild.name}" WHERE uuid = ${guild.id}`, err => {
+    if(err){
+      console.log(err);
+    }
+  })
+}
+/**
+ * Updates member count of guild whenever a user joins or leaves a server
+ * Function gets current member count of guild first
+ * Depending on the type, it either adds or substracts from the member count before updating the database row
+ * @param member - member that joins/leaves
+ * @param type - parameter to know if user joined or left
+ */
+const updateGuildMemberCount = (member, type) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  let count;
+  database.get(`SELECT * FROM Guild WHERE uuid = ${member.guild.id}`, (error, row) => {
+    if(error){
+      console.log(error);
+    }
+    //Only run statement if row exists
+    if(row){
+      switch(type){
+        case 'add':
+          count = row.member_count + 1 //Adds 1 to current member count if type is add
+          break;
+        case 'remove':
+          count = row.member_count - 1 //Substracts 1 to current member count if type is remove
+          break;
+      }
+      database.run(`UPDATE Guild SET member_count = ${count} WHERE uuid = ${row.uuid}`, err => {
+        if(err){
+          console.log(err)
+        }
+      })
+    }
+  })
+}
 module.exports = { 
   createGuildTable,
   insertNewGuild,
-  deleteGuild
+  deleteGuild,
+  updateGuild,
+  updateGuildMemberCount
 }
