@@ -195,11 +195,34 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 //----------
+/**
+ * As I use Bisolen for development and testing of new features, it is a bit annoying to clear testing notifications from channels that yagi stores data in
+ * This comes from hardcoding channels to log data in the event handlers. 
+ * To avoid dirtying the data and cluttering production channels, this function determines if the client is Bisolen and is being used for development
+ * Bisolen ID - 582202266828668998
+ * Yagi ID - 518196430104428579
+ */
+ const checkIfInDevelopment = (client) => {
+   return client.user.id === '582202266828668998'; //Bisolen's id (Development Bot)
+}
+//----------
+const sendGuildUpdateNotification = (client, guild) => {
+  const embed = serverEmbed(client, guild, 'join');
+  const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
+  const channelToSend = client.channels.cache.get(channelId);
+  
+  channelToSend.send({ embed });
+  if(!checkIfInDevelopment(client)){
+    channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);
+  }
+}
 module.exports = {
-  getServerTime: getServerTime,
-  formatCountdown: formatCountdown,
-  formatLocation: formatLocation,
-  serverEmbed: serverEmbed,
-  descriptionEmbed: descriptionEmbed,
-  capitalize: capitalize,
+  getServerTime,
+  formatCountdown,
+  formatLocation,
+  serverEmbed,
+  descriptionEmbed,
+  capitalize,
+  checkIfInDevelopment,
+  sendGuildUpdateNotification
 };

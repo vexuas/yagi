@@ -3,7 +3,7 @@ const { defaultPrefix, token } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
-const { serverEmbed } = require('./helpers');
+const { serverEmbed, sendGuildUpdateNotification } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 
@@ -80,18 +80,12 @@ yagi.on('guildCreate', (guild) => {
   guild.channels.cache.forEach(channel => {
     insertNewChannel(channel);
   })
-  const embed = serverEmbed(yagi, guild, 'join');
-  const serversChannel = yagi.channels.cache.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`);
+  sendGuildUpdateNotification(yagi, guild);
 });
 yagi.on('guildDelete', (guild) => {
   deleteGuild(guild);
   deleteAllChannels(guild);
-  const embed = serverEmbed(yagi, guild, 'leave');
-  const serversChannel = yagi.channels.cache.get('614749682849021972');
-  serversChannel.send({ embed });
-  serversChannel.setTopic(`Servers: ${yagi.guilds.cache.size}`);
+  sendGuildUpdateNotification(yagi, guild);
 });
 yagi.on('guildUpdate', (_, newGuild) => {
   updateGuild(newGuild);

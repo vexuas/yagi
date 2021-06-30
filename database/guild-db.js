@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { serverEmbed } = require('../helpers');
+const { sendGuildUpdateNotification } = require('../helpers');
 
 /**
  * Creates Guild table inside the Yagi Database
@@ -32,11 +32,7 @@ const createGuildTable = (database, guilds, client) => {
             if(err){
               console.log(err);
             }
-            //Sends info in guild server channel
-            const embed = serverEmbed(client, guild, 'join');
-            const serversChannel = client.channels.cache.get('614749682849021972');
-            serversChannel.send({ embed });
-            serversChannel.setTopic(`Servers: ${client.guilds.cache.size}`); //Removed users for now
+            sendGuildUpdateNotification(client, guild);
           })
         }
       })
