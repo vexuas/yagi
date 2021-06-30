@@ -223,7 +223,18 @@ const sendGuildUpdateNotification = (client, guild) => {
     channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);
   }
 }
-
+//----------
+/**
+ * Sends an error log to a specific channel for better error management
+ * 620621811142492172: goat-logs channel in Yagi's Den
+ * @param client - initialising discord client
+ * @param error - error object
+ */
+const sendErrorLog = (client, error) => {
+  const logChannel = client.channels.cache.get('620621811142492172');
+  logChannel.send(error.message);
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -232,5 +243,6 @@ module.exports = {
   descriptionEmbed,
   capitalize,
   checkIfInDevelopment,
-  sendGuildUpdateNotification
+  sendGuildUpdateNotification,
+  sendErrorLog
 };

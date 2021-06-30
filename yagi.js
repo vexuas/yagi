@@ -3,7 +3,7 @@ const { defaultPrefix, token } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
-const { serverEmbed, sendGuildUpdateNotification } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 
@@ -76,11 +76,16 @@ yagi.on('channelUpdate', (_, newChannel) => {
  * guildUpdate - called when updating details (e.g name change) in server yagi is in
  */
 yagi.on('guildCreate', (guild) => {
-  insertNewGuild(guild);
-  guild.channels.cache.forEach(channel => {
-    insertNewChannel(channel);
-  })
-  sendGuildUpdateNotification(yagi, guild);
+  try {
+    insertNewGuild(guild);
+    guild.channels.cache.forEach(channel => {
+      insertNewChannel(channel);
+    })
+    sendGuildUpdateNotification(yagi, guild);
+  } catch(e){
+    const logChannel = yagi.channels.cache.get('620621811142492172');
+    logChannel.send(e.message);
+  }
 });
 yagi.on('guildDelete', (guild) => {
   deleteGuild(guild);
