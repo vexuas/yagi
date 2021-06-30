@@ -206,6 +206,13 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
    return client.user.id === '582202266828668998'; //Bisolen's id (Development Bot)
 }
 //----------
+/**
+ * Sends a notification embed message to a specific channel
+ * 582213795942891521: bot-development channel for Bisolen development
+ * 614749682849021972: goat-servers channel for Yagi real guild data tracker
+ * @param client - initialising discord client
+ * @param guild  - guild data
+ */
 const sendGuildUpdateNotification = (client, guild) => {
   const embed = serverEmbed(client, guild, 'join');
   const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
@@ -216,6 +223,7 @@ const sendGuildUpdateNotification = (client, guild) => {
     channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);
   }
 }
+
 module.exports = {
   getServerTime,
   formatCountdown,
