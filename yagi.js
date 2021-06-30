@@ -15,6 +15,9 @@ const activitylist = [
   'Last update: 10/03/2021',
   'checkout Ama for eidolons!',
 ];
+
+yagi.login(token);
+
 /**
  * Event handler that fires only once when yagi is done booting up
  * Houses function initialisations such as database creation and activity list randomizer
@@ -56,16 +59,28 @@ yagi.once('ready', () => {
  * Used mainly for database updates to keep track of
  * channelCreate - called when new channel is created in a server yagi is in
  * channelDelete - called when channel is deleted in a server yagi is in
- * 
+ * channelUpdate - called when updating details of a channel
  */
 yagi.on('channelCreate', (channel) => {
-  insertNewChannel(channel);
+  try {
+    insertNewChannel(channel);
+  } catch(e){
+    sendErrorLog(e);
+  }
 })
 yagi.on('channelDelete', (channel) => {
-  deleteChannel(channel);
+  try {
+    deleteChannel(channel);
+  } catch(e){
+    sendErrorLog(e)
+  }
 })
 yagi.on('channelUpdate', (_, newChannel) => {
-  updateChannel(newChannel);
+  try {
+    updateChannel(newChannel);
+  } catch(e){
+    sendErrorLog(e)
+  }
 })
 //------
 /**
@@ -83,23 +98,38 @@ yagi.on('guildCreate', (guild) => {
     })
     sendGuildUpdateNotification(yagi, guild);
   } catch(e){
-    const logChannel = yagi.channels.cache.get('620621811142492172');
-    logChannel.send(e.message);
+    sendErrorLog(e);
   }
 });
 yagi.on('guildDelete', (guild) => {
-  deleteGuild(guild);
-  deleteAllChannels(guild);
-  sendGuildUpdateNotification(yagi, guild);
+  try {
+    deleteGuild(guild);
+    deleteAllChannels(guild);
+    sendGuildUpdateNotification(yagi, guild);
+  } catch(e){
+    sendErrorLog(e);
+  }
 });
 yagi.on('guildUpdate', (_, newGuild) => {
-  updateGuild(newGuild);
+  try {
+    updateGuild(newGuild);
+  } catch(e){
+    sendErrorLog(e);
+  }
 });
 yagi.on('guildMemberAdd', (member) => {
-  updateGuildMemberCount(member, 'add');
+  try {
+    updateGuildMemberCount(member, 'add');
+  } catch(e){
+    sendErrorLog(e);
+  }
 });
 yagi.on('guildMemberRemove', (member) => {
-  updateGuildMemberCount(member, 'remove');
+  try {
+    updateGuildMemberCount(member, 'remove');
+  } catch(e){
+    sendErrorLog(e);
+  }
 })
 //-----
 /**
@@ -107,7 +137,6 @@ yagi.on('guildMemberRemove', (member) => {
  */
 yagi.on('message', async (message) => {
   if (message.author.bot) return; //Ignore messages made by yagi
-  const logChannel = yagi.channels.cache.get('620621811142492172');
   const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
 
   try {
@@ -144,17 +173,12 @@ yagi.on('message', async (message) => {
       return;
     }
   } catch (e) {
-    console.log(e);
-    logChannel.send(e.message);
+    sendErrorLog(e);
   }
 });
 yagi.on('error', (error) => {
-  const logChannel = yagi.channels.cache.get('620621811142492172');
-  console.log(error);
-  logChannel.send(error.message);
+  sendErrorLog(error);
 });
-
-yagi.login(token);
 
 //Creates Yagi Database under database folder
 const createYagiDatabase = () => {

@@ -231,6 +231,7 @@ const sendGuildUpdateNotification = (client, guild) => {
  * @param error - error object
  */
 const sendErrorLog = (client, error) => {
+  console.log(error);
   const logChannel = client.channels.cache.get('620621811142492172');
   logChannel.send(error.message);
 }
