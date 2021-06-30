@@ -23,36 +23,40 @@ yagi.login(token);
  * Houses function initialisations such as database creation and activity list randomizer
  */
 yagi.once('ready', () => {
-  const testChannel = yagi.channels.cache.get('582213795942891521');
-  testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
-  console.log("I'm ready! (◕ᴗ◕✿)");
-  /**
-   * Displays people and guilds using yagi
-   */
-  yagi.users.cache.forEach((user) => {
-    console.log(user.username);
-  });
-  yagi.guilds.cache.forEach((guild) => {
-    console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
-  });
-  console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
-  /**
-   * Initialise Database and its tables
-   * Will create them if they don't exist
-   * See relevant files under database/* for more information
-   */
-  const yagiDatabase = createYagiDatabase();
-  createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
-  createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
-  /**
-   * Changes Yagi's activity every 2 minutes on random
-   * Starts on the first index of the activityList array and then sets to a different one after
-   */
-  yagi.user.setActivity(activitylist[0]);
-  setInterval(() => {
-    const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
-    yagi.user.setActivity(activitylist[index]);
-  }, 120000);
+  try {
+    const testChannel = yagi.channels.cache.get('582213795942891521');
+    testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
+    console.log("I'm ready! (◕ᴗ◕✿)");
+    /**
+     * Displays people and guilds using yagi
+     */
+    yagi.users.cache.forEach((user) => {
+      console.log(user.username);
+    });
+    yagi.guilds.cache.forEach((guild) => {
+      console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
+    });
+    console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
+    /**
+     * Initialise Database and its tables
+     * Will create them if they don't exist
+     * See relevant files under database/* for more information
+     */
+    const yagiDatabase = createYagiDatabase();
+    createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
+    createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
+    /**
+     * Changes Yagi's activity every 2 minutes on random
+     * Starts on the first index of the activityList array and then sets to a different one after
+     */
+    yagi.user.setActivity(activitylist[0]);
+    setInterval(() => {
+      const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
+      yagi.user.setActivity(activitylist[index]);
+    }, 120000);
+  } catch(e){
+    sendErrorLog(e);
+  }
 });
 /**
  * Event handlers for when a channel is created, deleted and updated in servers where yagi is in
