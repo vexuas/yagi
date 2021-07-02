@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
-const { defaultPrefix, token } = require('./config/yagi.json');
+const { defaultPrefix, token, bisoMixpanel, yagiMixpanel } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
-const { sendGuildUpdateNotification, sendErrorLog } = require('./helpers');
+const Mixpanel = require('mixpanel');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 
@@ -15,15 +16,24 @@ const activitylist = [
   'Last update: 10/03/2021',
   'checkout Ama for eidolons!',
 ];
-
-yagi.login(token);
-
+let mixpanel;
+//----------
+/**
+ * Initialize yagi to log in and establish a connection to Discord
+ * Wrapped in an async function as we want to wait for the promise to end so that our mixpanel instance knows which project to initialize in
+ */
+const initialize = async () => {
+  await yagi.login(token);
+  mixpanel = Mixpanel.init(checkIfInDevelopment(yagi) ? bisoMixpanel : yagiMixpanel);
+}
+initialize();
 /**
  * Event handler that fires only once when yagi is done booting up
  * Houses function initialisations such as database creation and activity list randomizer
  */
 yagi.once('ready', () => {
   try {
+    mixpanel.track('')
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     console.log("I'm ready! (◕ᴗ◕✿)");
@@ -156,6 +166,7 @@ yagi.on('message', async (message) => {
     });
     //Ignores messages without a prefix
     if (message.content.startsWith(yagiPrefix)) {
+      setMixpanelUser(message.author, message.channel, message.channel.guild);
       const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
       const command = args.shift().toLowerCase(); //gets command as a string from array
       const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
@@ -188,4 +199,16 @@ yagi.on('error', (error) => {
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
+}
+const setMixpanelUser = (user, channel, guild, client) => {
+  client.identify(user.id);
+  client.register({
+    user_id: user.id,
+    user: user.tag,
+    user_name: user.username,
+    channel: channel.name,
+    channel_id: channel.id,
+    guild: guild.name,
+    guild_id: guild.id
+  })
 }
