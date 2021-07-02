@@ -65,7 +65,7 @@ yagi.once('ready', () => {
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 /**
@@ -79,21 +79,21 @@ yagi.on('channelCreate', (channel) => {
   try {
     insertNewChannel(channel);
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 })
 yagi.on('channelDelete', (channel) => {
   try {
     deleteChannel(channel);
   } catch(e){
-    sendErrorLog(e)
+    sendErrorLog(yagi, e);
   }
 })
 yagi.on('channelUpdate', (_, newChannel) => {
   try {
     updateChannel(newChannel);
   } catch(e){
-    sendErrorLog(e)
+    sendErrorLog(yagi, e);
   }
 })
 //------
@@ -112,7 +112,7 @@ yagi.on('guildCreate', (guild) => {
     })
     sendGuildUpdateNotification(yagi, guild);
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildDelete', (guild) => {
@@ -121,28 +121,28 @@ yagi.on('guildDelete', (guild) => {
     deleteAllChannels(guild);
     sendGuildUpdateNotification(yagi, guild);
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildUpdate', (_, newGuild) => {
   try {
     updateGuild(newGuild);
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildMemberAdd', (member) => {
   try {
     updateGuildMemberCount(member, 'add');
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildMemberRemove', (member) => {
   try {
     updateGuildMemberCount(member, 'remove');
   } catch(e){
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 })
 //-----
@@ -166,7 +166,6 @@ yagi.on('message', async (message) => {
     });
     //Ignores messages without a prefix
     if (message.content.startsWith(yagiPrefix)) {
-      setMixpanelUser(message.author, message.channel, message.channel.guild);
       const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
       const command = args.shift().toLowerCase(); //gets command as a string from array
       const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
@@ -188,11 +187,11 @@ yagi.on('message', async (message) => {
       return;
     }
   } catch (e) {
-    sendErrorLog(e);
+    sendErrorLog(yagi, e);
   }
 });
 yagi.on('error', (error) => {
-  sendErrorLog(error);
+  sendErrorLog(yagi, error);
 });
 
 //Creates Yagi Database under database folder
@@ -200,6 +199,12 @@ const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
 }
+/**
+ * Aparently the node js mixpanel library does not support identify and super properties as inherently it's not client-side and doesn't concern itself with what the user does
+ * This doesn't go too well with my use case of wanting to track user interaction with the app
+ * Fortunately there's a workaround but would require passing the properties for each event
+ * Will implement in a new pr
+ */
 const setMixpanelUser = (user, channel, guild, client) => {
   client.identify(user.id);
   client.register({
