@@ -224,4 +224,10 @@ const sendMixpanelEvent = (user, channel, guild, command, client) => {
     guild: guild.name,
     guild_id: guild.id
   })
+  client.people.set_once(user.id, {
+    first_used: (new Date()).toISOString(), //Unfortunately this is only after v2.5
+    first_command: command,
+    first_used_in_guild: guild.name,
+    first_used_in_channel: channel.name
+  })
 }
