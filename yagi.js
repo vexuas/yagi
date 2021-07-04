@@ -7,6 +7,7 @@ const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
+const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
   'info | bot information',
@@ -27,6 +28,7 @@ const initialize = async () => {
   mixpanel = Mixpanel.init(checkIfInDevelopment(yagi) ? bisoMixpanel : yagiMixpanel);
 }
 initialize();
+
 /**
  * Event handler that fires only once when yagi is done booting up
  * Houses function initialisations such as database creation and activity list randomizer
@@ -51,7 +53,7 @@ yagi.once('ready', () => {
      * Initialise Database and its tables
      * Will create them if they don't exist
      * See relevant files under database/* for more information
-     */
+     */ 
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
@@ -179,6 +181,7 @@ yagi.on('message', async (message) => {
           await message.channel.send("That command doesn't accept arguments （・□・；）");
         } else {
           await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
+          sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel); //Send tracking event to mixpanel
         }
       } else {
         await message.channel.send("I'm not sure what you meant by that! （・□・；）");
@@ -198,22 +201,4 @@ yagi.on('error', (error) => {
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
-}
-/**
- * Aparently the node js mixpanel library does not support identify and super properties as inherently it's not client-side and doesn't concern itself with what the user does
- * This doesn't go too well with my use case of wanting to track user interaction with the app
- * Fortunately there's a workaround but would require passing the properties for each event
- * Will implement in a new pr
- */
-const setMixpanelUser = (user, channel, guild, client) => {
-  client.identify(user.id);
-  client.register({
-    user_id: user.id,
-    user: user.tag,
-    user_name: user.username,
-    channel: channel.name,
-    channel_id: channel.id,
-    guild: guild.name,
-    guild_id: guild.id
-  })
 }
