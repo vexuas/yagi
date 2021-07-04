@@ -179,6 +179,7 @@ yagi.on('message', async (message) => {
           await message.channel.send("That command doesn't accept arguments （・□・；）");
         } else {
           await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
+          sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel);
         }
       } else {
         await message.channel.send("I'm not sure what you meant by that! （・□・；）");
@@ -205,10 +206,10 @@ const createYagiDatabase = () => {
  * Fortunately there's a workaround but would require passing the properties for each event
  * Will implement in a new pr
  */
-const setMixpanelUser = (user, channel, guild, client) => {
-  client.identify(user.id);
-  client.register({
-    user_id: user.id,
+const sendMixpanelEvent = (user, channel, guild, command, client) => {
+  const eventToSend = `Use ${command} command`;
+  client.track(eventToSend, {
+    distinct_id: user.id,
     user: user.tag,
     user_name: user.username,
     channel: channel.name,
@@ -216,4 +217,7 @@ const setMixpanelUser = (user, channel, guild, client) => {
     guild: guild.name,
     guild_id: guild.id
   })
+  console.log(user);
+  console.log(user.createdAt);
+  console.log(user.createdAt.toISOString());
 }
