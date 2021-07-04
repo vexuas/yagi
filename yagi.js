@@ -35,7 +35,6 @@ initialize();
  */
 yagi.once('ready', () => {
   try {
-    mixpanel.track('')
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     console.log("I'm ready! (◕ᴗ◕✿)");
@@ -79,7 +78,9 @@ yagi.once('ready', () => {
  */
 yagi.on('channelCreate', (channel) => {
   try {
-    insertNewChannel(channel);
+    if(channel.type !== 'dm'){
+      insertNewChannel(channel);
+    }
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -153,6 +154,16 @@ yagi.on('guildMemberRemove', (member) => {
  */
 yagi.on('message', async (message) => {
   if (message.author.bot) return; //Ignore messages made by yagi
+  //Let users know that they can only use this in channels; sends sent_from_dm data to mixpanel to see if there's adoption for private messaging
+  if (message.channel.type === 'dm'){
+    const guildDM = {
+      id: 'sent_from_dm',
+      name: 'Sent From DM'
+    }
+    message.channel.send('My bad! I only work in server channels ( ≧Д≦)');
+    sendMixpanelEvent(message.author, message.channel, guildDM, '', mixpanel);
+  }
+
   const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
 
   try {
