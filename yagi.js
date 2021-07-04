@@ -217,7 +217,11 @@ const sendMixpanelEvent = (user, channel, guild, command, client) => {
     guild: guild.name,
     guild_id: guild.id
   })
-  console.log(user);
-  console.log(user.createdAt);
-  console.log(user.createdAt.toISOString());
+  client.people.set(user.id, {
+    $name: user.username,
+    $created: user.createdAt.toISOString(),
+    tag: user.tag,
+    guild: guild.name,
+    guild_id: guild.id
+  })
 }
