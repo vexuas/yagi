@@ -114,28 +114,32 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
      */
     return {
       nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss A'),
-      countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime)
+      countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
+      accurate: true
     };
   } else if (countdownValidity >= 0) {
     //normal timer (12am - 7:59pm server time) with updated sheet
     //Countdown still counting down
     return {
       nextSpawn: worldBossData.nextSpawn,
-      countdown: formatCountdown(nextSpawnDate, serverTime)
+      countdown: formatCountdown(nextSpawnDate, serverTime),
+      accurate: false
     };
   } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
     //late night timer; servertime is over 8pm and sheet is updated
     //+1 day to current nextSpawnDate
     return {
       nextSpawn: worldBossData.nextSpawn,
-      countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime)
+      countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
+      accurate: true
     };
   } else if (countdownValidity < 0) {
     //Edge case - no editor updated sheet for both normal and late night flow
     //+4 hours to current nextSpawnDate
     return {
       nextSpawn: format(addHours(nextSpawnDate, 4), 'h:mm:ss A'),
-      countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime)
+      countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
+      accurate: false
     };
   }
 };
