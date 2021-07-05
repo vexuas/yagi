@@ -176,6 +176,9 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
       url:
         'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
     },
+    footer: {
+      text: `**Note that sheet data isn't up to date, timer might be a couple of minutes off`
+    },
     fields: [
       {
         name: 'Location',

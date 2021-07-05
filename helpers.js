@@ -139,11 +139,11 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
         value: guild.name,
         inline: true,
       },
-      // {
-      //   name: 'Owner',
-      //   value: guild.owner.user.tag,
-      //   inline: true,
-      // },
+      {
+        name: 'Owner',
+        value: guild.members.fetch(guild.ownerID).then(guildMember => guildMember.user.tag),
+        inline: true,
+      },
       {
         name: 'Members',
         value: guild.memberCount,
