@@ -110,7 +110,7 @@ const formatLocation = function formatRawLocationDataIntoFullMapAndChannel(rawLo
  * Server Embed for when bot joining and leaving a server
  * Add iconURL logic to always return a png extension
  */
-const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
+const serverEmbed = async function designOfEmbedForShowingYagiJoiningAndLeavingServer(
   yagi,
   guild,
   status
@@ -136,23 +136,22 @@ const serverEmbed = function designOfEmbedForShowingYagiJoiningAndLeavingServer(
     fields: [
       {
         name: 'Name',
-        value: guild.name,
-        inline: true,
+        value: guild.name
       },
-      // {
-      //   name: 'Owner',
-      //   value: guild.owner.user.tag,
-      //   inline: true,
-      // },
+      {
+        name: 'Owner',
+        value: await guild.members.fetch(guild.ownerID).then(guildMember => guildMember.user.tag),
+        inline: true
+      },
       {
         name: 'Members',
         value: guild.memberCount,
-        inline: true,
+        inline: true
       },
       {
         name: 'Region',
         value: capitalize(guild.region),
-        inline: true,
+        inline: true
       },
     ],
   };
@@ -213,8 +212,8 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
  * @param client - initialising discord client
  * @param guild  - guild data
  */
-const sendGuildUpdateNotification = (client, guild) => {
-  const embed = serverEmbed(client, guild, 'join');
+const sendGuildUpdateNotification = async (client, guild, type) => {
+  const embed = await serverEmbed(client, guild, type);
   const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
   const channelToSend = client.channels.cache.get(channelId);
   

@@ -45,8 +45,9 @@ yagi.once('ready', () => {
       console.log(user.username);
     });
     yagi.guilds.cache.forEach((guild) => {
-      console.log(`${guild.name} - ${guild.region} : ${guild.memberCount}`);
+      guild.members.fetch(guild.ownerID).then(guildMember => console.log(`${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`))
     });
+
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
      * Initialise Database and its tables
@@ -113,7 +114,7 @@ yagi.on('guildCreate', (guild) => {
     guild.channels.cache.forEach(channel => {
       insertNewChannel(channel);
     })
-    sendGuildUpdateNotification(yagi, guild);
+    sendGuildUpdateNotification(yagi, guild, 'join');
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -122,7 +123,7 @@ yagi.on('guildDelete', (guild) => {
   try {
     deleteGuild(guild);
     deleteAllChannels(guild);
-    sendGuildUpdateNotification(yagi, guild);
+    sendGuildUpdateNotification(yagi, guild, 'leave');
   } catch(e){
     sendErrorLog(yagi, e);
   }

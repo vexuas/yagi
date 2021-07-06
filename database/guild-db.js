@@ -32,7 +32,7 @@ const createGuildTable = (database, guilds, client) => {
             if(err){
               console.log(err);
             }
-            sendGuildUpdateNotification(client, guild);
+            sendGuildUpdateNotification(client, guild, 'join');
           })
         }
       })
