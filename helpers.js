@@ -212,8 +212,8 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
  * @param client - initialising discord client
  * @param guild  - guild data
  */
-const sendGuildUpdateNotification = async (client, guild) => {
-  const embed = await serverEmbed(client, guild, 'join');
+const sendGuildUpdateNotification = async (client, guild, type) => {
+  const embed = await serverEmbed(client, guild, type);
   const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
   const channelToSend = client.channels.cache.get(channelId);
   

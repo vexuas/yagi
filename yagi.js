@@ -114,7 +114,7 @@ yagi.on('guildCreate', (guild) => {
     guild.channels.cache.forEach(channel => {
       insertNewChannel(channel);
     })
-    sendGuildUpdateNotification(yagi, guild);
+    sendGuildUpdateNotification(yagi, guild, 'join');
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -123,7 +123,7 @@ yagi.on('guildDelete', (guild) => {
   try {
     deleteGuild(guild);
     deleteAllChannels(guild);
-    sendGuildUpdateNotification(yagi, guild);
+    sendGuildUpdateNotification(yagi, guild, 'leave');
   } catch(e){
     sendErrorLog(yagi, e);
   }
