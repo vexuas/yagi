@@ -115,7 +115,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss A'),
       countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
-      accurate: true
+      accurate: false
     };
   } else if (countdownValidity >= 0) {
     //normal timer (12am - 7:59pm server time) with updated sheet
@@ -123,7 +123,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: worldBossData.nextSpawn,
       countdown: formatCountdown(nextSpawnDate, serverTime),
-      accurate: false
+      accurate: true
     };
   } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
     //late night timer; servertime is over 8pm and sheet is updated
@@ -160,6 +160,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
     validateSpawn(worldBossData, getServerTime()).nextSpawn
   }${grvAcnt}`;
+  const spawnFooter = validateSpawn(worldBossData, getServerTime()).accurate ? '' : `**Note that sheet data isn't up to date, timer might be a couple of minutes off`;
   /** 
    * This is far easier to get countdown but it isn't as reliable and accurate
    * I'll just leave it here for reference
@@ -177,7 +178,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
         'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
     },
     footer: {
-      text: `**Note that sheet data isn't up to date, timer might be a couple of minutes off`
+      text: spawnFooter
     },
     fields: [
       {
