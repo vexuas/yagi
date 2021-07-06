@@ -240,9 +240,7 @@ const sendErrorLog = (client, error) => {
  * UUID randomize generator
  */
 const generateUUID = () => {
-  const uuid = uuidv4();
-  console.log(uuid);
-  return uuid;
+  return uuidv4();
 }
 //----------
 module.exports = {

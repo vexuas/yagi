@@ -35,7 +35,6 @@ initialize();
  */
 yagi.once('ready', () => {
   try {
-    generateUUID();
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     console.log("I'm ready! (◕ᴗ◕✿)");
@@ -46,8 +45,15 @@ yagi.once('ready', () => {
       console.log(user.username);
     });
     yagi.guilds.cache.forEach((guild) => {
-      guild.members.fetch(guild.ownerID).then(guildMember => console.log(`${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`))
+      guild.members.fetch(guild.ownerID).then(guildMember => console.log(`Guild: ${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`))
     });
+    yagi.guilds.cache.forEach(guild => {
+      guild.roles.cache.forEach(role => {
+        guild.members.fetch().then(members => {
+          console.log(`Role: ${role.name} : ${guild.name} : ${role.members.size}`);
+        }) 
+      })
+    })
 
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
