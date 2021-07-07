@@ -7,7 +7,7 @@ const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
-const { createRoleTable } = require('./database/role-db.js');
+const { createRoleTable, insertNewRole, deleteRole } = require('./database/role-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -160,7 +160,9 @@ yagi.on('guildMemberRemove', (member) => {
     sendErrorLog(yagi, e);
   }
 })
-//-----
+//------
+
+//------
 /**
  * Event handler for when a message is sent in a channel that yagi is in
  */

@@ -47,7 +47,35 @@ const createRoleTable = async (database, guilds, client) => {
     })
   })
 }
+const insertNewRole = (role) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run('INSERT INTO Role (uuid, role_id, name, created_at, member_count, color, guild_id, used_for_reminder, reminder_id) VALUES ($uuid, $role_id, $name, $created_at, $member_count, $color, $guild_id, $used_for_reminder, $reminder_id)', {
+    $uuid: generateUUID(),
+    $role_id: role.id,
+    $name: role.name,
+    $created_at: role.createdAt,
+    $member_count: role.members.size,
+    $color: role.hexColor,
+    $guild_id: guild.id,
+    $used_for_reminder: false,
+    $reminder_id: null
+  }, err => {
+    if(error){
+      console.log(err);
+    }
+  })
+}
+const deleteRole = (role) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
+    if(err){
+      console.log(err);
+    }
+  })
+}
 
 module.exports = {
-  createRoleTable
+  createRoleTable,
+  insertNewRole,
+  deleteRole
 }
