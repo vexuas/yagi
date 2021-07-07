@@ -56,11 +56,12 @@ const insertNewRole = (role) => {
     $created_at: role.createdAt,
     $member_count: role.members.size,
     $color: role.hexColor,
-    $guild_id: guild.id,
+    $guild_id: role.guild.id,
     $used_for_reminder: false,
     $reminder_id: null
   }, err => {
-    if(error){
+    console.log('inserted role');
+    if(err){
       console.log(err);
     }
   })
@@ -68,6 +69,7 @@ const insertNewRole = (role) => {
 const deleteRole = (role) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
+    console.log('deleted role');
     if(err){
       console.log(err);
     }

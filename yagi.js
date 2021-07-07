@@ -161,7 +161,20 @@ yagi.on('guildMemberRemove', (member) => {
   }
 })
 //------
-
+yagi.on('roleCreate', (role) => {
+  try {
+    insertNewRole(role);
+  } catch (e){
+    sendErrorLog(yagi, e)
+  }
+})
+yagi.on('roleDelete', (role) => {
+  try {
+    deleteRole(role);
+  } catch (e){
+    sendErrorLog(yagi, e)
+  }
+})
 //------
 /**
  * Event handler for when a message is sent in a channel that yagi is in
