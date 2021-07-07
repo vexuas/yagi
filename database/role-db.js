@@ -47,6 +47,10 @@ const createRoleTable = async (database, guilds, client) => {
     })
   })
 }
+/**
+ * Adds new role to Role Table
+ * @param role - newly role created
+ */
 const insertNewRole = (role) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run('INSERT INTO Role (uuid, role_id, name, created_at, member_count, color, guild_id, used_for_reminder, reminder_id) VALUES ($uuid, $role_id, $name, $created_at, $member_count, $color, $guild_id, $used_for_reminder, $reminder_id)', {
@@ -60,16 +64,31 @@ const insertNewRole = (role) => {
     $used_for_reminder: false,
     $reminder_id: null
   }, err => {
-    console.log('inserted role');
     if(err){
       console.log(err);
     }
   })
 }
+/**
+ * Deletes crole from Role table
+ * @param role - role that has been deleted
+ */
 const deleteRole = (role) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
-    console.log('deleted role');
+    if(err){
+      console.log(err);
+    }
+  })
+}
+/**
+ * Updates data of existing role with new details in database
+ * Only setting name and color as these are the only parameters we're saving in our database that can be edited by a user
+ * @param role - new updated details of role 
+ */
+const updateRole = (role) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`UPDATE Role SET name = "${role.name}", color = "${role.hexColor}" WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
     if(err){
       console.log(err);
     }
@@ -79,5 +98,6 @@ const deleteRole = (role) => {
 module.exports = {
   createRoleTable,
   insertNewRole,
-  deleteRole
+  deleteRole,
+  updateRole
 }

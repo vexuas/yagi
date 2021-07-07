@@ -7,7 +7,7 @@ const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
-const { createRoleTable, insertNewRole, deleteRole } = require('./database/role-db.js');
+const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -164,14 +164,22 @@ yagi.on('guildMemberRemove', (member) => {
 yagi.on('roleCreate', (role) => {
   try {
     insertNewRole(role);
-  } catch (e){
+  } catch(e){
     sendErrorLog(yagi, e)
   }
 })
 yagi.on('roleDelete', (role) => {
   try {
     deleteRole(role);
-  } catch (e){
+  } catch(e){
+    sendErrorLog(yagi, e)
+  }
+})
+yagi.on('roleUpdate', (_, newRole) => {
+  try {
+    updateRole(newRole);
+  }
+  catch(e){
     sendErrorLog(yagi, e)
   }
 })
