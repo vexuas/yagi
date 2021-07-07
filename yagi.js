@@ -4,9 +4,10 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, generateUUID } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
+const { createRoleTable } = require('./database/role-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -39,19 +40,21 @@ yagi.once('ready', () => {
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     console.log("I'm ready! (◕ᴗ◕✿)");
     /**
-     * Displays people and guilds using yagi
+     * Displays people and guilds using yagi along with roles inside guilds
      */
-    yagi.users.cache.forEach((user) => {
-      console.log(user.username);
-    });
-    yagi.guilds.cache.forEach((guild) => {
-      guild.members.fetch(guild.ownerID).then(guildMember => console.log(`Guild: ${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`))
-    });
     yagi.guilds.cache.forEach(guild => {
+      guild.members.fetch(guild.ownerID).then(guildMember => {
+        console.log(`Guild: ${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`)
+      })
       guild.roles.cache.forEach(role => {
         guild.members.fetch().then(members => {
-          console.log(`Role: ${role.name} : ${guild.name} : ${role.members.size}`);
+          console.log(`Role: ${role.name} : ${guild.name} : ${role.members.size} : ${role.hexColor}`);
         }) 
+      })
+      guild.members.fetch().then(members => {
+        members.forEach(member => {
+          console.log(`Member: ${member.user.username} : ${guild.name}`);
+        })
       })
     })
 
@@ -64,6 +67,7 @@ yagi.once('ready', () => {
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
+    createRoleTable(yagiDatabase, yagi.guilds.cache);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
