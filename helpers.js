@@ -10,6 +10,7 @@ const {
   subHours,
   subMinutes,
 } = require('date-fns');
+const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
 const grvAcnt = '`';
 
@@ -235,6 +236,13 @@ const sendErrorLog = (client, error) => {
   logChannel.send(error.message);
 }
 //----------
+/**
+ * UUID randomize generator
+ */
+const generateUUID = () => {
+  return uuidv4();
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -244,5 +252,6 @@ module.exports = {
   capitalize,
   checkIfInDevelopment,
   sendGuildUpdateNotification,
-  sendErrorLog
+  sendErrorLog,
+  generateUUID
 };

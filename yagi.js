@@ -7,6 +7,7 @@ const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
+const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -39,14 +40,23 @@ yagi.once('ready', () => {
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     console.log("I'm ready! (◕ᴗ◕✿)");
     /**
-     * Displays people and guilds using yagi
+     * Displays people and guilds using yagi along with roles inside guilds
      */
-    yagi.users.cache.forEach((user) => {
-      console.log(user.username);
-    });
-    yagi.guilds.cache.forEach((guild) => {
-      guild.members.fetch(guild.ownerID).then(guildMember => console.log(`${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`))
-    });
+    yagi.guilds.cache.forEach(guild => {
+      guild.members.fetch(guild.ownerID).then(guildMember => {
+        console.log(`Guild: ${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`)
+      })
+      guild.roles.cache.forEach(role => {
+        guild.members.fetch().then(members => {
+          console.log(`Role: ${role.name} : ${guild.name} : ${role.members.size} : ${role.hexColor}`);
+        }) 
+      })
+      guild.members.fetch().then(members => {
+        members.forEach(member => {
+          console.log(`Member: ${member.user.username} : ${guild.name}`);
+        })
+      })
+    })
 
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
@@ -57,6 +67,7 @@ yagi.once('ready', () => {
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
+    createRoleTable(yagiDatabase, yagi.guilds.cache);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -149,7 +160,37 @@ yagi.on('guildMemberRemove', (member) => {
     sendErrorLog(yagi, e);
   }
 })
-//-----
+//------
+/**
+ * Event handlers for when a role in a guild where yagi is in gets created, deleted and updated
+ * A bit overkill to store these since all that's needed is the roles that are used for reminders but might as well just store everything
+ * roleCreate - called when a role is created in a server
+ * roleDelete - called when a role is deleted in a server
+ * roleUpdate - called when updating details (e.g. name change, color change) in a server
+ */
+yagi.on('roleCreate', (role) => {
+  try {
+    insertNewRole(role);
+  } catch(e){
+    sendErrorLog(yagi, e)
+  }
+})
+yagi.on('roleDelete', (role) => {
+  try {
+    deleteRole(role);
+  } catch(e){
+    sendErrorLog(yagi, e)
+  }
+})
+yagi.on('roleUpdate', (_, newRole) => {
+  try {
+    updateRole(newRole);
+  }
+  catch(e){
+    sendErrorLog(yagi, e)
+  }
+})
+//------
 /**
  * Event handler for when a message is sent in a channel that yagi is in
  */

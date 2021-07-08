@@ -11,6 +11,7 @@ module.exports = {
   // ----------
 
   // Reminder
+  remind: require('./commands/reminder/remind'),
   // ----------
   // Dev Tools
   daylights: require('./commands/developer/daylights'),
