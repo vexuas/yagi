@@ -161,6 +161,13 @@ yagi.on('guildMemberRemove', (member) => {
   }
 })
 //------
+/**
+ * Event handlers for when a role in a guild where yagi is in gets created, deleted and updated
+ * A bit overkill to store these since all that's needed is the roles that are used for reminders but might as well just store everything
+ * roleCreate - called when a role is created in a server
+ * roleDelete - called when a role is deleted in a server
+ * roleUpdate - called when updating details (e.g. name change, color change) in a server
+ */
 yagi.on('roleCreate', (role) => {
   try {
     insertNewRole(role);
