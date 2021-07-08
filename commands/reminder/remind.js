@@ -1,5 +1,3 @@
-const { hasArguments } = require("../developer/psa")
-
 const reminderInstructions = () => {
   const embed ={
     "description": "Personal reminder to notify you when world boss is spawning soon.\nCan only be activated in one channel per server by an admin.\n\n",
@@ -31,7 +29,18 @@ module.exports = {
   description : 'Activates a reminder inside a channel that pings users when world boss is spawning soon',
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix){
-    const embed = reminderInstructions();
-    message.channel.send({ embed });
+    if(arguments){
+      switch (arguments) {
+        case 'enable':
+          return message.channel.send('Reminder enabled!');
+        case 'disable':
+          return message.channel.send('Reminder disabled!');
+        default:
+          return message.channel.send('Only accepts `enable` or `disable` as arguments');
+      }
+    } else {
+      const embed = reminderInstructions();
+      message.channel.send({ embed });
+    }
   }
 }
