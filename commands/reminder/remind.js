@@ -1,4 +1,4 @@
-const { insertNewReminder } = require('../../database/reminder-db');
+const { insertNewReminder, disableReminder } = require('../../database/reminder-db');
 
 const reminderInstructions = () => {
   const embed ={
@@ -31,13 +31,13 @@ module.exports = {
   description : 'Activates a reminder inside a channel that pings users when world boss is spawning soon',
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix){
-    console.log(message);
     if(arguments){
       switch (arguments) {
         case 'enable':
           insertNewReminder(message);
           return message.channel.send('Reminder enabled!');
         case 'disable':
+          disableReminder(message);
           return message.channel.send('Reminder disabled!');
         default:
           return message.channel.send('Only accepts `enable` or `disable` as arguments');
