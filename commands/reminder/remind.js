@@ -1,4 +1,4 @@
-const { insertNewReminder, disableReminder } = require('../../database/reminder-db');
+const { insertNewReminder, disableReminder, enableReminder } = require('../../database/reminder-db');
 
 const reminderInstructions = () => {
   const embed ={
@@ -34,8 +34,7 @@ module.exports = {
     if(arguments){
       switch (arguments) {
         case 'enable':
-          insertNewReminder(message);
-          return message.channel.send('Reminder enabled!');
+          return enableReminder(message);
         case 'disable':
           disableReminder(message);
           return message.channel.send('Reminder disabled!');
