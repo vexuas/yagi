@@ -36,8 +36,7 @@ module.exports = {
         case 'enable':
           return enableReminder(message);
         case 'disable':
-          disableReminder(message);
-          return message.channel.send('Reminder disabled!');
+          return disableReminder(message);
         default:
           return message.channel.send('Only accepts `enable` or `disable` as arguments');
       }

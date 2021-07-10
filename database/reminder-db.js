@@ -30,7 +30,7 @@ const enableReminder = (message, reminder) => {
       }
       if(row){
         if(row.enabled === 1){
-          message.channel.send("Already enabled");
+          message.channel.send("Already enabled!");
         } else {
           database.run(`UPDATE Reminder SET enabled = ${true}, enabled_by = "${message.author.id}", enabled_at = ${Date.now()} WHERE uuid = "${row.uuid}"`, err => {
             if(err){
@@ -49,10 +49,26 @@ const enableReminder = (message, reminder) => {
 const disableReminder = (message, reminder) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
-  database.run(`UPDATE Reminder SET enabled = ${false}, disabled_by = "${message.author.id}", disabled_at = ${Date.now()} WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, err => {
-    if(err){
-      console.log(err);
-    }
+  database.serialize(() => {
+    database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, row) => {
+      if(error){
+        console.log(error);
+      }
+      if(row){
+        if(row.enabled === 0){
+          message.channel.send('This channel does not have reminders enabled!');
+        } else {
+          database.run(`UPDATE Reminder SET enabled = ${false}, disabled_by = "${message.author.id}", disabled_at = ${Date.now()} WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, err => {
+            if(err){
+              console.log(err);
+            }
+            message.channel.send('Reminder disabled!');
+          })
+        }
+      } else {
+        message.channel.send('This channel does not have reminders enabled!');
+      }
+    })
   })
 }
 module.exports = {
