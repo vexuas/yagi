@@ -31,12 +31,13 @@ module.exports = {
   description : 'Activates a reminder inside a channel that pings users when world boss is spawning soon',
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix){
+    const isAdmin = message.member.hasPermission("ADMINISTRATOR");
     if(arguments){
       switch (arguments) {
         case 'enable':
-          return enableReminder(message);
+          return isAdmin ? enableReminder(message) : message.channel.send('Reminders can only be enabled by an admin');
         case 'disable':
-          return disableReminder(message);
+          return isAdmin ? disableReminder(message) : message.channel.send('Reminders can only be disabled by an admin');
         default:
           return message.channel.send('Only accepts `enable` or `disable` as arguments');
       }
