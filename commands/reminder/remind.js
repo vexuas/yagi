@@ -1,4 +1,4 @@
-const { insertNewReminder, disableReminder, enableReminder } = require('../../database/reminder-db');
+const { disableReminder, enableReminder } = require('../../database/reminder-db');
 
 const reminderInstructions = () => {
   const embed ={
@@ -31,6 +31,12 @@ module.exports = {
   description : 'Activates a reminder inside a channel that pings users when world boss is spawning soon',
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix){
+    /**
+     * Accepts 1 argument which can either be 'enable' and 'disable' which fires the relevant functions
+     * If no argument is passed, a reminder instruction function is displayed
+     * To prevent channel spam and abuse, enabling/disabling reminders can only be used by admins
+     * For documentation of functions see reminder-db file
+     */
     const isAdmin = message.member.hasPermission("ADMINISTRATOR");
     if(arguments){
       switch (arguments) {
