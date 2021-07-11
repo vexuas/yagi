@@ -8,6 +8,7 @@ const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = requ
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
+const { createReminderTable } = require('./database/reminder-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -68,6 +69,7 @@ yagi.once('ready', () => {
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
     createRoleTable(yagiDatabase, yagi.guilds.cache);
+    createReminderTable(yagiDatabase);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
