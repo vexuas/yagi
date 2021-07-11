@@ -58,6 +58,11 @@ const enableReminder = (message) => {
         if(reminder.enabled === 1){
           message.channel.send("Already enabled!");
         } else {
+          /**
+           * Additional call to the Role Table to check if the role associated with the reminder still exists and hasn't been deleted
+           * If it does exist, we don't do anything and update the reminder to its enable state
+           * If it has been deleted, we call the createReminderRole to create a new role and link it with the reminder before updating it to its enable state
+           */
           database.serialize(() => {
             database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (err, role) => {
               if(err){
