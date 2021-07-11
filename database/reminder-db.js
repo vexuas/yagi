@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3').verbose();
 const { generateUUID } = require('../helpers');
+const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -11,23 +12,31 @@ const createReminderTable = (database) => {
 }
 /**
  * Adds new reminder to Reminder Table
+ * After creating the reminder, the createReminderRole function gets called to create the role used by yagi to ping users
  * @param message - message data object; taken from the on('message') event hook
  */
 const insertNewReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-
-  database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_id, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_id, $channel_id, $guild_id)', {
-    $uuid: generateUUID(),
-    $created_at: new Date(),
-    $enabled: true,
-    $enabled_by: message.author.id,
-    $enabled_at: new Date(),
-    $disabled_by: null,
-    $disabled_at: null,
-    $type: 'channel',
-    $role_id: null,
-    $channel_id: message.channel.id,
-    $guild_id: message.guild.id
+  const reminderUUID = generateUUID();
+  database.serialize(() => {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_id, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_id, $channel_id, $guild_id)', {
+      $uuid: reminderUUID,
+      $created_at: new Date(),
+      $enabled: true,
+      $enabled_by: message.author.id,
+      $enabled_at: new Date(),
+      $disabled_by: null,
+      $disabled_at: null,
+      $type: 'channel',
+      $role_id: null,
+      $channel_id: message.channel.id,
+      $guild_id: message.guild.id
+    }, err => {
+      if(err){
+        console.log(err);
+      }
+    })
+    createReminderRole(message.guild, reminderUUID);
   })
 }
 /**

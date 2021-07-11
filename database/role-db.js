@@ -94,10 +94,36 @@ const updateRole = (role) => {
     }
   })
 }
-
+/**
+ * Create role to be used by yagi for reminders
+ * Uses update instead of inserting new row in table as the roleCreate event when creating a the new role
+ * To prevent duplicate roles from being inserted into the table, we update the created role from the insertNewRole function with the relevant data
+ * @param guild - current guild object; needed to create a role
+ * @param reminderID - reminder id
+ */
+const createReminderRole = async (guild, reminderID) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  try {
+    const reminderRole = await guild.roles.create({
+      data: {
+        name: 'Goat Hunters',
+        color: '#68d5e9'
+      },
+      reason: 'Role to be used by Yagi for automated reminders for Vulture Vale/Blizzard Berg World Boss'
+    })
+    database.run(`UPDATE Role SET reminder_id = "${reminderID}", used_for_reminder = ${true} WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, err => {
+      if(err){
+        console.log(err);
+      }
+    })
+  } catch(e){
+    console.log(e);
+  }
+}
 module.exports = {
   createRoleTable,
   insertNewRole,
   deleteRole,
-  updateRole
+  updateRole,
+  createReminderRole
 }
