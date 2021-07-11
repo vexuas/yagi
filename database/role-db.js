@@ -111,10 +111,26 @@ const createReminderRole = async (guild, reminderID) => {
       },
       reason: 'Role to be used by Yagi for automated reminders for Vulture Vale/Blizzard Berg World Boss'
     })
-    database.run(`UPDATE Role SET reminder_id = "${reminderID}", used_for_reminder = ${true} WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, err => {
-      if(err){
-        console.log(err);
-      }
+    database.serialize(() => {
+      database.get(`SELECT * FROM Role WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, (error, row) => {
+        if(error){
+          console.log(error);
+        }
+        if(row){
+          //Update reminder role with relevant data
+          database.run(`UPDATE Role SET reminder_id = "${reminderID}", used_for_reminder = ${true} WHERE uuid = "${row.uuid}"`, err => {
+            if(err){
+              console.log(err);
+            }
+          })
+          //Update Reminder with created role
+          database.run(`UPDATE Reminder SET role_uuid = "${row.uuid}" where uuid = "${reminderID}"`, err => {
+            if(err){
+              console.log(err);
+            }
+          })
+        }
+      })
     })
   } catch(e){
     console.log(e);

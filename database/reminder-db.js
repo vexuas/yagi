@@ -8,7 +8,7 @@ const { createReminderRole } = require('./role-db');
  * @param database - yagi database
  */
 const createReminderTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_id TEXT, channel_id TEXT, guild_id TEXT)');
+  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT)');
 }
 /**
  * Adds new reminder to Reminder Table
@@ -19,7 +19,7 @@ const insertNewReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   const reminderUUID = generateUUID();
   database.serialize(() => {
-    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_id, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_id, $channel_id, $guild_id)', {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
       $uuid: reminderUUID,
       $created_at: new Date(),
       $enabled: true,
@@ -28,7 +28,7 @@ const insertNewReminder = (message) => {
       $disabled_by: null,
       $disabled_at: null,
       $type: 'channel',
-      $role_id: null,
+      $role_uuid: null,
       $channel_id: message.channel.id,
       $guild_id: message.guild.id
     }, err => {
