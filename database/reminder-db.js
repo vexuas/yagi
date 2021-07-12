@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3').verbose();
 const { generateUUID } = require('../helpers');
+const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -7,27 +8,35 @@ const { generateUUID } = require('../helpers');
  * @param database - yagi database
  */
 const createReminderTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_id TEXT, channel_id TEXT, guild_id TEXT)');
+  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT)');
 }
 /**
  * Adds new reminder to Reminder Table
+ * After creating the reminder, the createReminderRole function gets called to create the role used by yagi to ping users
  * @param message - message data object; taken from the on('message') event hook
  */
 const insertNewReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-
-  database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_id, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_id, $channel_id, $guild_id)', {
-    $uuid: generateUUID(),
-    $created_at: new Date(),
-    $enabled: true,
-    $enabled_by: message.author.id,
-    $enabled_at: new Date(),
-    $disabled_by: null,
-    $disabled_at: null,
-    $type: 'channel',
-    $role_id: null,
-    $channel_id: message.channel.id,
-    $guild_id: message.guild.id
+  const reminderUUID = generateUUID();
+  database.serialize(() => {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
+      $uuid: reminderUUID,
+      $created_at: new Date(),
+      $enabled: true,
+      $enabled_by: message.author.id,
+      $enabled_at: new Date(),
+      $disabled_by: null,
+      $disabled_at: null,
+      $type: 'channel',
+      $role_uuid: null,
+      $channel_id: message.channel.id,
+      $guild_id: message.guild.id
+    }, err => {
+      if(err){
+        console.log(err);
+      }
+    })
+    createReminderRole(message.guild, reminderUUID);
   })
 }
 /**
@@ -39,22 +48,37 @@ const enableReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
-    database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, row) => {
+    database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, reminder) => {
       if(error){
         console.log(error);
       }
       //Checks if it's an existing reminder
-      if(row){
+      if(reminder){
         //If it is, checks if the reminder is enabled
-        if(row.enabled === 1){
+        if(reminder.enabled === 1){
           message.channel.send("Already enabled!");
         } else {
-          //Updates the reminder to enabled with relevant data
-          database.run(`UPDATE Reminder SET enabled = ${true}, enabled_by = "${message.author.id}", enabled_at = ${Date.now()} WHERE uuid = "${row.uuid}"`, err => {
-            if(err){
-              console.log(err);
-            }
-            message.channel.send('Reminder enabled!');
+          /**
+           * Additional call to the Role Table to check if the role associated with the reminder still exists and hasn't been deleted
+           * If it does exist, we don't do anything and update the reminder to its enable state
+           * If it has been deleted, we call the createReminderRole to create a new role and link it with the reminder before updating it to its enable state
+           */
+          database.serialize(() => {
+            database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (err, role) => {
+              if(err){
+                console.log(err);
+              }
+              if(!role){
+                createReminderRole(message.guild, reminder.uuid);
+              }
+            })
+            //Updates the reminder to enabled with relevant data
+            database.run(`UPDATE Reminder SET enabled = ${true}, enabled_by = "${message.author.id}", enabled_at = ${Date.now()} WHERE uuid = "${reminder.uuid}"`, err => {
+              if(err){
+                console.log(err);
+              }
+              message.channel.send('Reminder enabled!');
+            })
           })
         }
       } else {
