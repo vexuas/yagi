@@ -35,6 +35,9 @@ const insertNewReminder = (message) => {
       if(err){
         console.log(err);
       }
+      /**
+       * Wrote an individual embed instead of using the function for better readability
+       */
       const embed = {
         title: "Reminder Enabled!",
         description: "I will notify you in this channel before world boss spawns!",
@@ -46,6 +49,7 @@ const insertNewReminder = (message) => {
   })
 }
 /**
+ * **REFACTOR: Make it more easily readable**
  * Function in charge of enabling reminders
  * Either updates an existing reminder when it's disabled or calls the insertNewReminder function if it's a brand new reminder
  * @param message - message data object; taken from the on('message') event hook
@@ -54,6 +58,13 @@ const enableReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
+    /**
+     * To lessen the amount of ping spam that might arise when enabling multiple channels within a guild to have reminders, I've decided to only limit the amount of active reminders to 1 at a time
+     * Wrapped the enabling functions with an outer check of the database if there are any reminders that are active inside the server
+     * If there is already, we send an embed notifying them there is already an active reminder
+     * If there isn't, we then have an additional check to see if the channel they are in is already in our database
+     * We update the data to its enabled state if it exists, create a new reminder in the database if it doesn't
+     */
     database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND enabled = ${true}`, (error, enabledReminder) => {
       if(error){
         console.log(error);
