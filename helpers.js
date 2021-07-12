@@ -12,6 +12,7 @@ const {
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
+const sqlite = require('sqlite3').verbose();
 const grvAcnt = '`';
 
 //----------
@@ -247,9 +248,9 @@ const generateUUID = () => {
  * Embed design used when disabling reminders
  * First checks if message was sent in the reminder-enabled channel and if reminder even exists
  * If it does, we check if it the reminder is enabled and send an embed notifying the reminder has been disabled
- * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminder in the channel
+ * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
  * @param message - message data object
- * @param message - reminder to be disabled 
+ * @param reminder - reminder to be disabled 
  */
 const disableReminderEmbed = (message, reminder) => {
   let embed;
@@ -269,6 +270,14 @@ const disableReminderEmbed = (message, reminder) => {
   }
   return embed;
 }
+/**
+ * Embed design used when enabling reminders
+ * First checks if message was sent in the reminder-enabled channel and if reminder even exists
+ * If it does, we check if it the reminder is disabled and send an embed notifying the reminder has been enabled
+ * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
+ * @param message - message data object
+ * @param reminder - reminder to be disabled  
+ */
 const enableReminderEmbed = (message, reminder) => {
   let embed;
   const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;

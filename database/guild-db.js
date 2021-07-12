@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3').verbose();
-const { sendGuildUpdateNotification } = require('../helpers');
+const { sendGuildUpdateNotification} = require('../helpers');
+const { defaultPrefix } = require('../config/yagi.json');
 
 /**
  * Creates Guild table inside the Yagi Database
@@ -12,7 +13,7 @@ const createGuildTable = (database, guilds, client) => {
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => { 
     //Creates Guild Table with the relevant columns if it does not exist
-    database.run('CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, region TEXT NOT NULL, owner_id TEXT NOT NULL)');
+    database.run('CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, region TEXT NOT NULL, owner_id TEXT NOT NULL, prefix TEXT NOT NULL)');
     
     //Populate Guild Table with existing guilds
     guilds.forEach(guild => {
@@ -22,12 +23,13 @@ const createGuildTable = (database, guilds, client) => {
         }
         //Only runs statement and insert into guild table if the guild hasn't been created yet
         if(!row){
-          database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
+          database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id, prefix) VALUES ($uuid, $name, $member_count, $region, $owner_id, $prefix)', {
             $uuid: guild.id,
             $name: guild.name,
             $member_count: guild.memberCount,
             $region: guild.region,
-            $owner_id: guild.ownerID
+            $owner_id: guild.ownerID,
+            $prefix: defaultPrefix
           }, err => {
             if(err){
               console.log(err);
@@ -45,12 +47,13 @@ const createGuildTable = (database, guilds, client) => {
  */
 const insertNewGuild = (guild) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id) VALUES ($uuid, $name, $member_count, $region, $owner_id)', {
+  database.run('INSERT INTO Guild (uuid, name, member_count, region, owner_id, prefix) VALUES ($uuid, $name, $member_count, $region, $owner_id, $prefix)', {
     $uuid: guild.id,
     $name: guild.name,
     $member_count: guild.memberCount,
     $region: guild.region,
-    $owner_id: guild.ownerID
+    $owner_id: guild.ownerID,
+    $prefix: defaultPrefix
   }, err => {
     if(err){
       console.log(err);
