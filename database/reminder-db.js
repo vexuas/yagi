@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID } = require('../helpers');
+const { generateUUID, disableReminderEmbed } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
@@ -101,26 +101,27 @@ const disableReminder = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
-    database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, row) => {
+    database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, reminder) => {
       if(error){
         console.log(error);
       }
+      const embed = disableReminderEmbed(message, reminder);
       //Checks if it's an existing reminder
-      if(row){
+      if(reminder){
         //If it is, checks if reminder is disabled
-        if(row.enabled === 0){
-          message.channel.send('This channel does not have reminders enabled!');
+        if(reminder.enabled === 0){
+          message.channel.send({ embed });
         } else {
           //Updates the reminder to disabled with relevant data
           database.run(`UPDATE Reminder SET enabled = ${false}, disabled_by = "${message.author.id}", disabled_at = ${Date.now()} WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, err => {
             if(err){
               console.log(err);
             }
-            message.channel.send('Reminder disabled!');
+            message.channel.send({ embed });
           })
         }
       } else {
-        message.channel.send('This channel does not have reminders enabled!');
+        message.channel.send({ embed });
       }
     })
   })

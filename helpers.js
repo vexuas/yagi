@@ -243,6 +243,33 @@ const generateUUID = () => {
   return uuidv4();
 }
 //----------
+/**
+ * Embed design used when disabling reminders
+ * First checks if message was sent in the reminder-enabled channel and if reminder even exists
+ * If it does, we check if it the reminder is enabled and send an embed notifying the reminder has been disabled
+ * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminder in the channel
+ * @param message - message data object
+ * @param message - reminder to be disabled 
+ */
+const disableReminderEmbed = (message, reminder) => {
+  let embed;
+  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
+  if(sentInEnabledChannel && reminder.enabled === 1){
+    embed = {
+      title: "Reminder disabled!",
+      description: "I will no longer notify you in this channel",
+      color: 32896
+    }
+  } else {
+    embed = {
+      title: "Whoops!",
+      description: "There are no active reminders in this channel",
+      color: 32896
+    }
+  }
+  return embed;
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -253,5 +280,6 @@ module.exports = {
   checkIfInDevelopment,
   sendGuildUpdateNotification,
   sendErrorLog,
-  generateUUID
+  generateUUID,
+  disableReminderEmbed
 };
