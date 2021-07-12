@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
@@ -52,11 +52,12 @@ const enableReminder = (message) => {
       if(error){
         console.log(error);
       }
+      const embed = enableReminderEmbed(message, reminder);
       //Checks if it's an existing reminder
       if(reminder){
         //If it is, checks if the reminder is enabled
         if(reminder.enabled === 1){
-          message.channel.send("Already enabled!");
+          message.channel.send({ embed });
         } else {
           /**
            * Additional call to the Role Table to check if the role associated with the reminder still exists and hasn't been deleted
@@ -77,14 +78,14 @@ const enableReminder = (message) => {
               if(err){
                 console.log(err);
               }
-              message.channel.send('Reminder enabled!');
+              message.channel.send({ embed });
             })
           })
         }
       } else {
         //Creates a new reminder if it doesn't exist
         insertNewReminder(message);
-        message.channel.send('Reminder enabled!');
+        message.channel.send({ embed });
       }
     })
   })

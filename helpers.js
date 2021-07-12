@@ -258,12 +258,30 @@ const disableReminderEmbed = (message, reminder) => {
     embed = {
       title: "Reminder disabled!",
       description: "I will no longer notify you in this channel",
-      color: 32896
+      color: 16711680
     }
   } else {
     embed = {
       title: "Whoops!",
       description: "There are no active reminders in this channel",
+      color: 32896
+    }
+  }
+  return embed;
+}
+const enableReminderEmbed = (message, reminder) => {
+  let embed;
+  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
+  if(sentInEnabledChannel && reminder.enabled === 0) {
+    embed = {
+      title: "Reminder Enabled!",
+      description: "I will notify you in this channel before world boss spawns!",
+      color: 55296
+    }
+  } else {
+    embed = {
+      title: "Whoops!",
+      description: "There is already an active reminder in this server! To see the reminder information, type `$yagi-remind`",
       color: 32896
     }
   }
@@ -281,5 +299,6 @@ module.exports = {
   sendGuildUpdateNotification,
   sendErrorLog,
   generateUUID,
-  disableReminderEmbed
+  disableReminderEmbed,
+  enableReminderEmbed
 };
