@@ -206,6 +206,7 @@ yagi.on('message', async (message) => {
     }
     message.channel.send('My bad! I only work in server channels ( ≧Д≦)');
     sendMixpanelEvent(message.author, message.channel, guildDM, '', mixpanel);
+    return;
   }
 
   const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
