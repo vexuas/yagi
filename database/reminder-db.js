@@ -156,8 +156,13 @@ const sendReminderInformation = (message) => {
       console.log(error)
     }
     if(enabledReminder){
-      const embed = reminderDetails();
-      message.channel.send({ embed })
+      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`, (error, role) => {
+        if(error){
+          console.log(error);
+        }
+        const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
+        message.channel.send({ embed })
+      })
     } else {
       const embed = reminderInstructions();
       message.channel.send({ embed });

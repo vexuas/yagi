@@ -327,7 +327,7 @@ const reminderInstructions = () => {
   return embed;
 }
 //----------
-const reminderDetails = (role) => {
+const reminderDetails = (channel, role) => {
   const embed = {
     color: 32896,
     description: "Below are the details used for reminders. To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
@@ -338,12 +338,12 @@ const reminderDetails = (role) => {
     fields: [
       {
         name: "Active Channel",
-        value: "channel",
+        value: `<#${channel}>`,
         inline: true
       },
       {
         name: "Reminder Role",
-        value: "role",
+        value: `<@&${role}>`,
         inline: true
       }
     ]
