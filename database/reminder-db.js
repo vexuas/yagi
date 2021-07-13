@@ -1,6 +1,7 @@
 const sqlite = require('sqlite3').verbose();
 const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails } = require('../helpers');
 const { createReminderRole } = require('./role-db');
+const { insertNewReminderDetails } = require('./reminder-details-db');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -184,6 +185,7 @@ const sendReminderInformation = (message) => {
         const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
         const messageDetail = await message.channel.send({ embed })
         await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
+        insertNewReminderDetails(messageDetail, message.author);
       })
     } else {
       const embed = reminderInstructions();
