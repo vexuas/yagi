@@ -15,7 +15,24 @@ const insertNewReminderDetails = (message, user) => {
     $no_of_reactions: 0
   })
 }
+const cacheExistingReminderDetails = (guilds, client) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+
+  guilds.forEach(guild => {
+    guild.channels.cache.forEach(channel => {
+      database.each(`SELECT * FROM Reminder_Details WHERE channel_id = ${channel.id}`, async (error, detail) => {
+        if(error){
+          console.log(error);
+        }
+        if(detail){
+          await channel.messages.fetch(detail.uuid);
+        }
+      })
+    })
+  })
+}
 module.exports = {
   createReminderDetailsTable,
-  insertNewReminderDetails
+  insertNewReminderDetails,
+  cacheExistingReminderDetails
 }

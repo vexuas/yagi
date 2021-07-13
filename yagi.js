@@ -9,7 +9,7 @@ const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildM
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
-const { createReminderDetailsTable } = require('./database/reminder-details-db.js');
+const { createReminderDetailsTable, cacheExistingReminderDetails } = require('./database/reminder-details-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -59,7 +59,6 @@ yagi.once('ready', () => {
         })
       })
     })
-
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
      * Initialise Database and its tables
@@ -72,6 +71,7 @@ yagi.once('ready', () => {
     createRoleTable(yagiDatabase, yagi.guilds.cache);
     createReminderTable(yagiDatabase);
     createReminderDetailsTable(yagiDatabase);
+    cacheExistingReminderDetails(yagi.guilds.cache, yagi);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -199,7 +199,6 @@ yagi.on('roleUpdate', (_, newRole) => {
  * Event handlers for when a cached message gets reactions
  */
 yagi.on('messageReactionAdd', (reaction, user) => {
-  
   console.log(user.username);
   console.log(reaction.emoji.identifier);
   console.log(reaction.emoji.name);
