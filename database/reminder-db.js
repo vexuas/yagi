@@ -11,44 +11,6 @@ const createReminderTable = (database) => {
   database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT)');
 }
 /**
- * Adds new reminder to Reminder Table
- * After creating the reminder, the createReminderRole function gets called to create the role used by yagi to ping users
- * @param message - message data object; taken from the on('message') event hook
- */
-const insertNewReminder = (message) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  const reminderUUID = generateUUID();
-  database.serialize(() => {
-    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
-      $uuid: reminderUUID,
-      $created_at: new Date(),
-      $enabled: true,
-      $enabled_by: message.author.id,
-      $enabled_at: new Date(),
-      $disabled_by: null,
-      $disabled_at: null,
-      $type: 'channel',
-      $role_uuid: null,
-      $channel_id: message.channel.id,
-      $guild_id: message.guild.id
-    }, err => {
-      if(err){
-        console.log(err);
-      }
-      /**
-       * Wrote an individual embed instead of using the function for better readability
-       */
-      const embed = {
-        title: "Reminder Enabled!",
-        description: "I will notify you in this channel before world boss spawns!",
-        color: 55296
-      }
-      message.channel.send({ embed });
-    })
-    createReminderRole(message.guild, reminderUUID);
-  })
-}
-/**
  * **REFACTOR: Make it more easily readable**
  * Function in charge of enabling reminders
  * Either updates an existing reminder when it's disabled or calls the insertNewReminder function if it's a brand new reminder
@@ -108,6 +70,65 @@ const enableReminder = (message) => {
             insertNewReminder(message);
           }
         })
+      }
+    })
+  })
+}
+/**
+ * Adds new reminder to Reminder Table
+ * After creating the reminder, the createReminderRole function gets called to create the role used by yagi to ping users
+ * @param message - message data object; taken from the on('message') event hook
+ */
+ const insertNewReminder = (message) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  const reminderUUID = generateUUID();
+  database.serialize(() => {
+    /**
+     * Create new reminder and insert it into our database table
+     */
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
+      $uuid: reminderUUID,
+      $created_at: new Date(),
+      $enabled: true,
+      $enabled_by: message.author.id,
+      $enabled_at: new Date(),
+      $disabled_by: null,
+      $disabled_at: null,
+      $type: 'channel',
+      $role_uuid: null,
+      $channel_id: message.channel.id,
+      $guild_id: message.guild.id
+    }, err => {
+      if(err){
+        console.log(err);
+      }
+      /**
+       * Wrote an individual embed instead of using the function for better readability
+       */
+      const embed = {
+        title: "Reminder Enabled!",
+        description: "I will notify you in this channel before world boss spawns!",
+        color: 55296
+      }
+      message.channel.send({ embed });
+    })
+    /**
+     * After creation, we want to check if there's already an existing role inside the server that is specifically used for reminders i.e. made by yagi previously in another reminder channel
+     * If there is, we update the new reminder to use the existing role
+     * If there isn't, we create a new reminder role
+     */
+    database.get(`SELECT * FROM Role WHERE guild_id = ${message.guild.id} AND used_for_reminder = ${true}`, (error, role) => {
+      if(error){
+        console.log(error);
+      }
+      if(role){
+        database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminderUUID}"`, error => {
+          if(error){
+            console.log(error);
+          }
+        })
+      } else {
+        createReminderRole(message.guild, reminderUUID);
       }
     })
   })
