@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
@@ -156,7 +156,8 @@ const sendReminderInformation = (message) => {
       console.log(error)
     }
     if(enabledReminder){
-      message.channel.send('Reminder Information')
+      const embed = reminderDetails();
+      message.channel.send({ embed })
     } else {
       const embed = reminderInstructions();
       message.channel.send({ embed });
