@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 /**
  * Creates Reminder table inside the Yagi Database
@@ -149,9 +149,24 @@ const disableReminder = (message) => {
     })
   })
 }
+const sendReminderInformation = (message) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND enabled = ${true}`, (error, enabledReminder) => {
+    if(error){
+      console.log(error)
+    }
+    if(enabledReminder){
+      message.channel.send('Reminder Information')
+    } else {
+      const embed = reminderInstructions();
+      message.channel.send({ embed });
+    }
+  })
+}
 module.exports = {
   createReminderTable,
   insertNewReminder,
   enableReminder,
-  disableReminder
+  disableReminder,
+  sendReminderInformation
 }
