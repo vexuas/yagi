@@ -194,6 +194,16 @@ yagi.on('roleUpdate', (_, newRole) => {
 })
 //------
 /**
+ * Event handlers for when a cached message gets reactions
+ */
+yagi.on('messageReactionAdd', (reaction, user) => {
+  console.log(user.username);
+  console.log(reaction.emoji.identifier);
+  console.log(reaction.emoji.name);
+  console.log(reaction.me);
+})
+//------
+/**
  * Event handler for when a message is sent in a channel that yagi is in
  */
 yagi.on('message', async (message) => {

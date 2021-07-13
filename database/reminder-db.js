@@ -177,12 +177,13 @@ const sendReminderInformation = (message) => {
       console.log(error)
     }
     if(enabledReminder){
-      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`, (error, role) => {
+      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`, async (error, role) => {
         if(error){
           console.log(error);
         }
         const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
-        message.channel.send({ embed })
+        const messageDetail = await message.channel.send({ embed })
+        await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
       })
     } else {
       const embed = reminderInstructions();
