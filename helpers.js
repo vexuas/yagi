@@ -243,6 +243,114 @@ const generateUUID = () => {
   return uuidv4();
 }
 //----------
+/**
+ * Embed design used when disabling reminders
+ * First checks if message was sent in the reminder-enabled channel and if reminder even exists
+ * If it does, we check if it the reminder is enabled and send an embed notifying the reminder has been disabled
+ * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
+ * @param message - message data object
+ * @param reminder - reminder to be disabled 
+ */
+const disableReminderEmbed = (message, reminder) => {
+  let embed;
+  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
+  if(sentInEnabledChannel && reminder.enabled === 1){
+    embed = {
+      title: "Reminder disabled!",
+      description: "I will no longer notify you in this channel",
+      color: 16711680
+    }
+  } else {
+    embed = {
+      title: "Whoops!",
+      description: "There are no active reminders in this channel",
+      color: 32896
+    }
+  }
+  return embed;
+}
+/**
+ * Embed design used when enabling reminders
+ * First checks if message was sent in the reminder-enabled channel and if reminder even exists
+ * If it does, we check if it the reminder is disabled and send an embed notifying the reminder has been enabled
+ * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
+ * @param message - message data object
+ * @param reminder - reminder to be disabled  
+ */
+const enableReminderEmbed = (message, reminder) => {
+  let embed;
+  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
+  if(sentInEnabledChannel && reminder.enabled === 0) {
+    embed = {
+      title: "Reminder Enabled!",
+      description: "I will notify you in this channel before world boss spawns!",
+      color: 55296
+    }
+  } else {
+    embed = {
+      title: "Whoops!",
+      description: "There is already an active reminder in this server! To see the reminder details, type `$yagi-remind`",
+      color: 32896
+    }
+  }
+  return embed;
+}
+//----------
+/**
+ * Embed design used for onboarding users on how to use reminders
+ * Tried to be as detailed as possible but still not sure if it would be complicated for users to get it
+ * Debating if I have to do a support doc or make a video about it
+ */
+const reminderInstructions = () => {
+  const embed = {
+    description: "Personal reminder to notify you when world boss is spawning soon.\nCan only be activated in one channel per server by an admin.\n\n",
+    color: 32896,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+    },
+    fields: [
+      {
+        name: "How to enable:",
+        value: "1. In the channel you want to get notifications from, type `$yagi-remind enable`. This will activate reminders on the current channel.\n2. When a channel is successfully activated, a special message is sent to the channel with details about the reminder."
+      },
+      {
+        name: "How to use",
+        value: "1. When a channel is activated, Yagi creates a new role in the server `@Goat Hunters`\n2. To get reminders, simply react on the special message with :goat: and you will automatically get the role. *Note that by removing the reaction you will lose the role*\n3. When world boss is spawning soon, Yagi will ping the role\n\n*To get the special message again, type `$yagi-remind`. You can also edit the role to customise its name/color*"
+      },
+      {
+        name: "How to disable",
+        value: "1. Type `$yagi-remind disable` in the channel where reminders was enabled. This will deactivate reminders on the current channel."
+      }
+    ]
+  }
+  return embed;
+}
+//----------
+const reminderDetails = (channel, role) => {
+  const embed = {
+    color: 32896,
+    description: "Below are the details used for reminders. To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
+    },
+    fields: [
+      {
+        name: "Active Channel",
+        value: `<#${channel}>`,
+        inline: true
+      },
+      {
+        name: "Reminder Role",
+        value: `<@&${role}>`,
+        inline: true
+      }
+    ]
+  }
+  return embed;
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -253,5 +361,9 @@ module.exports = {
   checkIfInDevelopment,
   sendGuildUpdateNotification,
   sendErrorLog,
-  generateUUID
-};
+  generateUUID,
+  disableReminderEmbed,
+  enableReminderEmbed,
+  reminderInstructions,
+  reminderDetails
+}
