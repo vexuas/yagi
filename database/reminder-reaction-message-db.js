@@ -53,6 +53,13 @@ const cacheExistingReminderReactionMessages = (guilds) => {
     })
   })
 }
+/**
+ * Function to update the reaction message
+ * Only updates the reaction count for now as I don't think there's anything else that's important
+ * Substracts 1 from the count taken from discord since yagi by default also reacts to it and discord counts it
+ * Additional checks to see if the reaction is :goat: and if it's not made by the bot so we only update the table when necessary
+ * @param {*} reaction 
+ */
 const updateReminderReactionMessage = (reaction) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${reaction.message.id}"`, (error, detail) => {

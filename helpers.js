@@ -327,7 +327,16 @@ const reminderInstructions = () => {
   return embed;
 }
 //----------
-const reminderDetails = (channel, role) => {
+/**
+ * Embed design used to display the details of the active reminder in the server
+ * Active Channel - channel where the reminder is enabled
+ * Reminder Role - role that yagi uses to ping users
+ * Reaction Message - a link to the message where users can react to get reminder role
+ * @param channel - channelId 
+ * @param role - roleId
+ * @param message - messageId
+ */
+const reminderDetails = (channel, role, message) => {
   const embed = {
     title: "Reminder Details",
     color: 32896,
@@ -356,9 +365,17 @@ const reminderDetails = (channel, role) => {
   }
   return embed;
 }
+//----------
+/**
+ * Embed design used to inform users how to get pinged by Yagi and acts as a collector for reactions
+ * Active Channel - channel where the reminder is enabled
+ * Reminder Role - role that yagi uses to ping users
+ * @param channel - channelId 
+ * @param role - roleId
+ */
 const reminderReactionMessage = (channel, role) => {
   const embed = {
-    color: 32896,
+    color: 16761651,
     description: "To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
     thumbnail: {
       url:

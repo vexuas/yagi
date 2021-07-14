@@ -92,6 +92,7 @@ yagi.once('ready', () => {
  * channelCreate - called when new channel is created in a server yagi is in
  * channelDelete - called when channel is deleted in a server yagi is in
  * channelUpdate - called when updating details of a channel
+ * More information about each function in their relevant database files
  */
 yagi.on('channelCreate', (channel) => {
   try {
@@ -123,6 +124,9 @@ yagi.on('channelUpdate', (_, newChannel) => {
  * guildCreate - called when yagi is invited to a server
  * guildDelete - called when yagi is kicked from server
  * guildUpdate - called when updating details (e.g name change) in server yagi is in
+ * guildMemberAdd - called when a user gets invited to a server
+ * guildMemberRemove - called when a user leaves a server
+ * More information about each function in their relevant database files
  */
 yagi.on('guildCreate', (guild) => {
   try {
@@ -172,6 +176,7 @@ yagi.on('guildMemberRemove', (member) => {
  * roleCreate - called when a role is created in a server
  * roleDelete - called when a role is deleted in a server
  * roleUpdate - called when updating details (e.g. name change, color change) in a server
+ * More information about each function in their relevant database files
  */
 yagi.on('roleCreate', (role) => {
   try {
@@ -198,6 +203,9 @@ yagi.on('roleUpdate', (_, newRole) => {
 //------
 /**
  * Event handlers for when a cached message gets reactions
+ * messageReactionAdd - called when a user reacts to a message
+ * messageReactionRemove - called when a user unreacts to a message
+ * More information about each function in their relevant database files
  */
 yagi.on('messageReactionAdd', (reaction, user) => {
   updateReminderReactionMessage(reaction);

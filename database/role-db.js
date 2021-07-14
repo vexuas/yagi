@@ -99,8 +99,8 @@ const updateRole = (role) => {
  * Create role to be used by yagi for reminders
  * Uses update instead of inserting new row in table as the roleCreate event when creating a the new role
  * To prevent duplicate roles from being inserted into the table, we update the created role from the insertNewRole function with the relevant data
- * @param guild - current guild object; needed to create a role
- * @param reminderID - reminder id
+ * @param message - message data object. Used to get current guild object needed to create a role
+ * @param reminder - reminder to be linked with role
  */
 const createReminderRole = async (message, reminder) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
@@ -129,6 +129,12 @@ const createReminderRole = async (message, reminder) => {
             if(err){
               console.log(err);
             }
+            /**
+             * We send our reminder reaction message only after a reminder gets enabled
+             * This is to collect reactions that yagi will use to set the reminder role
+             * Yagi reacts to the message by default after sending it so users won't have to find the reaction
+             * * By design and discord's api limitation, there will only be one reminder reaction message per server. 
+             */
             const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
             const messageDetail = await message.channel.send({ embed })
             await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:

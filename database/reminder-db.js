@@ -62,6 +62,12 @@ const enableReminder = (message) => {
                   console.log(err);
                 }
                 if(role){
+                  /**
+                   * We send our reminder reaction message only after a reminder gets enabled
+                   * This is to collect reactions that yagi will use to set the reminder role
+                   * Yagi reacts to the message by default after sending it so users won't have to find the reaction
+                   * By design and discord's api limitation, there will only be one reminder reaction message per server. 
+                  */
                   const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
                   const messageDetail = await message.channel.send({ embed })
                   await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
@@ -181,6 +187,13 @@ const disableReminder = (message) => {
     })
   })
 }
+/**
+ * Function in charge to send the correct embed message when a user uses the `remind` command
+ * If there's an active reminder in the server, we send the reminder details embed
+ * If there's none, we send the reminder instructions embed
+ * More information on the helpers.js file
+ * @param message - message data object
+ */
 const sendReminderInformation = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND enabled = ${true}`, (error, enabledReminder) => {
