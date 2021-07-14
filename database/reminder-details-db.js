@@ -6,7 +6,7 @@ const sqlite = require('sqlite3').verbose();
  * @param database - yagi database
  */
 const createReminderDetailsTable = (database) => {
-  database.run(`CREATE TABLE IF NOT EXISTS Reminder_Details(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
+  database.run(`CREATE TABLE IF NOT EXISTS ReminderDetails(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
 }
 /**
  * Adds new reminder details message to Reminder Details table
@@ -16,7 +16,7 @@ const createReminderDetailsTable = (database) => {
  */
 const insertNewReminderDetails = (message, user) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run('INSERT INTO Reminder_Details(uuid, created_at, requested_by, channel_id, guild_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $no_of_reactions)', {
+  database.run('INSERT INTO ReminderDetails(uuid, created_at, requested_by, channel_id, guild_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $no_of_reactions)', {
     $uuid: message.id,
     $created_at: message.createdAt,
     $requested_by: user.id,
@@ -39,7 +39,7 @@ const cacheExistingReminderDetails = (guilds) => {
 
   guilds.forEach(guild => {
     guild.channels.cache.forEach(channel => {
-      database.each(`SELECT * FROM Reminder_Details WHERE channel_id = ${channel.id}`, async (error, detail) => {
+      database.each(`SELECT * FROM ReminderDetails WHERE channel_id = ${channel.id}`, async (error, detail) => {
         if(error){
           console.log(error);
         }
@@ -52,13 +52,13 @@ const cacheExistingReminderDetails = (guilds) => {
 }
 const updateReminderDetails = (reaction) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.get(`SELECT * FROM Reminder_Details WHERE uuid = "${reaction.message.id}"`, (error, detail) => {
+  database.get(`SELECT * FROM ReminderDetails WHERE uuid = "${reaction.message.id}"`, (error, detail) => {
     if(error){
       console.log(error);
     }
     if(detail && !reaction.me && reaction.emoji.identifier === "%F0%9F%90%90"){
       const newCount = reaction.count - 1;
-      database.run(`UPDATE Reminder_Details SET no_of_reactions = ${newCount} WHERE uuid = ${detail.uuid}`, error => {
+      database.run(`UPDATE ReminderDetails SET no_of_reactions = ${newCount} WHERE uuid = ${detail.uuid}`, error => {
         if(error){
           console.log(error);
         }

@@ -10,6 +10,7 @@ const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, 
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
 const { createReminderDetailsTable, cacheExistingReminderDetails, updateReminderDetails } = require('./database/reminder-details-db.js');
+const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -72,6 +73,7 @@ yagi.once('ready', () => {
     createReminderTable(yagiDatabase);
     createReminderDetailsTable(yagiDatabase);
     cacheExistingReminderDetails(yagi.guilds.cache);
+    createReminderUserTable(yagiDatabase);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -200,9 +202,11 @@ yagi.on('roleUpdate', (_, newRole) => {
  */
 yagi.on('messageReactionAdd', (reaction, user) => {
   updateReminderDetails(reaction);
+  reactToMessage(reaction, user);
 })
 yagi.on('messageReactionRemove', (reaction, user) => {
   updateReminderDetails(reaction);
+  removeReminderUser(user);
 })
 //------
 /**
