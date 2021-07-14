@@ -34,7 +34,7 @@ const insertNewReminderDetails = (message, user) => {
  * @param guilds - guilds that yagi is in
  * @param client - yagi client
  */
-const cacheExistingReminderDetails = (guilds, client) => {
+const cacheExistingReminderDetails = (guilds) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
   guilds.forEach(guild => {
@@ -50,8 +50,25 @@ const cacheExistingReminderDetails = (guilds, client) => {
     })
   })
 }
+const updateReminderDetails = (reaction) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.get(`SELECT * FROM Reminder_Details WHERE uuid = "${reaction.message.id}"`, (error, detail) => {
+    if(error){
+      console.log(error);
+    }
+    if(detail && !reaction.me && reaction.emoji.identifier === "%F0%9F%90%90"){
+      const newCount = reaction.count - 1;
+      database.run(`UPDATE Reminder_Details SET no_of_reactions = ${newCount} WHERE uuid = ${detail.uuid}`, error => {
+        if(error){
+          console.log(error);
+        }
+      })
+    }
+  })
+}
 module.exports = {
   createReminderDetailsTable,
   insertNewReminderDetails,
-  cacheExistingReminderDetails
+  cacheExistingReminderDetails,
+  updateReminderDetails
 }
