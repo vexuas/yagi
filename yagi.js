@@ -71,8 +71,7 @@ yagi.once('ready', () => {
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
     createRoleTable(yagiDatabase, yagi.guilds.cache);
     createReminderTable(yagiDatabase);
-    createReminderReactionMessageTable(yagiDatabase)
-    cacheExistingReminderReactionMessages(yagi.guilds.cache);
+    cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
     createReminderUserTable(yagiDatabase);
     /**
      * Changes Yagi's activity every 2 minutes on random

@@ -356,7 +356,7 @@ const reminderDetails = (channel, role) => {
   }
   return embed;
 }
-const reminderReactionMessage = () => {
+const reminderReactionMessage = (channel, role) => {
   const embed = {
     color: 32896,
     description: "To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
@@ -394,5 +394,6 @@ module.exports = {
   disableReminderEmbed,
   enableReminderEmbed,
   reminderInstructions,
-  reminderDetails
+  reminderDetails,
+  reminderReactionMessage
 }

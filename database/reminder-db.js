@@ -1,7 +1,7 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage } = require('../helpers');
 const { createReminderRole } = require('./role-db');
-const { insertNewReminderDetails } = require('./reminder-reaction-message-db.js');
+const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -48,15 +48,7 @@ const enableReminder = (message) => {
              * If it does exist, we don't do anything and update the reminder to its enable state
              * If it has been deleted, we call the createReminderRole to create a new role and link it with the reminder before updating it to its enable state
              */
-            database.serialize(() => {
-              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (err, role) => {
-                if(err){
-                  console.log(err);
-                }
-                if(!role){
-                  createReminderRole(message.guild, reminder.uuid);
-                }
-              })
+            database.serialize(async () => {
               //Updates the reminder to enabled with relevant data
               database.run(`UPDATE Reminder SET enabled = ${true}, enabled_by = "${message.author.id}", enabled_at = ${Date.now()} WHERE uuid = "${reminder.uuid}"`, err => {
                 if(err){
@@ -64,6 +56,19 @@ const enableReminder = (message) => {
                 }
                 const embed = enableReminderEmbed(message, reminder)
                 message.channel.send({ embed });
+              })
+              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, async (err, role) => {
+                if(err){
+                  console.log(err);
+                }
+                if(role){
+                  const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
+                  const messageDetail = await message.channel.send({ embed })
+                  await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
+                  insertNewReminderReactionMessage(messageDetail, message.author);
+                } else {
+                  createReminderRole(message, reminder);
+                }
               })
             })
           } else {
@@ -129,7 +134,12 @@ const enableReminder = (message) => {
           }
         })
       } else {
-        createReminderRole(message.guild, reminderUUID);
+        database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
+          if(error){
+            console.log(error);
+          }
+          createReminderRole(message, reminder);
+        })
       }
     })
   })
@@ -183,9 +193,8 @@ const sendReminderInformation = (message) => {
           console.log(error);
         }
         const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
-        const messageDetail = await message.channel.send({ embed })
-        // await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-        // insertNewReminderDetails(messageDetail, message.author);
+        message.channel.send({ embed })
+       
       })
     } else {
       const embed = reminderInstructions();

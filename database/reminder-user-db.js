@@ -1,5 +1,3 @@
-const { reactToAllReminderDetails } = require('./reminder-reaction-message-db');
-
 const sqlite = require('sqlite3').verbose();
 
 const createReminderUserTable = (database) => {
@@ -12,7 +10,7 @@ const reactToMessage = (reaction, user) => {
     if(error){
       console.log(error);
     }
-    database.get(`SELECT * FROM ReminderDetails WHERE uuid = "${reaction.message.id}"`, (error, reminderDetail) => {
+    database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${reaction.message.id}"`, (error, reminderDetail) => {
       if(error){
         console.log(error);
       }
@@ -46,6 +44,7 @@ const removeReminderUser = (user) => {
     }
   })
 }
+
 module.exports = {
   createReminderUserTable,
   reactToMessage,

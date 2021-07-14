@@ -36,16 +36,19 @@ const insertNewReminderReactionMessage = (message, user) => {
  */
 const cacheExistingReminderReactionMessages = (guilds) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-
-  guilds.forEach(guild => {
-    guild.channels.cache.forEach(channel => {
-      database.each(`SELECT * FROM ReminderReactionMessage WHERE channel_id = ${channel.id}`, async (error, detail) => {
-        if(error){
-          console.log(error);
-        }
-        if(detail){
-          await channel.messages.fetch(detail.uuid);
-        }
+  database.serialize(() => {
+    //Adding the creation of reminder reaction table here to make sure it gets called first before caching messages
+    createReminderReactionMessageTable(database);
+    guilds.forEach(guild => {
+      guild.channels.cache.forEach(channel => {
+        database.each(`SELECT * FROM ReminderReactionMessage WHERE channel_id = ${channel.id}`, async (error, detail) => {
+          if(error){
+            console.log(error);
+          }
+          if(detail){
+            await channel.messages.fetch(detail.uuid);
+          }
+        })
       })
     })
   })
