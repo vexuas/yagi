@@ -1,4 +1,4 @@
-const { reactToAllReminderDetails } = require('./reminder-details-db');
+const { reactToAllReminderDetails } = require('./reminder-reaction-message-db');
 
 const sqlite = require('sqlite3').verbose();
 

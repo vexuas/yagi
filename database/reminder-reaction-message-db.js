@@ -5,8 +5,8 @@ const sqlite = require('sqlite3').verbose();
  * Primarily to keep track of the special message from yagi where users can react with to get the reminder role
  * @param database - yagi database
  */
-const createReminderDetailsTable = (database) => {
-  database.run(`CREATE TABLE IF NOT EXISTS ReminderDetails(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
+const createReminderReactionMessageTable = (database) => {
+  database.run(`CREATE TABLE IF NOT EXISTS ReminderReactionMessage(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
 }
 /**
  * Adds new reminder details message to Reminder Details table
@@ -14,9 +14,9 @@ const createReminderDetailsTable = (database) => {
  * @param message - message data object
  * @param user - user who initially used command
  */
-const insertNewReminderDetails = (message, user) => {
+const insertNewReminderReactionMessage = (message, user) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run('INSERT INTO ReminderDetails(uuid, created_at, requested_by, channel_id, guild_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $no_of_reactions)', {
+  database.run('INSERT INTO ReminderReactionMessage(uuid, created_at, requested_by, channel_id, guild_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $no_of_reactions)', {
     $uuid: message.id,
     $created_at: message.createdAt,
     $requested_by: user.id,
@@ -34,12 +34,12 @@ const insertNewReminderDetails = (message, user) => {
  * @param guilds - guilds that yagi is in
  * @param client - yagi client
  */
-const cacheExistingReminderDetails = (guilds) => {
+const cacheExistingReminderReactionMessages = (guilds) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
   guilds.forEach(guild => {
     guild.channels.cache.forEach(channel => {
-      database.each(`SELECT * FROM ReminderDetails WHERE channel_id = ${channel.id}`, async (error, detail) => {
+      database.each(`SELECT * FROM ReminderReactionMessage WHERE channel_id = ${channel.id}`, async (error, detail) => {
         if(error){
           console.log(error);
         }
@@ -50,15 +50,15 @@ const cacheExistingReminderDetails = (guilds) => {
     })
   })
 }
-const updateReminderDetails = (reaction) => {
+const updateReminderReactionMessage = (reaction) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.get(`SELECT * FROM ReminderDetails WHERE uuid = "${reaction.message.id}"`, (error, detail) => {
+  database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${reaction.message.id}"`, (error, detail) => {
     if(error){
       console.log(error);
     }
     if(detail && !reaction.me && reaction.emoji.identifier === "%F0%9F%90%90"){
       const newCount = reaction.count - 1;
-      database.run(`UPDATE ReminderDetails SET no_of_reactions = ${newCount} WHERE uuid = ${detail.uuid}`, error => {
+      database.run(`UPDATE ReminderReactionMessage SET no_of_reactions = ${newCount} WHERE uuid = ${detail.uuid}`, error => {
         if(error){
           console.log(error);
         }
@@ -67,8 +67,8 @@ const updateReminderDetails = (reaction) => {
   })
 }
 module.exports = {
-  createReminderDetailsTable,
-  insertNewReminderDetails,
-  cacheExistingReminderDetails,
-  updateReminderDetails
+  createReminderReactionMessageTable,
+  insertNewReminderReactionMessage,
+  cacheExistingReminderReactionMessages,
+  updateReminderReactionMessage
 }

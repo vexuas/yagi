@@ -329,8 +329,37 @@ const reminderInstructions = () => {
 //----------
 const reminderDetails = (channel, role) => {
   const embed = {
+    title: "Reminder Details",
     color: 32896,
-    description: "Below are the details used for reminders. To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
+    description: "To get notified, react to the linked message below!",
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
+    },
+    fields: [
+      {
+        name: "Active Channel",
+        value: `<#${channel}>`,
+        inline: true
+      },
+      {
+        name: "Reminder Role",
+        value: `<@&${role}>`,
+        inline: true
+      },
+      {
+        name: "Reaction Message",
+        value: 'Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
+
+      }
+    ]
+  }
+  return embed;
+}
+const reminderReactionMessage = () => {
+  const embed = {
+    color: 32896,
+    description: "To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*",
     thumbnail: {
       url:
         'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'

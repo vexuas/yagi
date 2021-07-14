@@ -8,8 +8,8 @@ const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = requ
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
-const { createReminderTable } = require('./database/reminder-db.js');
-const { createReminderDetailsTable, cacheExistingReminderDetails, updateReminderDetails } = require('./database/reminder-details-db.js');
+const { createReminderTable } = require('./database/reminder-db');
+const { createReminderReactionMessageTable, cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
@@ -71,8 +71,8 @@ yagi.once('ready', () => {
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
     createRoleTable(yagiDatabase, yagi.guilds.cache);
     createReminderTable(yagiDatabase);
-    createReminderDetailsTable(yagiDatabase);
-    cacheExistingReminderDetails(yagi.guilds.cache);
+    createReminderReactionMessageTable(yagiDatabase)
+    cacheExistingReminderReactionMessages(yagi.guilds.cache);
     createReminderUserTable(yagiDatabase);
     /**
      * Changes Yagi's activity every 2 minutes on random
@@ -201,11 +201,11 @@ yagi.on('roleUpdate', (_, newRole) => {
  * Event handlers for when a cached message gets reactions
  */
 yagi.on('messageReactionAdd', (reaction, user) => {
-  updateReminderDetails(reaction);
+  updateReminderReactionMessage(reaction);
   reactToMessage(reaction, user);
 })
 yagi.on('messageReactionRemove', (reaction, user) => {
-  updateReminderDetails(reaction);
+  updateReminderReactionMessage(reaction);
   removeReminderUser(user);
 })
 //------
