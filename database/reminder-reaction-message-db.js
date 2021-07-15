@@ -6,7 +6,7 @@ const sqlite = require('sqlite3').verbose();
  * @param database - yagi database
  */
 const createReminderReactionMessageTable = (database) => {
-  database.run(`CREATE TABLE IF NOT EXISTS ReminderReactionMessage(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
+  database.run(`CREATE TABLE IF NOT EXISTS ReminderReactionMessage(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, requested_by TEXT NOT NULL, channel_id TEXT NOT NULL, guild_id TEXT NOT NULL, reminder_id TEXT NOT NULL, no_of_reactions INTEGER NOT NULL)`);
 }
 /**
  * Adds new reminder details message to Reminder Details table
@@ -14,15 +14,23 @@ const createReminderReactionMessageTable = (database) => {
  * @param message - message data object
  * @param user - user who initially used command
  */
-const insertNewReminderReactionMessage = (message, user) => {
+const insertNewReminderReactionMessage = (message, user, reminder) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run('INSERT INTO ReminderReactionMessage(uuid, created_at, requested_by, channel_id, guild_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $no_of_reactions)', {
-    $uuid: message.id,
-    $created_at: message.createdAt,
-    $requested_by: user.id,
-    $channel_id: message.channel.id,
-    $guild_id: message.guild.id,
-    $no_of_reactions: 0
+  database.serialize(() => {
+    database.run('INSERT INTO ReminderReactionMessage(uuid, created_at, requested_by, channel_id, guild_id, reminder_id, no_of_reactions) VALUES ($uuid, $created_at, $requested_by, $channel_id, $guild_id, $reminder_id, $no_of_reactions)', {
+      $uuid: message.id,
+      $created_at: message.createdAt,
+      $requested_by: user.id,
+      $channel_id: message.channel.id,
+      $guild_id: message.guild.id,
+      $reminder_id: reminder.uuid,
+      $no_of_reactions: 0
+    })
+    database.run(`UPDATE Reminder SET reaction_message_id = "${message.id}" WHERE uuid = "${reminder.uuid}"`, error => {
+      if(error){
+        console.log(error)
+      }
+    })
   })
 }
 /**

@@ -138,7 +138,7 @@ const createReminderRole = async (message, reminder) => {
             const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
             const messageDetail = await message.channel.send({ embed })
             await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-            insertNewReminderReactionMessage(messageDetail, message.author);
+            insertNewReminderReactionMessage(messageDetail, message.author, reminder);
           })
         }
       })

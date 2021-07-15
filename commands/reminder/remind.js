@@ -22,7 +22,7 @@ module.exports = {
           return message.channel.send('Only accepts `enable` or `disable` as arguments');
       }
     } else {
-      sendReminderInformation(message);
+      sendReminderInformation(message, yagi);
     }
   }
 }

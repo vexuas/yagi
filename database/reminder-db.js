@@ -9,7 +9,7 @@ const { insertNewReminderReactionMessage} = require('./reminder-reaction-message
  * @param database - yagi database
  */
 const createReminderTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT)');
+  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT, reaction_message_id TEXT)');
 }
 /**
  * **REFACTOR: Make it more easily readable**
@@ -71,7 +71,7 @@ const enableReminder = (message) => {
                   const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
                   const messageDetail = await message.channel.send({ embed })
                   await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-                  insertNewReminderReactionMessage(messageDetail, message.author);
+                  insertNewReminderReactionMessage(messageDetail, message.author, reminder);
                 } else {
                   createReminderRole(message, reminder);
                 }
@@ -98,7 +98,7 @@ const enableReminder = (message) => {
     /**
      * Create new reminder and insert it into our database table
      */
-    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id, reaction_message_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id, $reaction_message_id)', {
       $uuid: reminderUUID,
       $created_at: new Date(),
       $enabled: true,
@@ -109,7 +109,8 @@ const enableReminder = (message) => {
       $type: 'channel',
       $role_uuid: null,
       $channel_id: message.channel.id,
-      $guild_id: message.guild.id
+      $guild_id: message.guild.id,
+      $reaction_message_id: null
     }, err => {
       if(err){
         console.log(err);
@@ -194,20 +195,30 @@ const disableReminder = (message) => {
  * More information on the helpers.js file
  * @param message - message data object
  */
-const sendReminderInformation = (message) => {
+const sendReminderInformation = (message, yagi) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND enabled = ${true}`, (error, enabledReminder) => {
     if(error){
       console.log(error)
     }
     if(enabledReminder){
-      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`, async (error, role) => {
+      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`,(error, role) => {
         if(error){
           console.log(error);
         }
-        const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
-        message.channel.send({ embed })
-       
+        if(role){
+          database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
+            if(error){
+              console.log(error)
+            }
+            if(reactionMessage){
+              const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
+              const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+              const embed = reminderDetails(enabledReminder.channel_id, role.role_id, reactionMessageInChannel.url);
+              message.channel.send({ embed })
+            }
+          })
+        }
       })
     } else {
       const embed = reminderInstructions();
