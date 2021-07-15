@@ -70,6 +70,15 @@ const removeReminderUser = (reaction, user) => {
     setReminderRoleToUser(reaction, user, 'remove');
   })
 }
+/**
+ * Function to add the reminder role to a user or remove it
+ * Gets called after adding the reminder user to our database
+ * To be able to properly set the role, we need to fetch the guild member object of the user first
+ * Then we can use it to add the reminder role to it
+ * @param reaction - reaction data object
+ * @param user - user who made the reaction
+ * @param type - whether or not it's adding or removing a reaction
+ */
 const setReminderRoleToUser = (reaction, user, type) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM Reminder WHERE guild_id = "${reaction.message.guild.id}" AND enabled = ${true}`, (error, reminder) => {
