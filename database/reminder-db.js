@@ -1,6 +1,7 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage } = require('../helpers');
 const { createReminderRole } = require('./role-db');
+const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -8,7 +9,7 @@ const { createReminderRole } = require('./role-db');
  * @param database - yagi database
  */
 const createReminderTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT)');
+  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT, reaction_message_id TEXT)');
 }
 /**
  * **REFACTOR: Make it more easily readable**
@@ -47,15 +48,7 @@ const enableReminder = (message) => {
              * If it does exist, we don't do anything and update the reminder to its enable state
              * If it has been deleted, we call the createReminderRole to create a new role and link it with the reminder before updating it to its enable state
              */
-            database.serialize(() => {
-              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (err, role) => {
-                if(err){
-                  console.log(err);
-                }
-                if(!role){
-                  createReminderRole(message.guild, reminder.uuid);
-                }
-              })
+            database.serialize(async () => {
               //Updates the reminder to enabled with relevant data
               database.run(`UPDATE Reminder SET enabled = ${true}, enabled_by = "${message.author.id}", enabled_at = ${Date.now()} WHERE uuid = "${reminder.uuid}"`, err => {
                 if(err){
@@ -63,6 +56,25 @@ const enableReminder = (message) => {
                 }
                 const embed = enableReminderEmbed(message, reminder)
                 message.channel.send({ embed });
+              })
+              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, async (err, role) => {
+                if(err){
+                  console.log(err);
+                }
+                if(role){
+                  /**
+                   * We send our reminder reaction message only after a reminder gets enabled
+                   * This is to collect reactions that yagi will use to set the reminder role
+                   * Yagi reacts to the message by default after sending it so users won't have to find the reaction
+                   * By design and discord's api limitation, there will only be one reminder reaction message per server. 
+                  */
+                  const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
+                  const messageDetail = await message.channel.send({ embed })
+                  await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
+                  insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+                } else {
+                  createReminderRole(message, reminder);
+                }
               })
             })
           } else {
@@ -86,7 +98,7 @@ const enableReminder = (message) => {
     /**
      * Create new reminder and insert it into our database table
      */
-    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id)', {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id, reaction_message_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id, $reaction_message_id)', {
       $uuid: reminderUUID,
       $created_at: new Date(),
       $enabled: true,
@@ -97,7 +109,8 @@ const enableReminder = (message) => {
       $type: 'channel',
       $role_uuid: null,
       $channel_id: message.channel.id,
-      $guild_id: message.guild.id
+      $guild_id: message.guild.id,
+      $reaction_message_id: null
     }, err => {
       if(err){
         console.log(err);
@@ -128,7 +141,12 @@ const enableReminder = (message) => {
           }
         })
       } else {
-        createReminderRole(message.guild, reminderUUID);
+        database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
+          if(error){
+            console.log(error);
+          }
+          createReminderRole(message, reminder);
+        })
       }
     })
   })
@@ -170,19 +188,37 @@ const disableReminder = (message) => {
     })
   })
 }
-const sendReminderInformation = (message) => {
+/**
+ * Function in charge to send the correct embed message when a user uses the `remind` command
+ * If there's an active reminder in the server, we send the reminder details embed
+ * If there's none, we send the reminder instructions embed
+ * More information on the helpers.js file
+ * @param message - message data object
+ */
+const sendReminderInformation = (message, yagi) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND enabled = ${true}`, (error, enabledReminder) => {
     if(error){
       console.log(error)
     }
     if(enabledReminder){
-      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`, (error, role) => {
+      database.get(`SELECT * FROM Role WHERE uuid = "${enabledReminder.role_uuid}"`,(error, role) => {
         if(error){
           console.log(error);
         }
-        const embed = reminderDetails(enabledReminder.channel_id, role.role_id);
-        message.channel.send({ embed })
+        if(role){
+          database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
+            if(error){
+              console.log(error)
+            }
+            if(reactionMessage){
+              const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
+              const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+              const embed = reminderDetails(enabledReminder.channel_id, role.role_id, reactionMessageInChannel.url);
+              message.channel.send({ embed })
+            }
+          })
+        }
       })
     } else {
       const embed = reminderInstructions();

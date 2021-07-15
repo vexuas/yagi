@@ -8,7 +8,9 @@ const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = requ
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
-const { createReminderTable } = require('./database/reminder-db.js');
+const { createReminderTable } = require('./database/reminder-db');
+const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
+const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
 const activitylist = [
@@ -58,7 +60,6 @@ yagi.once('ready', () => {
         })
       })
     })
-
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
      * Initialise Database and its tables
@@ -70,6 +71,8 @@ yagi.once('ready', () => {
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
     createRoleTable(yagiDatabase, yagi.guilds.cache);
     createReminderTable(yagiDatabase);
+    cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
+    createReminderUserTable(yagiDatabase);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -89,6 +92,7 @@ yagi.once('ready', () => {
  * channelCreate - called when new channel is created in a server yagi is in
  * channelDelete - called when channel is deleted in a server yagi is in
  * channelUpdate - called when updating details of a channel
+ * More information about each function in their relevant database files
  */
 yagi.on('channelCreate', (channel) => {
   try {
@@ -120,6 +124,9 @@ yagi.on('channelUpdate', (_, newChannel) => {
  * guildCreate - called when yagi is invited to a server
  * guildDelete - called when yagi is kicked from server
  * guildUpdate - called when updating details (e.g name change) in server yagi is in
+ * guildMemberAdd - called when a user gets invited to a server
+ * guildMemberRemove - called when a user leaves a server
+ * More information about each function in their relevant database files
  */
 yagi.on('guildCreate', (guild) => {
   try {
@@ -169,6 +176,7 @@ yagi.on('guildMemberRemove', (member) => {
  * roleCreate - called when a role is created in a server
  * roleDelete - called when a role is deleted in a server
  * roleUpdate - called when updating details (e.g. name change, color change) in a server
+ * More information about each function in their relevant database files
  */
 yagi.on('roleCreate', (role) => {
   try {
@@ -191,6 +199,21 @@ yagi.on('roleUpdate', (_, newRole) => {
   catch(e){
     sendErrorLog(yagi, e)
   }
+})
+//------
+/**
+ * Event handlers for when a cached message gets reactions
+ * messageReactionAdd - called when a user reacts to a message
+ * messageReactionRemove - called when a user unreacts to a message
+ * More information about each function in their relevant database files
+ */
+yagi.on('messageReactionAdd', async (reaction, user) => {
+  updateReminderReactionMessage(reaction);
+  reactToMessage(reaction, user);
+})
+yagi.on('messageReactionRemove', (reaction, user) => {
+  updateReminderReactionMessage(reaction);
+  removeReminderUser(reaction, user);
 })
 //------
 /**

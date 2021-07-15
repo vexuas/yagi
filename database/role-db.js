@@ -1,5 +1,6 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID } = require('../helpers');
+const { generateUUID, reminderReactionMessage } = require('../helpers');
+const { insertNewReminderReactionMessage } = require('./reminder-reaction-message-db');
 /**
  * Creates Role table inside the Yagi Database
  * Gets called in the client.once("ready") hook
@@ -98,13 +99,13 @@ const updateRole = (role) => {
  * Create role to be used by yagi for reminders
  * Uses update instead of inserting new row in table as the roleCreate event when creating a the new role
  * To prevent duplicate roles from being inserted into the table, we update the created role from the insertNewRole function with the relevant data
- * @param guild - current guild object; needed to create a role
- * @param reminderID - reminder id
+ * @param message - message data object. Used to get current guild object needed to create a role
+ * @param reminder - reminder to be linked with role
  */
-const createReminderRole = async (guild, reminderID) => {
+const createReminderRole = async (message, reminder) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   try {
-    const reminderRole = await guild.roles.create({
+    const reminderRole = await message.guild.roles.create({
       data: {
         name: 'Goat Hunters',
         color: '#68d5e9'
@@ -112,22 +113,32 @@ const createReminderRole = async (guild, reminderID) => {
       reason: 'Role to be used by Yagi for automated reminders for Vulture Vale/Blizzard Berg World Boss'
     })
     database.serialize(() => {
-      database.get(`SELECT * FROM Role WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, (error, row) => {
+      database.get(`SELECT * FROM Role WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, (error, role) => {
         if(error){
           console.log(error);
         }
-        if(row){
+        if(role){
           //Update reminder role with relevant data
-          database.run(`UPDATE Role SET reminder_id = "${reminderID}", used_for_reminder = ${true} WHERE uuid = "${row.uuid}"`, err => {
+          database.run(`UPDATE Role SET reminder_id = "${reminder.uuid}", used_for_reminder = ${true} WHERE uuid = "${role.uuid}"`, err => {
             if(err){
               console.log(err);
             }
           })
           //Update Reminder with created role
-          database.run(`UPDATE Reminder SET role_uuid = "${row.uuid}" where uuid = "${reminderID}"`, err => {
+          database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" where uuid = "${reminder.uuid}"`, async err => {
             if(err){
               console.log(err);
             }
+            /**
+             * We send our reminder reaction message only after a reminder gets enabled
+             * This is to collect reactions that yagi will use to set the reminder role
+             * Yagi reacts to the message by default after sending it so users won't have to find the reaction
+             * * By design and discord's api limitation, there will only be one reminder reaction message per server. 
+             */
+            const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
+            const messageDetail = await message.channel.send({ embed })
+            await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
+            insertNewReminderReactionMessage(messageDetail, message.author, reminder);
           })
         }
       })
