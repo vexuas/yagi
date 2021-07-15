@@ -9,7 +9,7 @@ const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildM
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db');
-const { createReminderReactionMessageTable, cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
+const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 
@@ -207,13 +207,13 @@ yagi.on('roleUpdate', (_, newRole) => {
  * messageReactionRemove - called when a user unreacts to a message
  * More information about each function in their relevant database files
  */
-yagi.on('messageReactionAdd', (reaction, user) => {
+yagi.on('messageReactionAdd', async (reaction, user) => {
   updateReminderReactionMessage(reaction);
   reactToMessage(reaction, user);
 })
 yagi.on('messageReactionRemove', (reaction, user) => {
   updateReminderReactionMessage(reaction);
-  removeReminderUser(user);
+  removeReminderUser(reaction, user);
 })
 //------
 /**

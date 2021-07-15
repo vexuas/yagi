@@ -39,6 +39,11 @@ const cacheExistingReminderReactionMessages = (guilds) => {
   database.serialize(() => {
     //Adding the creation of reminder reaction table here to make sure it gets called first before caching messages
     createReminderReactionMessageTable(database);
+
+    /**
+     * Keeping this loop in the off chance discord ever implements adding of role on behalf of users
+     * Dream is to support multiple reaction messages but currently we are limited to just one
+     **/
     guilds.forEach(guild => {
       guild.channels.cache.forEach(channel => {
         database.each(`SELECT * FROM ReminderReactionMessage WHERE channel_id = ${channel.id}`, async (error, detail) => {
