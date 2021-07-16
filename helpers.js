@@ -400,6 +400,17 @@ const reminderReactionMessage = (channel, role) => {
   return embed;
 }
 //----------
+/**
+ * Function to extract data from the Olympus google spreadsheet
+ * Returns readable data as an object for location, last spawn, next spawn and countdown
+ * Note that last spawn and next spawn is only returned as time and not as a Date object
+ * This is because the spreadsheet actually only gets the time from a private one that the leads use
+ * If we can somehow get access to the private sheet and get the timestamp it would make our lives so much easier but it's whatever, we make do with what we have
+ * To get the correct data, we need to pass in a request body when we make the call:
+ * spreadsheetId: 'https:~~/spreadsheets/d/{spreadsheetId}/~~~'; taken from the url of the sheet
+ * ranges: which cells you need from the sheet
+ * auth: an authenticated token you can get from google's sheet api; as the sheet is public you can pretty much use any
+ */
 const getWorldBossData = async () => {
   const authClient = api;
   const request = {
