@@ -12,6 +12,9 @@ const {
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
+const { api } = require('./config/yagi.json');
+const { google } = require('googleapis');
+const sheets = google.sheets('v4');
 const grvAcnt = '`';
 
 //----------
@@ -397,6 +400,35 @@ const reminderReactionMessage = (channel, role) => {
   return embed;
 }
 //----------
+const getWorldBossData = async () => {
+  const authClient = api;
+  const request = {
+    spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
+
+    ranges: ['C4', 'C6', 'C8', 'C10'],
+
+    auth: authClient
+  };
+  let actualSheetValues = [];
+
+  try {
+    const response = await sheets.spreadsheets.values.batchGet(request);
+    const rawSheetValues = response.data.valueRanges;
+    rawSheetValues.forEach(item => {
+      actualSheetValues.push(item.values[0][0]);
+    });
+    return {
+      location: actualSheetValues[0],
+      lastSpawn: actualSheetValues[1],
+      nextSpawn: actualSheetValues[2],
+      countdown: actualSheetValues[3]
+    }
+  } catch(e){
+    //Add error handler here later
+    throw e;
+  }
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -412,5 +444,6 @@ module.exports = {
   enableReminderEmbed,
   reminderInstructions,
   reminderDetails,
-  reminderReactionMessage
+  reminderReactionMessage,
+  getWorldBossData
 }

@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -38,7 +38,7 @@ initialize();
  * Event handler that fires only once when yagi is done booting up
  * Houses function initialisations such as database creation and activity list randomizer
  */
-yagi.once('ready', () => {
+yagi.once('ready', async () => {
   try {
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
@@ -84,6 +84,8 @@ yagi.once('ready', () => {
       const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
+    const worldBossData = await getWorldBossData();
+    console.log(worldBossData);
     /**
      * Every 10 minutes
      */
