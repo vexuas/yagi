@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateSpawnDate } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -13,7 +13,7 @@ const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = 
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
-
+const { format } = require('date-fns');
 const activitylist = [
   'info | bot information',
   'ping me for prefix!',
@@ -85,7 +85,11 @@ yagi.once('ready', async () => {
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
     const worldBossData = await getWorldBossData();
+    const serverTime = getServerTime();
+    const nextSpawnDate = validateSpawnDate(serverTime, worldBossData);
     console.log(worldBossData);
+    console.log(format(serverTime, 'MMMM D YYYY hh:mm:ss A'));
+    console.log(nextSpawnDate);
     /**
      * Every 10 minutes
      */
@@ -95,6 +99,7 @@ yagi.once('ready', async () => {
       //Ping if it isn't
       //Either way when we get the data we clear existing timeouts and set setTimouts for each reminder in our database
       console.log('Reminder Interval');
+      console.log(format(getServerTime(), 'MMMM D YYYY hh:mm:ss a'));
     }, 30000)
   } catch(e){
     sendErrorLog(yagi, e);

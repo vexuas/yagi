@@ -7,8 +7,16 @@ const {
   differenceInHours,
   differenceInMinutes,
   differenceInSeconds,
+  differenceInMilliseconds,
   subHours,
   subMinutes,
+  addHours,
+  addDays,
+  format,
+  isWithinRange,
+  startOfDay,
+  endOfDay,
+  isAfter
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
@@ -440,6 +448,61 @@ const getWorldBossData = async () => {
   }
 }
 //----------
+const validateSpawnDate = (serverTime, worldBoss) => {
+  const currentDay = format(serverTime, 'D');
+  const currentMonth = format(serverTime, 'MMMM');
+  const currentYear = format(serverTime, 'YYYY');
+
+  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${worldBoss.nextSpawn}`;
+
+  const twelveAMStart = startOfDay(serverTime);
+  const fourAM = addHours(twelveAMStart, 4);
+  const eightPM = addHours(twelveAMStart, 20);
+  const twelveAMEnd = endOfDay(serverTime);
+
+  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime); //See if nextSpawnDate is later than the current serverTime; useful to know whether the sheet has been updated
+  //Checks if sheet is up-to-date; returns true if countdown is positve
+  if(countdownValidity >= 0){
+    //12AM - 4AM
+    if(isWithinRange(serverTime, twelveAMStart, fourAM)) {
+      if(isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)) {
+        return {
+          nextSpawn: addHours(subDays(nextSpawnDate, 1), 4),
+          countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
+          accurate: false
+        }
+      } else {
+        return {
+          nextSpawn: nextSpawnDate,
+          countdown: formatCountdown(nextSpawnDate, serverTime),
+          accurate: true
+        }
+      }
+      //4AM - 12AM
+    } else {
+      return {
+        nextSpawn: nextSpawnDate,
+        countdown: formatCountdown(nextSpawnDate, serverTime),
+        accurate: true
+      }
+    } 
+  } else {
+    if(isWithinRange(serverTime, eightPM, twelveAMEnd) && nextSpawnDate.includes('AM')){
+      return {
+        nextSpawn: addDays(nextSpawnDate, 1),
+        countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
+        accurate: true
+      }
+    } else {
+      return {
+        nextSpawn: addHours(nextSpawnDate, 4),
+        countdown: formatCountdown(nextSpawnDate, serverTime),
+        accurate: false
+      }
+    }
+  }
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -456,5 +519,6 @@ module.exports = {
   reminderInstructions,
   reminderDetails,
   reminderReactionMessage,
-  getWorldBossData
+  getWorldBossData,
+  validateSpawnDate
 }
