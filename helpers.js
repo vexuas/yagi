@@ -8,6 +8,7 @@ const {
   differenceInMinutes,
   differenceInSeconds,
   differenceInMilliseconds,
+  subDays,
   subHours,
   subMinutes,
   addHours,
@@ -443,12 +444,13 @@ const getWorldBossData = async () => {
       countdown: actualSheetValues[3]
     }
   } catch(e){
+    console.log(e);
     //Add error handler here later
     throw e;
   }
 }
 //----------
-const validateSpawnDate = (serverTime, worldBoss) => {
+const validateSpawnDate = (worldBoss, serverTime) => {
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
@@ -460,43 +462,45 @@ const validateSpawnDate = (serverTime, worldBoss) => {
   const eightPM = addHours(twelveAMStart, 20);
   const twelveAMEnd = endOfDay(serverTime);
 
-  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime); //See if nextSpawnDate is later than the current serverTime; useful to know whether the sheet has been updated
-  //Checks if sheet is up-to-date; returns true if countdown is positve
+  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime); //See if nextSpawnDate is later than the current serverTime; positive means that it is
+
+  //Checks if nextSpawnDate is later than the current server time
   if(countdownValidity >= 0){
-    //12AM - 4AM
-    if(isWithinRange(serverTime, twelveAMStart, fourAM)) {
-      if(isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)) {
-        return {
-          nextSpawn: addHours(subDays(nextSpawnDate, 1), 4),
-          countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
-          accurate: false
-        }
-      } else {
-        return {
-          nextSpawn: nextSpawnDate,
-          countdown: formatCountdown(nextSpawnDate, serverTime),
-          accurate: true
-        }
-      }
-      //4AM - 12AM
-    } else {
+    //If it is later, checks if it's spawning within 4 hours
+    if(countdownValidity <= 14400000){
+      //12AM - 12AM
       return {
+        serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
         nextSpawn: nextSpawnDate,
         countdown: formatCountdown(nextSpawnDate, serverTime),
         accurate: true
       }
-    } 
+    } else {
+      //If it's happening over four hours, check if serverTime is between 12AM - 4AM and if the spawnDate is between 8PM - 12AM
+      if(isWithinRange(serverTime, twelveAMStart, fourAM) && isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)) {
+        return {
+          serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
+          nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'MMMM D, YYYY h:mm:ss A'),
+          countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
+          accurate: false
+        }
+      }
+    }
   } else {
+    //Server Time is late night and next spawn date has been reset back to start of day when it should be the next day
     if(isWithinRange(serverTime, eightPM, twelveAMEnd) && nextSpawnDate.includes('AM')){
       return {
-        nextSpawn: addDays(nextSpawnDate, 1),
+        serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
+        nextSpawn: format(addDays(nextSpawnDate, 1), 'MMMM D, YYYY h:mm:ss A'),
         countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
         accurate: true
       }
     } else {
+      //No one updated sheet and we default +4 hours to previous nextSpawn data
       return {
-        nextSpawn: addHours(nextSpawnDate, 4),
-        countdown: formatCountdown(nextSpawnDate, serverTime),
+        serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
+        nextSpawn: format(addHours(nextSpawnDate, 4), 'MMMM D, YYYY h:mm:ss A'),
+        countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
         accurate: false
       }
     }

@@ -86,7 +86,7 @@ yagi.once('ready', async () => {
     }, 120000);
     const worldBossData = await getWorldBossData();
     const serverTime = getServerTime();
-    const nextSpawnDate = validateSpawnDate(serverTime, worldBossData);
+    const nextSpawnDate = validateSpawnDate(worldBossData, serverTime);
     console.log(worldBossData);
     console.log(format(serverTime, 'MMMM D YYYY hh:mm:ss A'));
     console.log(nextSpawnDate);
