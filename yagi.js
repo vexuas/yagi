@@ -4,14 +4,14 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateSpawnDate } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
 const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
-const { createTimerTable } = require('./database/timer-db.js');
+const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { format } = require('date-fns');
 const activitylist = [
@@ -62,6 +62,12 @@ yagi.once('ready', async () => {
       })
     })
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
+    const worldBossData = await getWorldBossData();
+    const serverTime = getServerTime();
+    const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
+    console.log(worldBossData);
+    console.log(format(serverTime, 'MMMM D YYYY hh:mm:ss A'));
+    console.log(validatedWorldBossData);
     /**
      * Initialise Database and its tables
      * Will create them if they don't exist
@@ -74,7 +80,7 @@ yagi.once('ready', async () => {
     createReminderTable(yagiDatabase);
     cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
     createReminderUserTable(yagiDatabase);
-    createTimerTable(yagiDatabase);
+    createTimerTable(yagiDatabase, validatedWorldBossData);
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -84,22 +90,16 @@ yagi.once('ready', async () => {
       const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
-    const worldBossData = await getWorldBossData();
-    const serverTime = getServerTime();
-    const nextSpawnDate = validateSpawnDate(worldBossData, serverTime);
-    console.log(worldBossData);
-    console.log(format(serverTime, 'MMMM D YYYY hh:mm:ss A'));
-    console.log(nextSpawnDate);
     /**
      * Every 10 minutes
      */
-    setInterval(() => {
+    setInterval(async () => {
       //Check if timer table row exists
       //If it does, check if accurate and not from previous spawns
       //Ping if it isn't
       //Either way when we get the data we clear existing timeouts and set setTimouts for each reminder in our database
       console.log('Reminder Interval');
-      console.log(format(getServerTime(), 'MMMM D YYYY hh:mm:ss a'));
+      getCurrentTimerData();
     }, 30000)
   } catch(e){
     sendErrorLog(yagi, e);

@@ -16,8 +16,7 @@ const {
   format,
   isWithinRange,
   startOfDay,
-  endOfDay,
-  isAfter
+  endOfDay
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
@@ -462,7 +461,7 @@ const getWorldBossData = async () => {
  * @param worldBoss - world boss data object from spreadsheet
  * @param serverTime - current server time
  */
-const validateSpawnDate = (worldBoss, serverTime) => {
+const validateWorldBossData = (worldBoss, serverTime) => {
   //Gets current day, month and year of server time
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
@@ -475,7 +474,8 @@ const validateSpawnDate = (worldBoss, serverTime) => {
    * Server Time = July 17, 2021 10:40:00 AM
    * nextSpawnDate = July 17, 2021 {{whatever time from sheet}}
    **/ 
-  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${worldBoss.nextSpawn}`;
+  const nextSpawnDate = `${currentMonth} ${currentDay} ${currentYear} ${worldBoss.nextSpawn}`;
+  let actualSpawnDate;
 
   //Cut-off time variables of current day  
   const twelveAMStart = startOfDay(serverTime);
@@ -498,11 +498,14 @@ const validateSpawnDate = (worldBoss, serverTime) => {
        * Normal timer for the full day
        * If we have the full timestamp the function stops here but we can't have everything in life
        **/ 
+      actualSpawnDate = nextSpawnDate;
       return {
-        serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
-        nextSpawn: nextSpawnDate,
+        serverTime: format(serverTime, 'MMMM D YYYY h:mm:ss A'),
+        nextSpawn: actualSpawnDate,
         countdown: formatCountdown(nextSpawnDate, serverTime),
-        accurate: true
+        accurate: true,
+        location: formatLocation(worldBoss.location),
+        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     } else {
       /**
@@ -515,11 +518,14 @@ const validateSpawnDate = (worldBoss, serverTime) => {
        * If it is, we substract a day from nextSpawnDate and add 4 hours to it as well as for countdown
        */
       if(isWithinRange(serverTime, twelveAMStart, fourAM) && isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)) {
+        actualSpawnDate = format(addHours(subDays(nextSpawnDate, 1), 4), 'MMMM D YYYY h:mm:ss A');
         return {
-          serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
-          nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'MMMM D, YYYY h:mm:ss A'),
+          serverTime: format(serverTime, 'MMMM D YYYY h:mm:ss A'),
+          nextSpawn: actualSpawnDate,
           countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
-          accurate: false
+          accurate: false,
+          location: formatLocation(worldBoss.location),
+          projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
         }
       }
     }
@@ -535,11 +541,14 @@ const validateSpawnDate = (worldBoss, serverTime) => {
      * If it is, we add a day to nextSpawnDate as well as for countdown
      */
     if(isWithinRange(serverTime, eightPM, twelveAMEnd) && nextSpawnDate.includes('AM')){
+      actualSpawnDate = format(addDays(nextSpawnDate, 1), 'MMMM D YYYY h:mm:ss A')
       return {
-        serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
-        nextSpawn: format(addDays(nextSpawnDate, 1), 'MMMM D, YYYY h:mm:ss A'),
+        serverTime: format(serverTime, 'MMMM D YYYY hh:mm:ss A'),
+        nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
-        accurate: true
+        accurate: true,
+        location: formatLocation(worldBoss.location),
+        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     } else {
       /**
@@ -547,11 +556,14 @@ const validateSpawnDate = (worldBoss, serverTime) => {
        * In this case, it's during 12AM-8PM and only due to leads not updating the sheet
        * We default +4 hours to previous nextSpawn data
        */
+      actualSpawnDate = format(addHours(nextSpawnDate, 4), 'MMMM D YYYY h:mm:ss A');
       return {
-        serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
-        nextSpawn: format(addHours(nextSpawnDate, 4), 'MMMM D, YYYY h:mm:ss A'),
+        serverTime: format(serverTime, 'MMMM D YYYY hh:mm:ss A'),
+        nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
-        accurate: false
+        accurate: false,
+        location: formatLocation(worldBoss.location),
+        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     }
   }
@@ -574,5 +586,5 @@ module.exports = {
   reminderDetails,
   reminderReactionMessage,
   getWorldBossData,
-  validateSpawnDate
+  validateWorldBossData
 }
