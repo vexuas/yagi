@@ -450,25 +450,54 @@ const getWorldBossData = async () => {
   }
 }
 //----------
+/**
+ * The ultimate voodoo
+ * As the spreadsheet only offers a time variable and not the full date/timestamp for next spawn, we cannot fully rely on it as there would be gaps on some spawn times within the day
+ * E.g. if server time is late night and next spawn should be the next day.
+ * This function tries to get it right as much as possible by using the date of the server time itself and then transforming the raw next spawn time data into a date
+ * With how complicated it is already to work with time in js, adding the fact that you only have time you'd expect a whole lotta voodoo and headaches trying to get this reasoably usable
+ * So far the testing suites are all working fine so it should be quite stable even if the sheet doesn't get updated once
+ * However, there is no handler for when the sheet hasn't been updated > once but that's a risk I'm willing to take and trust that the leads won't let that happen
+ * As it stands, I'm just hoping it holds up until I finally get yagi automated and not rely on human input from the sheet
+ * @param worldBoss - world boss data object from spreadsheet
+ * @param serverTime - current server time
+ */
 const validateSpawnDate = (worldBoss, serverTime) => {
+  //Gets current day, month and year of server time
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
 
+  /**
+   * Tentative nextSpawn date
+   * Takes the above variables and assumes the next spawn date is at the same date
+   * Example:
+   * Server Time = July 17, 2021 10:40:00 AM
+   * nextSpawnDate = July 17, 2021 {{whatever time from sheet}}
+   **/ 
   const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${worldBoss.nextSpawn}`;
 
+  //Cut-off time variables of current day  
   const twelveAMStart = startOfDay(serverTime);
   const fourAM = addHours(twelveAMStart, 4);
   const eightPM = addHours(twelveAMStart, 20);
   const twelveAMEnd = endOfDay(serverTime);
 
-  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime); //See if nextSpawnDate is later than the current serverTime; positive means that it is
+  /**
+   * See the difference in milliseconds between the next spawn date and server time
+   * Positive means that next spawn date happens after the server time
+   * Negative means that next spawn date happens before the server time
+   **/
+  const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime); 
 
   //Checks if nextSpawnDate is later than the current server time
   if(countdownValidity >= 0){
-    //If it is later, checks if it's spawning within 4 hours
+    //If it is later, checks if it's spawning within 4 hours as time between world boss spawns should only be 4 hours
     if(countdownValidity <= 14400000){
-      //12AM - 12AM
+      /**
+       * Normal timer for the full day
+       * If we have the full timestamp the function stops here but we can't have everything in life
+       **/ 
       return {
         serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
         nextSpawn: nextSpawnDate,
@@ -476,7 +505,15 @@ const validateSpawnDate = (worldBoss, serverTime) => {
         accurate: true
       }
     } else {
-      //If it's happening over four hours, check if serverTime is between 12AM - 4AM and if the spawnDate is between 8PM - 12AM
+      /**
+       * If it's happening over 4 hours, this means that the tentative nextSpawnDate is wrong and ahead
+       * This happens when the server time is in a new day and the sheet has not been updated yet i.e.:
+       * Server time: July 18, 1:30:00 AM
+       * Sheet next spawn data: 11:00:00 PM
+       * Which makes our tentative next spawn date: July 18, 11:00:00 PM hence causes the countdown to be more than 4 hours
+       * To fix this, we check if server time is in the early morning 12AM-4M and if the sheet data is from 8PM-12AM
+       * If it is, we substract a day from nextSpawnDate and add 4 hours to it as well as for countdown
+       */
       if(isWithinRange(serverTime, twelveAMStart, fourAM) && isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)) {
         return {
           serverTime: format(serverTime, 'MMMM D, YYYY h:mm:ss A'),
@@ -487,7 +524,16 @@ const validateSpawnDate = (worldBoss, serverTime) => {
       }
     }
   } else {
-    //Server Time is late night and next spawn date has been reset back to start of day when it should be the next day
+    /**
+     * NextSpawnDate is happening before the server time
+     * In this case, the sheet is updated but our tentative nextSpawnDate is wrong and way behind
+     * This happens when the server time is still today but the actual next spawn is happening in a new day i.e.:
+     * Server time: July 17, 11:00:00 PM
+     * Sheet next spawn data: 1:30:00 AM
+     * Which makes our tentative next spawn date: July 17, 1:30:00 AM hence causes the countdown to be way behind
+     * To fix this, we check if server time is in the late night 8PM-12AM and if nextSpawnDate is in the morning
+     * If it is, we add a day to nextSpawnDate as well as for countdown
+     */
     if(isWithinRange(serverTime, eightPM, twelveAMEnd) && nextSpawnDate.includes('AM')){
       return {
         serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
@@ -496,7 +542,11 @@ const validateSpawnDate = (worldBoss, serverTime) => {
         accurate: true
       }
     } else {
-      //No one updated sheet and we default +4 hours to previous nextSpawn data
+      /**
+       * NextSpawnDate is happening before the server time
+       * In this case, it's during 12AM-8PM and only due to leads not updating the sheet
+       * We default +4 hours to previous nextSpawn data
+       */
       return {
         serverTime: format(serverTime, 'MMMM D, YYYY hh:mm:ss A'),
         nextSpawn: format(addHours(nextSpawnDate, 4), 'MMMM D, YYYY h:mm:ss A'),
