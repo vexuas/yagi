@@ -578,12 +578,13 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
   const spawnText = `${worldBoss.location.toLowerCase()}, ${format(worldBoss.next_spawn, 'h:mm:ss A')}`;
   const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
+  const inaccurateText = `*Sheet data isn't up to date, timer accuracy might be off*`;
 
   const spawnFooter = `This feature is currently in beta. If you have any feedback, feel free to leave it here!\nFor questions, suggestions and bug reports, make sure to join the support server!`
 
   const embed = {
     title: 'Olympus | World Boss',
-    description: `${serverTimeDescription}\n${spawnDescription}`,
+    description: `${serverTimeDescription}\n${spawnDescription}\n\n${worldBoss.accurate ? '' : inaccurateText}`,
     thumbnail: {
       url:
         'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
@@ -609,7 +610,7 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
       }
     ]
   }
-  channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  return channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 const sendHealthLog = (channel, rawData, trueData) => {

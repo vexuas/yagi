@@ -248,7 +248,7 @@ const startReminders = (client) => {
 
         database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
           const reminderTimeout = setTimeout(() => {
-            sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+            const reminderTimerMessage = sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
           }, 30000); //differenceInMilliseconds(timer.next_spawn, getServerTime()) - 300000
 
           database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {

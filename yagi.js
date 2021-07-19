@@ -13,7 +13,6 @@ const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = 
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
-const { format } = require('date-fns');
 const activitylist = [
   'info | bot information',
   'ping me for prefix!',
