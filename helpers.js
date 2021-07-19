@@ -578,21 +578,22 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
   const spawnText = `${worldBoss.location.toLowerCase()}, ${format(worldBoss.next_spawn, 'h:mm:ss A')}`;
   const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
-  const inaccurateText = `*Sheet data isn't up to date, timer accuracy might be off*`;
+  const inaccurateText = `**Note that sheet data isn't up to date, timer accuracy might be off`;
 
-  const spawnFooter = `This feature is currently in beta. If you have any feedback, feel free to leave it here!\nFor questions, suggestions and bug reports, make sure to join the support server!`
+  //Don't forget to add typeform and yagi's discord server invite
+  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://www.google.com/)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`
 
   const embed = {
     title: 'Olympus | World Boss',
-    description: `${serverTimeDescription}\n${spawnDescription}\n\n${worldBoss.accurate ? '' : inaccurateText}`,
+    description: `${serverTimeDescription}\n${spawnDescription}\n\n${spawnFooter}`,
     thumbnail: {
       url:
         'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
     },
-    footer: {
-      text: spawnFooter
-    },
     color: 32896,
+    footer: {
+      text: worldBoss.accurate ? '' : inaccurateText
+    },
     fields: [
       {
         name: 'Location',

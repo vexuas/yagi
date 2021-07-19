@@ -160,7 +160,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
     validateSpawn(worldBossData, getServerTime()).nextSpawn
   }${grvAcnt}`;
-  const spawnFooter = validateSpawn(worldBossData, getServerTime()).accurate ? '' : `**Note that sheet data isn't up to date, timer might be a couple of minutes off`;
+  const spawnFooter = validateSpawn(worldBossData, getServerTime()).accurate ? '' : `**Note that sheet data isn't up to date, timer accuracy might be off`;
   /** 
    * This is far easier to get countdown but it isn't as reliable and accurate
    * I'll just leave it here for reference
