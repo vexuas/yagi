@@ -9,7 +9,7 @@ const { insertNewReminderReactionMessage} = require('./reminder-reaction-message
  * @param database - yagi database
  */
 const createReminderTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT, reaction_message_id TEXT)');
+  database.run('CREATE TABLE IF NOT EXISTS Reminder(uuid TEXT NOT NULL PRIMARY KEY, created_at DATE NOT NULL, enabled BOOLEAN NOT NULL, enabled_by TEXT, enabled_at DATE, disabled_by TEXT, disabled_at DATE, type TEXT NOT NULL, role_uuid TEXT, channel_id TEXT, guild_id TEXT, reaction_message_id TEXT, timer BLOB)');
 }
 /**
  * **REFACTOR: Make it more easily readable**
@@ -98,7 +98,7 @@ const enableReminder = (message) => {
     /**
      * Create new reminder and insert it into our database table
      */
-    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id, reaction_message_id) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id, $reaction_message_id)', {
+    database.run('INSERT INTO Reminder(uuid, created_at, enabled, enabled_by, enabled_at, disabled_by, disabled_at, type, role_uuid, channel_id, guild_id, reaction_message_id, timer) VALUES ($uuid, $created_at, $enabled, $enabled_by, $enabled_at, $disabled_by, $disabled_at, $type, $role_uuid, $channel_id, $guild_id, $reaction_message_id, $timer)', {
       $uuid: reminderUUID,
       $created_at: new Date(),
       $enabled: true,
@@ -110,7 +110,8 @@ const enableReminder = (message) => {
       $role_uuid: null,
       $channel_id: message.channel.id,
       $guild_id: message.guild.id,
-      $reaction_message_id: null
+      $reaction_message_id: null,
+      $timer: null
     }, err => {
       if(err){
         console.log(err);
@@ -226,10 +227,30 @@ const sendReminderInformation = (message, yagi) => {
     }
   })
 }
+const startReminders = (client) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.each(`SELECT * FROM Reminder WHERE enabled = ${true}`, (error, reminder) => {
+    if(reminder.timer){
+      clearTimeout(reminder.timer);
+    }
+    const reminderChannel = client.channels.cache.get(reminder.channel_id);
+
+    const reminderTimeout = setTimeout(() => {
+      reminderChannel.send(`I'm reminding you!`)
+    }, 30000);
+    
+    database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
+      if(error){
+        console.log(error);
+      }
+    });
+  })
+}
 module.exports = {
   createReminderTable,
   insertNewReminder,
   enableReminder,
   disableReminder,
-  sendReminderInformation
+  sendReminderInformation,
+  startReminders
 }

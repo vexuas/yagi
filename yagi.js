@@ -8,7 +8,7 @@ const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorl
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
-const { createReminderTable } = require('./database/reminder-db.js');
+const { createReminderTable, startReminders } = require('./database/reminder-db.js');
 const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
@@ -93,14 +93,15 @@ yagi.once('ready', async () => {
     /**
      * Every 10 minutes
      */
+    startReminders(yagi);
     setInterval(async () => {
       //Check if timer table row exists
       //If it does, check if accurate and not from previous spawns
       //Ping if it isn't
       //Either way when we get the data we clear existing timeouts and set setTimouts for each reminder in our database
       console.log('Reminder Interval');
-      getCurrentTimerData();
-    }, 30000)
+      getCurrentTimerData(yagi);
+    }, 60000, yagi)
   } catch(e){
     sendErrorLog(yagi, e);
   }

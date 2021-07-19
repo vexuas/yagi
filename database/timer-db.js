@@ -1,5 +1,7 @@
 const sqlite = require('sqlite3').verbose();
 const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData } = require('../helpers');
+const { startReminders } = require('./reminder-db');
+const { isBefore } = require('date-fns');
 
 /**
  * Creates Timer table inside the Yagi Database
@@ -64,22 +66,26 @@ const updateTimerData = (worldBoss, timer) => {
     }
   })
 }
-const getCurrentTimerData = () => {
+const getCurrentTimerData = (client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, async (error, timer) => {
-    if(error){
-      console.log(error)
-    }
-    if(timer.accurate === 1){
-      console.log(timer);
-    } else {
-      const worldBossData = await getWorldBossData();
+  database.serialize(() => {
+    database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, async (error, timer) => {
+      if(error){
+        console.log(error)
+      }
       const serverTime = getServerTime();
-      const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
-      console.log(validatedWorldBossData);
-
-      updateTimerData(validatedWorldBossData, timer);
-    }
+  
+      if(timer.accurate === 0 || isBefore(timer.next_spawn, serverTime) ){
+        const worldBossData = await getWorldBossData();
+        
+        const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
+        updateTimerData(validatedWorldBossData, timer);
+  
+        const healthChannel = client.channels.cache.get('866297328159686676');
+        healthChannel.send('Pinged sheet and updated timer data');
+      }
+    })
+    startReminders(client);
   })
 }
 
