@@ -12,7 +12,7 @@ const { isBefore } = require('date-fns');
  * @param database - yagi database
  * @param worldBoss - validated world boss object data; note that we want our database to be as accurate as possible hence we don't use the raw data from the sheet
  */
-const createTimerTable = (database, worldBoss) => {
+const createTimerTable = (database, worldBoss, client) => {
   //Wrapped in a serlialize to ensure that each method is called in order in which it is initialised
   database.serialize(() => {
     //Creates Timer table with relevant columns if it does not exist
@@ -30,7 +30,8 @@ const createTimerTable = (database, worldBoss) => {
         //Create a new timer if it doesn't
         insertNewTimer(database, worldBoss);
       }
-    }) 
+    });
+    startReminders(client); //Start existing enabled reminders on their timer countdowns on initialisation
   })
 }
 /**

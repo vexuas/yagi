@@ -579,7 +579,7 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   const spawnText = `${worldBoss.location.toLowerCase()}, ${format(worldBoss.next_spawn, 'h:mm:ss A')}`;
   const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
 
-  const spawnFooter = `This feature is currently in beta. If you have any feedback, feel free to leave it here!\nFor questions and suggestions, make sure to join the support server!`
+  const spawnFooter = `This feature is currently in beta. If you have any feedback, feel free to leave it here!\nFor questions, suggestions and bug reports, make sure to join the support server!`
 
   const embed = {
     title: 'Olympus | World Boss',
