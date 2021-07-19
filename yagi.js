@@ -82,7 +82,7 @@ yagi.once('ready', async () => {
     createReminderTable(yagiDatabase);
     cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
     createReminderUserTable(yagiDatabase);
-    createTimerTable(yagiDatabase, validatedWorldBossData); //timer table to store up-to-date world boss data; also used for reminders to work
+    createTimerTable(yagiDatabase, validatedWorldBossData, yagi); //timer table to store up-to-date world boss data; also used for reminders to work
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -98,10 +98,9 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
-    startReminders(yagi); //Start existing enabled reminders on their timer countdowns on initialisation
     setInterval(async () => {
       getCurrentTimerData(yagi);
-    }, 60000, yagi)
+    }, 600000, yagi)
   } catch(e){
     sendErrorLog(yagi, e);
   }
