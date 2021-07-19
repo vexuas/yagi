@@ -66,6 +66,13 @@ const updateTimerData = (worldBoss, timer) => {
     }
   })
 }
+/**
+ * Function to stay up to date with world boss data and be accurate as possible
+ * Gets called in the client.once('ready') hook and inside a setInterval to constantly update our timer data
+ * To lessen the amount of unnecessary calls, we only want to make a request to the spreadsheet if our previous data is not accurate or the next spawn date has already passed
+ * Regardless of a ping to the sheet, we call the startReminders to restart the timers for enabled reminders
+ * @param client - yagi client; use to get the discord channel to send health logs and ensure that our timer is working
+ */
 const getCurrentTimerData = (client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
@@ -81,8 +88,8 @@ const getCurrentTimerData = (client) => {
         const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
         updateTimerData(validatedWorldBossData, timer);
   
-        const healthChannel = client.channels.cache.get('866297328159686676');
-        healthChannel.send('Pinged sheet and updated timer data');
+        const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+        healthChannel.send('Pinged sheet and updated timer data'); //Currently only a text, might want to send more info
       }
     })
     startReminders(client);

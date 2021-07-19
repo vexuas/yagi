@@ -227,6 +227,14 @@ const sendReminderInformation = (message, yagi) => {
     }
   })
 }
+/**
+ * Function to start the timers for each enabled reminder
+ * With the nature of how goat spawns do not stay fixed, we need to be constantly requesting and updating our timer dates
+ * This would require us to call this function and restart reminders every time we make a call to the wb spreadsheet
+ * Once we do get the updated data, we clear any existing timers and then start a new timer with the current next spawn date
+ * In the end we update the reminder with the new timer id so we know which one to clear in the next iteration;
+ * @param client - yagi client; to get the discord channel to send reminders in
+ */
 const startReminders = (client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.each(`SELECT * FROM Reminder WHERE enabled = ${true}`, (error, reminder) => {
@@ -237,8 +245,8 @@ const startReminders = (client) => {
 
     const reminderTimeout = setTimeout(() => {
       reminderChannel.send(`I'm reminding you!`)
-    }, 30000);
-    
+    }, 30000); //Replace this with difference in milliseconds of next spawn date and date now
+
     database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
       if(error){
         console.log(error);

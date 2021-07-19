@@ -62,12 +62,14 @@ yagi.once('ready', async () => {
       })
     })
     console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
+    /**
+     * Initial call to the Olympus spreadsheet and get world boss data
+     * As the public sheet isn't accurate with the timestamps given (only returns time and not date), we validate the data first. See more info in the helpers file
+     * After the data gets validated and is as accurate as possible now, we'll then be using this to store in our database
+     */
     const worldBossData = await getWorldBossData();
     const serverTime = getServerTime();
     const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
-    console.log(worldBossData);
-    console.log(format(serverTime, 'MMMM D YYYY hh:mm:ss A'));
-    console.log(validatedWorldBossData);
     /**
      * Initialise Database and its tables
      * Will create them if they don't exist
@@ -80,7 +82,7 @@ yagi.once('ready', async () => {
     createReminderTable(yagiDatabase);
     cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
     createReminderUserTable(yagiDatabase);
-    createTimerTable(yagiDatabase, validatedWorldBossData);
+    createTimerTable(yagiDatabase, validatedWorldBossData); //timer table to store up-to-date world boss data; also used for reminders to work
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -91,15 +93,13 @@ yagi.once('ready', async () => {
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
     /**
-     * Every 10 minutes
+     * Get current timer data from sheet every 30 minutes
+     * We want to do this as goats spawn are not fixed hence we can't hardcode reminders with a set date
+     * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
+     * For more documentation, see the timer-db file
      */
-    startReminders(yagi);
+    startReminders(yagi); //Start existing enabled reminders on their timer countdowns on initialisation
     setInterval(async () => {
-      //Check if timer table row exists
-      //If it does, check if accurate and not from previous spawns
-      //Ping if it isn't
-      //Either way when we get the data we clear existing timeouts and set setTimouts for each reminder in our database
-      console.log('Reminder Interval');
       getCurrentTimerData(yagi);
     }, 60000, yagi)
   } catch(e){
