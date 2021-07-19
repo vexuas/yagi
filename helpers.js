@@ -504,7 +504,7 @@ const validateWorldBossData = (worldBoss, serverTime) => {
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(nextSpawnDate, serverTime),
         accurate: true,
-        location: formatLocation(worldBoss.location),
+        location: worldBoss.location,
         projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     } else {
@@ -524,7 +524,7 @@ const validateWorldBossData = (worldBoss, serverTime) => {
           nextSpawn: actualSpawnDate,
           countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
           accurate: false,
-          location: formatLocation(worldBoss.location),
+          location: worldBoss.location,
           projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
         }
       }
@@ -547,7 +547,7 @@ const validateWorldBossData = (worldBoss, serverTime) => {
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
         accurate: true,
-        location: formatLocation(worldBoss.location),
+        location: worldBoss.location,
         projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     } else {
@@ -562,11 +562,54 @@ const validateWorldBossData = (worldBoss, serverTime) => {
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
         accurate: false,
-        location: formatLocation(worldBoss.location),
+        location: worldBoss.location,
         projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
       }
     }
   }
+}
+//----------
+const codeBlock = (text) => {
+  return "`" + text + "`";
+}
+//----------
+const sendReminderTimerEmbed = (channel, role, worldBoss) => {
+  const serverTime = getServerTime();
+  const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
+  const spawnText = `${worldBoss.location.toLowerCase()}, ${format(worldBoss.next_spawn, 'h:mm:ss A')}`;
+  const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
+
+  const spawnFooter = `This feature is currently in beta. If you have any feedback, feel free to leave it here!\nFor questions and suggestions, make sure to join the support server!`
+
+  const embed = {
+    title: 'Olympus | World Boss',
+    description: `${serverTimeDescription}\n${spawnDescription}`,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
+    },
+    footer: {
+      text: spawnFooter
+    },
+    color: 32896,
+    fields: [
+      {
+        name: 'Location',
+        value: '```fix\n\n' + formatLocation(worldBoss.location) + '```'
+      },
+      {
+        name: 'Countdown',
+        value: '```xl\n\n'+ formatCountdown(worldBoss.next_spawn, serverTime) + '```',
+        inline: true
+      },
+      {
+        name: 'Time of Spawn',
+        value: '```xl\n\n'+ format(worldBoss.next_spawn, 'h:mm:ss A') + '```',
+        inline: true
+      }
+    ]
+  }
+  channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 module.exports = {
@@ -586,5 +629,7 @@ module.exports = {
   reminderDetails,
   reminderReactionMessage,
   getWorldBossData,
-  validateWorldBossData
+  validateWorldBossData,
+  codeBlock,
+  sendReminderTimerEmbed
 }

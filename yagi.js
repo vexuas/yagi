@@ -101,7 +101,7 @@ yagi.once('ready', async () => {
     startReminders(yagi); //Start existing enabled reminders on their timer countdowns on initialisation
     setInterval(async () => {
       getCurrentTimerData(yagi);
-    }, 60000, yagi)
+    }, 600000, yagi)
   } catch(e){
     sendErrorLog(yagi, e);
   }

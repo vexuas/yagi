@@ -1,7 +1,8 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage, sendReminderTimerEmbed, getServerTime } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
+const { differenceInMilliseconds } = require('date-fns');
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -238,20 +239,26 @@ const sendReminderInformation = (message, yagi) => {
 const startReminders = (client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.each(`SELECT * FROM Reminder WHERE enabled = ${true}`, (error, reminder) => {
-    if(reminder.timer){
-      clearTimeout(reminder.timer);
+    if(reminder){
+      database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+        if(reminder.timer){
+          clearTimeout(reminder.timer);
+        }
+        const reminderChannel = client.channels.cache.get(reminder.channel_id);
+
+        database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
+          const reminderTimeout = setTimeout(() => {
+            sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+          }, differenceInMilliseconds(timer.next_spawn, getServerTime()) - 300000); //Replace this with difference in milliseconds of next spawn date and date now
+
+          database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
+            if(error){
+              console.log(error);
+            }
+          });
+        })
+      })
     }
-    const reminderChannel = client.channels.cache.get(reminder.channel_id);
-
-    const reminderTimeout = setTimeout(() => {
-      reminderChannel.send(`I'm reminding you!`)
-    }, 30000); //Replace this with difference in milliseconds of next spawn date and date now
-
-    database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
-      if(error){
-        console.log(error);
-      }
-    });
   })
 }
 module.exports = {
