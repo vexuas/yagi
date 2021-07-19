@@ -99,7 +99,7 @@ yagi.once('ready', async () => {
      */
     setInterval(() => {
       getCurrentTimerData(yagi);
-    }, 60000, yagi)
+    }, 1200000, yagi)
     const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
     sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
   } catch(e){

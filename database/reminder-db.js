@@ -247,9 +247,13 @@ const startReminders = (client) => {
         const reminderChannel = client.channels.cache.get(reminder.channel_id);
 
         database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
-          const reminderTimeout = setTimeout(() => {
-            const reminderTimerMessage = sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
-          }, 30000); //differenceInMilliseconds(timer.next_spawn, getServerTime()) - 300000
+          const reminderTimeout = setTimeout(async () => {
+            const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+            setTimeout(async () => {
+              await reminderTimerMessage.edit('World boss has started in v1. If you are late, ask in-game for the current channel spawn'); //Edit timer message to display that world boss has started
+              await reminderTimerMessage.delete({ timeout: 15000}); //Delete timer message after a certain time as world boss has ended
+            }, 30000);
+          }, 60000); //differenceInMilliseconds(timer.next_spawn, getServerTime()) - 300000
 
           database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
             if(error){
