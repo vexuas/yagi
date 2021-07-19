@@ -612,6 +612,37 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
+const sendHealthLog = (channel, rawData, trueData) => {
+  const embed = {
+    title: 'Yagi | Health Log',
+    description: 'Requested data from sheet',
+    color: trueData.accurate ? 3066993 : 16776960,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+    },
+    fields: [
+      {
+        name: 'Server Time',
+        value: codeBlock(trueData.serverTime)
+      },
+      {
+        name: 'Sheet Data',
+        value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(rawData.countdown)}`
+      },
+      {
+        name: 'True Data',
+        value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}`
+      },
+      {
+        name: 'Accurate',
+        value: trueData.accurate ? 'Yes' : 'No'
+      }
+    ]
+  }
+  channel.send({ embed });
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -631,5 +662,6 @@ module.exports = {
   getWorldBossData,
   validateWorldBossData,
   codeBlock,
-  sendReminderTimerEmbed
+  sendReminderTimerEmbed,
+  sendHealthLog
 }

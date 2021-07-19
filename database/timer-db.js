@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData } = require('../helpers');
+const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('../helpers');
 const { startReminders } = require('./reminder-db');
 const { isBefore } = require('date-fns');
 
@@ -82,15 +82,15 @@ const getCurrentTimerData = (client) => {
         console.log(error)
       }
       const serverTime = getServerTime();
+      const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
   
       if(timer.accurate === 0 || isBefore(timer.next_spawn, serverTime) ){
         const worldBossData = await getWorldBossData();
         
         const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
         updateTimerData(validatedWorldBossData, timer);
-  
-        const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
-        healthChannel.send('Pinged sheet and updated timer data'); //Currently only a text, might want to send more info
+        
+        sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
       }
     })
     startReminders(client);
