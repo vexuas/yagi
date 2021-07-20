@@ -661,7 +661,7 @@ const sendHealthLog = (channel, rawData, trueData) => {
       },
       {
         name: 'True Data',
-        value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}`
+        value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`
       },
       {
         name: 'Accurate',

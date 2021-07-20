@@ -18,7 +18,7 @@ const createReminderTable = (database) => {
  * Either updates an existing reminder when it's disabled or calls the insertNewReminder function if it's a brand new reminder
  * @param message - message data object; taken from the on('message') event hook
  */
-const enableReminder = (message) => {
+const enableReminder = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
@@ -80,7 +80,7 @@ const enableReminder = (message) => {
             })
           } else {
             //Creates a new reminder if it doesn't exist
-            insertNewReminder(message);
+            insertNewReminder(message, client);
           }
         })
       }
@@ -92,7 +92,7 @@ const enableReminder = (message) => {
  * After creating the reminder, the createReminderRole function gets called to create the role used by yagi to ping users
  * @param message - message data object; taken from the on('message') event hook
  */
- const insertNewReminder = (message) => {
+ const insertNewReminder = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   const reminderUUID = generateUUID();
   database.serialize(() => {
@@ -141,16 +141,18 @@ const enableReminder = (message) => {
           if(error){
             console.log(error);
           }
+          // startReminders(database, client);
         })
       } else {
         database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
           if(error){
             console.log(error);
           }
-          createReminderRole(message, reminder);
+          createReminderRole(message, reminder, client);
         })
       }
     })
+    
   })
 }
 /**
@@ -248,14 +250,15 @@ const startReminders = (database, client) => {
         database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
           const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
           //Only start timers if nextSpawn date is after current server time
-          if(timerCountdown >= 0) {
+          if(timerCountdown >= 600000) {
+            console.log('Restarting Reminders');
             const reminderTimeout = setTimeout(async () => {
               const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
               setTimeout(async () => {
                 await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
-                await reminderTimerMessage.delete({ timeout: 15000 }); //Delete timer message after a certain time as world boss has ended
-              }, 30000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
-            }, 60000); //600000 - 10 minutes before world boss spawns 
+                await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
+              }, 600000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
+            }, timerCountdown - 600000); //600000 - 10 minutes before world boss spawns 
   
             database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
               if(error){
