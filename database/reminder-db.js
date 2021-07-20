@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage, sendReminderTimerEmbed, getServerTime } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
 const { createReminderRole } = require('./role-db');
 const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
@@ -247,12 +247,13 @@ const startReminders = (database, client) => {
 
         database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
           const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
+          //Only start timers if nextSpawn date is after current server time
           if(timerCountdown >= 0) {
             const reminderTimeout = setTimeout(async () => {
               const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
               setTimeout(async () => {
-                await reminderTimerMessage.edit('World boss has started in v1. If you are late, ask in-game for the current channel spawn'); //Edit timer message to display that world boss has started
-                // await reminderTimerMessage.delete({ timeout: 15000}); //Delete timer message after a certain time as world boss has ended
+                await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
+                await reminderTimerMessage.delete({ timeout: 15000 }); //Delete timer message after a certain time as world boss has ended
               }, 30000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
             }, 60000); //600000 - 10 minutes before world boss spawns 
   

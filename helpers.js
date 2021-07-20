@@ -614,6 +614,33 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   return channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
+const editReminderTimerStatus = (message, role, worldBoss) => {
+  const serverTime = getServerTime();
+  const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
+  const spawnText = `${worldBoss.location.toLowerCase()}, ${format(worldBoss.next_spawn, 'h:mm:ss A')}`;
+  const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
+ 
+  //Don't forget to add typeform and yagi's discord server invite
+  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://www.google.com/)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`
+
+  const embed = {
+    title: 'Olympus | World Boss',
+    description: `${serverTimeDescription}\n${spawnDescription}\n\n${spawnFooter}`,
+    thumbnail: {
+      url:
+        'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
+    },
+    color: 32896,
+    fields: [
+      {
+        name: 'Status',
+        value: '```fix\n\n' + `World Boss has started in ${formatLocation(worldBoss.location)}. If you are late, ask in-game for current spawn channel.` + '```'
+      }
+    ]
+  }
+  return message.edit(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+}
+//----------
 const sendHealthLog = (channel, rawData, trueData) => {
   const embed = {
     title: 'Yagi | Health Log',
@@ -665,5 +692,6 @@ module.exports = {
   validateWorldBossData,
   codeBlock,
   sendReminderTimerEmbed,
+  editReminderTimerStatus,
   sendHealthLog
 }
