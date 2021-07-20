@@ -569,10 +569,21 @@ const validateWorldBossData = (worldBoss, serverTime) => {
   }
 }
 //----------
+/**
+ * Function to create a text into a discord code block
+ * @param text - text to transform
+ */
 const codeBlock = (text) => {
   return "`" + text + "`";
 }
 //----------
+/**
+ * Function to send the timer embed for reminders
+ * Similar to the message in the goats command but added a paragraph about the feature being in beta
+ * @param channel - channel to send the message in
+ * @param role - role to ping
+ * @param worldBoss - validated world boss data\
+ */
 const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   const serverTime = getServerTime();
   const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
@@ -614,6 +625,14 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
   return channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
+/**
+ * Function to edit the message of above when world boss has started
+ * This is just to be aethestically pleasing and to be informative for players that are late that's wb has begun
+ * Also lays a foundation for the future if we want to be editing where the current spawn is located with v3
+ * @param message - message to edit
+ * @param role - role to ping
+ * @param worldBoss - validated world boss data
+ */
 const editReminderTimerStatus = (message, role, worldBoss) => {
   const serverTime = getServerTime();
   const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
@@ -641,6 +660,14 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
   return message.edit(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
+/**
+ * Function to send health status so that I can monitor how the timer and reminders are doing
+ * Currently in it's state it just returns the raw sheet data, the validated data and the current server time
+ * In the future, I'll probably add more stuff in here like server status, individual channel status, number of active reminders and so forth 
+ * @param channel - channel to send health logs in
+ * @param {*} rawData - data from olympus spreadsheet
+ * @param {*} trueData - validated world boss data
+ */
 const sendHealthLog = (channel, rawData, trueData) => {
   const embed = {
     title: 'Yagi | Health Log',
