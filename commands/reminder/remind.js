@@ -15,7 +15,7 @@ module.exports = {
     if(arguments){
       switch (arguments) {
         case 'enable':
-          return isAdmin ? enableReminder(message) : message.channel.send('Reminders can only be enabled by an admin');
+          return isAdmin ? enableReminder(message, yagi) : message.channel.send('Reminders can only be enabled by an admin');
         case 'disable':
           return isAdmin ? disableReminder(message) : message.channel.send('Reminders can only be disabled by an admin');
         default:

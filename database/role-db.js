@@ -8,7 +8,7 @@ const { insertNewReminderReactionMessage } = require('./reminder-reaction-messag
  * @param guilds - guilds that yagi is in; using this as roles are nested inside the guild collection
  * @param client - yagi client
  */
-const createRoleTable = async (database, guilds, client) => {
+const createRoleTable = async (database, guilds) => {
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
     //Creates Role Table with the relevant columns if it does not exist
@@ -138,7 +138,7 @@ const createReminderRole = async (message, reminder) => {
             const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
             const messageDetail = await message.channel.send({ embed })
             await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-            insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+            insertNewReminderReactionMessage(messageDetail, message.author, reminder);  
           })
         }
       })

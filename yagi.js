@@ -4,16 +4,15 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('./helpers');
 const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
-const { createReminderTable, startReminders } = require('./database/reminder-db.js');
+const { createReminderTable } = require('./database/reminder-db.js');
 const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
-const { format } = require('date-fns');
 const activitylist = [
   'info | bot information',
   'ping me for prefix!',
@@ -98,9 +97,11 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
-    setInterval(async () => {
+    setInterval(() => {
       getCurrentTimerData(yagi);
-    }, 600000, yagi)
+    }, 1800000, yagi) //1800000 - 30 minutes
+    const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+    sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
   } catch(e){
     sendErrorLog(yagi, e);
   }

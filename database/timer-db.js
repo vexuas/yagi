@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData } = require('../helpers');
+const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('../helpers');
 const { startReminders } = require('./reminder-db');
 const { isBefore } = require('date-fns');
 
@@ -25,13 +25,13 @@ const createTimerTable = (database, worldBoss, client) => {
       //Check if there's an existing timer in our database
       if(timer){
         //Update the timer if it does
-        updateTimerData(worldBoss, timer);
+        updateTimerData(database, worldBoss, timer);
       } else {
         //Create a new timer if it doesn't
         insertNewTimer(database, worldBoss);
       }
     });
-    startReminders(client); //Start existing enabled reminders on their timer countdowns on initialisation
+    startReminders(database, client); //Start existing enabled reminders on their timer countdowns on initialisation
   })
 }
 /**
@@ -59,8 +59,7 @@ const insertNewTimer = (database, worldBoss) => {
  * @param {*} worldBoss - validated world boss data
  * @param {*} timer - existing timer in table
  */
-const updateTimerData = (worldBoss, timer) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+const updateTimerData = (database, worldBoss, timer) => {
   database.run(`UPDATE Timer SET last_retrieved_at = ${Date.now()}, location = "${worldBoss.location}", next_spawn = "${worldBoss.nextSpawn}", projected_next_spawn = "${worldBoss.projectedNextSpawn}", accurate = ${worldBoss.accurate} WHERE uuid = "${timer.uuid}"`, error => {
     if(error){
       console.log(error);
@@ -82,18 +81,18 @@ const getCurrentTimerData = (client) => {
         console.log(error)
       }
       const serverTime = getServerTime();
+      const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
   
       if(timer.accurate === 0 || isBefore(timer.next_spawn, serverTime) ){
         const worldBossData = await getWorldBossData();
         
         const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
-        updateTimerData(validatedWorldBossData, timer);
-  
-        const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
-        healthChannel.send('Pinged sheet and updated timer data'); //Currently only a text, might want to send more info
+        updateTimerData(database, validatedWorldBossData, timer);
+        
+        sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
       }
     })
-    startReminders(client);
+    startReminders(database, client);
   })
 }
 
