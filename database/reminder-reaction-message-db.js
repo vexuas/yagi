@@ -90,13 +90,16 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
+
 const sendReminderReactionMessage = (database, message, client, reminder, role) => {
   database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
     if(reactionMessage){
       const reactionChannel = await client.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
       const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
       const embed = reminderDetails(reminder.channel_id, role.role_id, reactionMessageInChannel.url);
-      message.channel.send({ embed });
+      database.run(`UPDATE Reminder SET reaction_message_id = "${reactionMessage.uuid}" WHERE uuid = "${reminder.uuid}"`, err => {
+        message.channel.send({ embed });
+      })
     } else {
       /**
        * We send our reminder reaction message only after a reminder gets enabled
