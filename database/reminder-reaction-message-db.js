@@ -1,4 +1,5 @@
 const sqlite = require('sqlite3').verbose();
+const { reminderReactionMessage, reminderDetails } = require('../helpers');
 /**
  * Creates Reminder Details table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -89,9 +90,31 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
+const sendReminderReactionMessage = (database, message, client, reminder, role) => {
+  database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
+    if(reactionMessage){
+      const reactionChannel = await client.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
+      const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+      const embed = reminderDetails(reminder.channel_id, role.role_id, reactionMessageInChannel.url);
+      message.channel.send({ embed });
+    } else {
+      /**
+       * We send our reminder reaction message only after a reminder gets enabled
+       * This is to collect reactions that yagi will use to set the reminder role
+       * Yagi reacts to the message by default after sending it so users won't have to find the reaction
+       * * By design and discord's api limitation, there will only be one reminder reaction message per server. 
+      */
+      const embed = reminderReactionMessage(reminder.channel_id, role.role_id)
+      const messageDetail = await message.channel.send({ embed });
+      await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
+      insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+    }
+  })
+}
 module.exports = {
   createReminderReactionMessageTable,
   insertNewReminderReactionMessage,
   cacheExistingReminderReactionMessages,
-  updateReminderReactionMessage
+  updateReminderReactionMessage,
+  sendReminderReactionMessage
 }
