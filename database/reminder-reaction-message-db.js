@@ -72,7 +72,7 @@ const cacheExistingReminderReactionMessages = (guilds) => {
  * Only updates the reaction count for now as I don't think there's anything else that's important
  * Substracts 1 from the count taken from discord since yagi by default also reacts to it and discord counts it
  * Additional checks to see if the reaction is :goat: and if it's not made by the bot so we only update the table when necessary
- * @param {*} reaction 
+ * @param reaction - reaction data object
  */
 const updateReminderReactionMessage = (reaction) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
@@ -90,10 +90,24 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
-
+/**
+ * Function to either send the reminder information or sending the reminder reaction message
+ * We need to check if there's already an existing reaction message due to discord's current api limitation of not being able to force user reactions and move specific messages
+ * Due to this, we need to only have one reaction message per server and just link to the message url in subsequent reminder enables
+ * @param database - yagi database
+ * @param message - message data object
+ * @param client - yagi client
+ * @param reminder - reminder that's enabled
+ * @param role - role being used to ping users
+ */
 const sendReminderReactionMessage = (database, message, client, reminder, role) => {
   database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
     if(reactionMessage){
+      /**
+       * If a reaction message already exists in the current server, we don't want to create a new one
+       * Instead we show the reminder details instead so that users can be redirected to the original reaction message
+       * As new reminders have no reaction message by default, we update it with the reaction message in the end
+       */
       const reactionChannel = await client.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
       const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
       const embed = reminderDetails(reminder.channel_id, role.role_id, reactionMessageInChannel.url);

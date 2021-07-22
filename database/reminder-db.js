@@ -294,11 +294,17 @@ const startReminders = (database, client) => {
   })
 }
 /**
- * 
- * @param {*} database 
- * @param {*} reminder 
- * @param {*} role 
- * @param {*} client 
+ * Function to start a timer based on the difference between the date of wb next spawn and date of server time when this function is called
+ * Starts with a parent timeout for the actual reminder which ping users roughly 10 minutes before the actual spawn
+ * Note that with increasing number of reminders set per server it won't always be 10 minutes but would differ by a couple of seconds due to time of computation
+ * Set it to 10 minutes and 1 second just for aesthetic so at least 1 server would have a perfect 10 minutes in their cooldown field
+ * After the initial timeout has elapsed, a secondary timeout gets started. Once this timeout reaches zero, it edits the initial message to convey that world boss has started on a specific channel
+ * After 20 minutes, we then delete the message to avoid cluttering of channel
+ * Made this reusable as we want to start individual timers when a reminder gets enabled and not just when getting the timer data
+ * @param database - yagi database
+ * @param reminder - enabled reminder data object
+ * @param role - role used to ping
+ * @param client - yagi discord client
  */
  const startIndividualReminder = (database, reminder, role, client) => {
   database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
@@ -311,7 +317,7 @@ const startReminders = (database, client) => {
         const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
         setTimeout(async () => {
           await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
-          await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
+          await reminderTimerMessage.delete({ timeout: 1800000 }); //Delete timer message after 20 minutes as world boss has ended (30 minutes after the parent timeout)
         }, 601000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
       }, timerCountdown - 601000); //600000 - 10 minutes before world boss spawns 
 
@@ -323,6 +329,12 @@ const startReminders = (database, client) => {
     }
   })
 }
+/**
+ * Function to stop reminder timers when they get disabled
+ * Clears the setTimeout object tied to the reminder and updated the database column back to null
+ * @param database - yagi database
+ * @param reminder - reminder that has been disabled
+ */
 const stopReminder = (database, reminder) => {
   clearTimeout(reminder.timer);
   database.run(`UPDATE Reminder SET timer = ${null} WHERE uuid = "${reminder.uuid}"`);
