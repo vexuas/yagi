@@ -1,8 +1,8 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
-const { createReminderRole } = require('./role-db');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage } = require('../helpers');
+const { createReminderRole, startIndividualReminder } = require('./role-db');
 const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
-const { differenceInMilliseconds } = require('date-fns');
+
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -36,7 +36,7 @@ const enableReminder = (message, client) => {
 
       if(enabledReminder){
         const embed = enableReminderEmbed(message, enabledReminder)
-        message.channel.send({ embed })
+        message.channel.send({ embed });
       } else {
         database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, reminder) => {
           if(error){
@@ -73,8 +73,9 @@ const enableReminder = (message, client) => {
                   const messageDetail = await message.channel.send({ embed })
                   await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
                   insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+                  startIndividualReminder(database, reminder, role, client);
                 } else {
-                  createReminderRole(message, reminder);
+                  createReminderRole(message, reminder, client);
                 }
               })
             })
@@ -141,7 +142,12 @@ const enableReminder = (message, client) => {
           if(error){
             console.log(error);
           }
-          // startReminders(database, client);
+          database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
+            if(error){
+              console.log(error);
+            }
+            startIndividualReminder(database, reminder, role, client);
+          })
         })
       } else {
         database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
@@ -245,32 +251,12 @@ const startReminders = (database, client) => {
         if(reminder.timer){
           clearTimeout(reminder.timer);
         }
-        const reminderChannel = client.channels.cache.get(reminder.channel_id);
-
-        database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
-          const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
-          //Only start timers if nextSpawn date is after current server time
-          if(timerCountdown >= 600000) {
-            console.log('Restarting Reminders');
-            const reminderTimeout = setTimeout(async () => {
-              const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
-              setTimeout(async () => {
-                await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
-                await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
-              }, 600000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
-            }, timerCountdown - 600000); //600000 - 10 minutes before world boss spawns 
-  
-            database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
-              if(error){
-                console.log(error);
-              }
-            });
-          }
-        })
+        startIndividualReminder(database, reminder, role, client);
       })
     }
   })
 }
+
 module.exports = {
   createReminderTable,
   insertNewReminder,

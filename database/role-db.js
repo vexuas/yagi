@@ -1,6 +1,7 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, reminderReactionMessage } = require('../helpers');
+const { generateUUID, reminderReactionMessage, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
 const { insertNewReminderReactionMessage } = require('./reminder-reaction-message-db');
+const { differenceInMilliseconds } = require('date-fns');
 /**
  * Creates Role table inside the Yagi Database
  * Gets called in the client.once("ready") hook
@@ -102,7 +103,7 @@ const updateRole = (role) => {
  * @param message - message data object. Used to get current guild object needed to create a role
  * @param reminder - reminder to be linked with role
  */
-const createReminderRole = async (message, reminder) => {
+const createReminderRole = async (message, reminder, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   try {
     const reminderRole = await message.guild.roles.create({
@@ -138,7 +139,8 @@ const createReminderRole = async (message, reminder) => {
             const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
             const messageDetail = await message.channel.send({ embed })
             await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-            insertNewReminderReactionMessage(messageDetail, message.author, reminder);  
+            insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+            startIndividualReminder(database, reminder, role, client);
           })
         }
       })
@@ -147,10 +149,34 @@ const createReminderRole = async (message, reminder) => {
     console.log(e);
   }
 }
+const startIndividualReminder = (database, reminder, role, client) => {
+  database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
+    const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
+    const reminderChannel = client.channels.cache.get(reminder.channel_id);
+    //Only start timers if nextSpawn date is after current server time
+    if(timerCountdown >= 600000) {
+      console.log('Restarting Reminders');
+      const reminderTimeout = setTimeout(async () => {
+        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+        setTimeout(async () => {
+          await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
+          await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
+        }, 600000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
+      }, timerCountdown - 4320000 - 600000); //600000 - 10 minutes before world boss spawns 
+
+      database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
+        if(error){
+          console.log(error);
+        }
+      });
+    }
+  })
+}
 module.exports = {
   createRoleTable,
   insertNewRole,
   deleteRole,
   updateRole,
-  createReminderRole
+  createReminderRole,
+  startIndividualReminder
 }
