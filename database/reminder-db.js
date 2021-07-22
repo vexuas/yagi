@@ -147,6 +147,7 @@ const enableReminder = (message, client) => {
               console.log(error);
             }
             startIndividualReminder(database, reminder, role, client);
+            //Reminder reaction should go here too
           })
         })
       } else {
@@ -189,6 +190,7 @@ const disableReminder = (message) => {
             if(err){
               console.log(err);
             }
+            stopReminder(database, reminder);
             message.channel.send({ embed });
           })
         }
@@ -256,12 +258,16 @@ const startReminders = (database, client) => {
     }
   })
 }
-
+const stopReminder = (database, reminder) => {
+  clearTimeout(reminder.timer);
+  database.run(`UPDATE Reminder SET timer = ${null} WHERE uuid = "${reminder.uuid}"`);
+}
 module.exports = {
   createReminderTable,
   insertNewReminder,
   enableReminder,
   disableReminder,
   sendReminderInformation,
-  startReminders
+  startReminders,
+  stopReminder
 }
