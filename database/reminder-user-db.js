@@ -1,4 +1,5 @@
 const sqlite = require('sqlite3').verbose();
+const { generateUUID } = require('../helpers');
 
 /**
  * Creates Reminder User table inside the Yagi Database
@@ -7,7 +8,7 @@ const sqlite = require('sqlite3').verbose();
  * @param database - yagi database
  */
 const createReminderUserTable = (database) => {
-  database.run('CREATE TABLE IF NOT EXISTS ReminderUser(uuid TEXT NOT NULL PRIMARY KEY, reacted_at DATE NOT NULL, guild_id TEXT NOT NULL, channel_id TEXT NOT NULL, reminder_reaction_message_id TEXT NOT NULL)');
+  database.run('CREATE TABLE IF NOT EXISTS ReminderUser(uuid TEXT NOT NULL PRIMARY KEY, user_id TEXT NOT NULL, reacted_at DATE NOT NULL, guild_id TEXT NOT NULL, channel_id TEXT NOT NULL, reminder_reaction_message_id TEXT NOT NULL)');
 }
 /**
  * Function in charge on what to do when a user reacts to a message
@@ -43,8 +44,9 @@ const reactToMessage = (reaction, user) => {
 const insertNewReminderUser = (reaction, user) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
-    database.run(`INSERT INTO ReminderUser(uuid, reacted_at, guild_id, channel_id, reminder_reaction_message_id) VALUES ($uuid, $reacted_at, $guild_id, $channel_id, $reminder_reaction_message_id)`, {
-      $uuid: user.id,
+    database.run(`INSERT INTO ReminderUser(uuid, user_id, reacted_at, guild_id, channel_id, reminder_reaction_message_id) VALUES ($uuid, $user_id, $reacted_at, $guild_id, $channel_id, $reminder_reaction_message_id)`, {
+      $uuid: generateUUID(),
+      $user_id: user.id,
       $reacted_at: new Date(),
       $guild_id: reaction.message.guild.id,
       $channel_id: reaction.message.channel.id,
@@ -63,7 +65,7 @@ const insertNewReminderUser = (reaction, user) => {
  */
 const removeReminderUser = (reaction, user) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run(`DELETE FROM ReminderUser WHERE uuid = ${user.id}`, error => {
+  database.run(`DELETE FROM ReminderUser WHERE user_id = "${user.id}" AND guild_id = "${reaction.message.guild.id}"`, error => {
     if(error){
       console.log(error);
     }

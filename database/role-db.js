@@ -154,15 +154,15 @@ const startIndividualReminder = (database, reminder, role, client) => {
     const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
     const reminderChannel = client.channels.cache.get(reminder.channel_id);
     //Only start timers if nextSpawn date is after current server time
-    if(timerCountdown >= 600000) {
+    if(timerCountdown >= 601000) {
       console.log('Restarting Reminders');
       const reminderTimeout = setTimeout(async () => {
         const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
         setTimeout(async () => {
           await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
           await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
-        }, 600000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
-      }, timerCountdown - 4320000 - 600000); //600000 - 10 minutes before world boss spawns 
+        }, 601000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
+      }, timerCountdown - 601000); //600000 - 10 minutes before world boss spawns 
 
       database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
         if(error){
