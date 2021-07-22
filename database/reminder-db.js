@@ -64,6 +64,7 @@ const enableReminder = (message, client) => {
                 }
                 if(role){
                   sendReminderReactionMessage(database, message, client, reminder, role);
+                  startIndividualReminder(database, reminder, role, client);
                 } else {
                   createReminderRole(message, reminder, client);
                 }
