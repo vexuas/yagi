@@ -1,8 +1,8 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, reminderReactionMessage, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
-const { createReminderRole } = require('./role-db');
-const { insertNewReminderReactionMessage} = require('./reminder-reaction-message-db.js');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
+const { sendReminderReactionMessage } = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
+
 /**
  * Creates Reminder table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -36,7 +36,7 @@ const enableReminder = (message, client) => {
 
       if(enabledReminder){
         const embed = enableReminderEmbed(message, enabledReminder)
-        message.channel.send({ embed })
+        message.channel.send({ embed });
       } else {
         database.get(`SELECT * FROM Reminder WHERE guild_id = ${message.guild.id} AND channel_id = ${message.channel.id}`, (error, reminder) => {
           if(error){
@@ -63,18 +63,10 @@ const enableReminder = (message, client) => {
                   console.log(err);
                 }
                 if(role){
-                  /**
-                   * We send our reminder reaction message only after a reminder gets enabled
-                   * This is to collect reactions that yagi will use to set the reminder role
-                   * Yagi reacts to the message by default after sending it so users won't have to find the reaction
-                   * By design and discord's api limitation, there will only be one reminder reaction message per server. 
-                  */
-                  const embed = reminderReactionMessage(reminder.channel_id, role.role_id);
-                  const messageDetail = await message.channel.send({ embed })
-                  await messageDetail.react('%F0%9F%90%90'); //Bot reacts to the message with :goat:
-                  insertNewReminderReactionMessage(messageDetail, message.author, reminder);
+                  sendReminderReactionMessage(database, message, client, reminder, role);
+                  startIndividualReminder(database, reminder, role, client);
                 } else {
-                  createReminderRole(message, reminder);
+                  createReminderRole(message, reminder, client);
                 }
               })
             })
@@ -141,7 +133,13 @@ const enableReminder = (message, client) => {
           if(error){
             console.log(error);
           }
-          // startReminders(database, client);
+          database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
+            if(error){
+              console.log(error);
+            }
+            startIndividualReminder(database, reminder, role, client);
+            sendReminderReactionMessage(database, message, client, reminder, role);
+          })
         })
       } else {
         database.get(`SELECT * FROM Reminder WHERE uuid = "${reminderUUID}"`, (error, reminder) => {
@@ -183,6 +181,7 @@ const disableReminder = (message) => {
             if(err){
               console.log(err);
             }
+            stopReminder(database, reminder);
             message.channel.send({ embed });
           })
         }
@@ -191,6 +190,50 @@ const disableReminder = (message) => {
       }
     })
   })
+}
+/**
+ * Create role to be used by yagi for reminders
+ * Uses update instead of inserting new row in table as the roleCreate event when creating a the new role
+ * To prevent duplicate roles from being inserted into the table, we update the created role from the insertNewRole function with the relevant data
+ * @param message - message data object. Used to get current guild object needed to create a role
+ * @param reminder - reminder to be linked with role
+ */
+ const createReminderRole = async (message, reminder, client) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  try {
+    const reminderRole = await message.guild.roles.create({
+      data: {
+        name: 'Goat Hunters',
+        color: '#68d5e9'
+      },
+      reason: 'Role to be used by Yagi for automated reminders for Vulture Vale/Blizzard Berg World Boss'
+    })
+    database.serialize(() => {
+      database.get(`SELECT * FROM Role WHERE role_id = ${reminderRole.id} AND guild_id = ${reminderRole.guild.id}`, (error, role) => {
+        if(error){
+          console.log(error);
+        }
+        if(role){
+          //Update reminder role with relevant data
+          database.run(`UPDATE Role SET reminder_id = "${reminder.uuid}", used_for_reminder = ${true} WHERE uuid = "${role.uuid}"`, err => {
+            if(err){
+              console.log(err);
+            }
+          })
+          //Update Reminder with created role
+          database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" where uuid = "${reminder.uuid}"`, async err => {
+            if(err){
+              console.log(err);
+            }
+            sendReminderReactionMessage(database, message, client, reminder, role);
+            startIndividualReminder(database, reminder, role, client);
+          })
+        }
+      })
+    })
+  } catch(e){
+    console.log(e);
+  }
 }
 /**
  * Function in charge to send the correct embed message when a user uses the `remind` command
@@ -245,31 +288,56 @@ const startReminders = (database, client) => {
         if(reminder.timer){
           clearTimeout(reminder.timer);
         }
-        const reminderChannel = client.channels.cache.get(reminder.channel_id);
-
-        database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
-          const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
-          //Only start timers if nextSpawn date is after current server time
-          if(timerCountdown >= 600000) {
-            console.log('Restarting Reminders');
-            const reminderTimeout = setTimeout(async () => {
-              const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
-              setTimeout(async () => {
-                await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
-                await reminderTimerMessage.delete({ timeout: 1200000 }); //Delete timer message after 20 minutes as world boss has ended
-              }, 600000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
-            }, timerCountdown - 600000); //600000 - 10 minutes before world boss spawns 
-  
-            database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
-              if(error){
-                console.log(error);
-              }
-            });
-          }
-        })
+        startIndividualReminder(database, reminder, role, client);
       })
     }
   })
+}
+/**
+ * Function to start a timer based on the difference between the date of wb next spawn and date of server time when this function is called
+ * Starts with a parent timeout for the actual reminder which ping users roughly 10 minutes before the actual spawn
+ * Note that with increasing number of reminders set per server it won't always be 10 minutes but would differ by a couple of seconds due to time of computation
+ * Set it to 10 minutes and 1 second just for aesthetic so at least 1 server would have a perfect 10 minutes in their cooldown field
+ * After the initial timeout has elapsed, a secondary timeout gets started. Once this timeout reaches zero, it edits the initial message to convey that world boss has started on a specific channel
+ * After 20 minutes, we then delete the message to avoid cluttering of channel
+ * Made this reusable as we want to start individual timers when a reminder gets enabled and not just when getting the timer data
+ * @param database - yagi database
+ * @param reminder - enabled reminder data object
+ * @param role - role used to ping
+ * @param client - yagi discord client
+ */
+ const startIndividualReminder = (database, reminder, role, client) => {
+  database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
+    const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
+    const reminderChannel = client.channels.cache.get(reminder.channel_id);
+    //Only start timers if nextSpawn date is after current server time
+    if(timerCountdown >= 601000) {
+      console.log('Restarting Reminders');
+      const reminderTimeout = setTimeout(async () => {
+        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+        setTimeout(async () => {
+          await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
+          await reminderTimerMessage.delete({ timeout: 1800000 }); //Delete timer message after 20 minutes as world boss has ended (30 minutes after the parent timeout)
+        }, 601000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
+      }, timerCountdown - 601000); //600000 - 10 minutes before world boss spawns 
+
+      database.run(`UPDATE Reminder SET timer = ${reminderTimeout} WHERE uuid = "${reminder.uuid}"`, error => {
+        if(error){
+          console.log(error);
+        }
+      });
+    }
+  })
+}
+/**
+ * Function to stop reminder timers when they get disabled
+ * Clears the setTimeout object tied to the reminder and updated the database column back to null
+ * @param database - yagi database
+ * @param reminder - reminder that has been disabled
+ */
+const stopReminder = (database, reminder) => {
+  clearTimeout(reminder.timer);
+  database.run(`UPDATE Reminder SET timer = ${null} WHERE uuid = "${reminder.uuid}"`);
 }
 module.exports = {
   createReminderTable,
@@ -277,5 +345,6 @@ module.exports = {
   enableReminder,
   disableReminder,
   sendReminderInformation,
-  startReminders
+  startReminders,
+  stopReminder
 }
