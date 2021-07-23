@@ -253,19 +253,17 @@ const sendReminderInformation = (message, yagi) => {
         if(error){
           console.log(error);
         }
-        if(role){
-          database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
-            if(error){
-              console.log(error)
-            }
-            if(reactionMessage){
-              const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
-              const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
-              const embed = reminderDetails(enabledReminder.channel_id, role.role_id, reactionMessageInChannel.url);
-              message.channel.send({ embed })
-            }
-          })
-        }
+        database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
+          if(error){
+            console.log(error)
+          }
+          if(reactionMessage){
+            const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
+            const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+            const embed = reminderDetails(enabledReminder.channel_id, role && role.role_id, reactionMessageInChannel.url);
+            message.channel.send({ embed })
+          }
+        })
       })
     } else {
       const embed = reminderInstructions();

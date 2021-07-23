@@ -364,7 +364,7 @@ const reminderDetails = (channel, role, message) => {
       },
       {
         name: "Reminder Role",
-        value: `<@&${role}>`,
+        value: role ? `<@&${role}>` : '@deleted-role',
         inline: true
       },
       {
