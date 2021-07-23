@@ -79,7 +79,11 @@ const deleteRole = (role) => {
     //Update reminders to not have a role if the deleted role is being used in a reminder
     database.get(`SELECT * FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, (error, deletedRole) => {
       if(deletedRole.used_for_reminder === 1){
-        database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${deletedRole.reminder_id}"`);
+        database.each(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}"`, (error, reminder) => {
+          if(reminder){
+            database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${reminder.uuid}"`);
+          }
+        })
       }
     })
     database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
