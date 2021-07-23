@@ -73,7 +73,7 @@ const insertNewRole = (role) => {
  * Deletes role from Role table
  * @param role - role that has been deleted
  */
-const deleteRole = (role) => {
+const deleteRole = (role, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     //Update reminders to not have a role if the deleted role is being used in a reminder
@@ -86,6 +86,15 @@ const deleteRole = (role) => {
             }
           })
           database.run(`DELETE FROM ReminderUser WHERE guild_id = "${deletedRole.guild_id}"`);
+          database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${deletedRole.guild_id}"`, async (error, reactionMessage) => {
+            const channel = await client.channels.fetch(reactionMessage.channel_id);
+            const message = await channel.messages.fetch(reactionMessage.uuid);
+            message.reactions.cache.forEach(async reaction => {
+              if(reaction.emoji.name === '🐐'){
+                await reaction.remove();
+              }
+            })
+          })
         })
       }
     })

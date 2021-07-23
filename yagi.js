@@ -207,7 +207,7 @@ yagi.on('roleCreate', (role) => {
 })
 yagi.on('roleDelete', (role) => {
   try {
-    deleteRole(role);
+    deleteRole(role, yagi);
   } catch(e){
     sendErrorLog(yagi, e)
   }
