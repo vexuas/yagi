@@ -622,7 +622,8 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
       }
     ]
   }
-  return channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  const roleId = role ? `<@&${role}>` : '@deleted-role';
+  return channel.send(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 /**
@@ -657,7 +658,8 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
       }
     ]
   }
-  return message.edit(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  const roleId = role ? `<@&${role}>` : '@deleted-role';
+  return message.edit(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 /**

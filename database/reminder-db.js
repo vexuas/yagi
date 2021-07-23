@@ -314,9 +314,9 @@ const startReminders = (database, client) => {
     if(timerCountdown >= 601000) {
       console.log('Restarting Reminders');
       const reminderTimeout = setTimeout(async () => {
-        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role && role.role_id, timer);
         setTimeout(async () => {
-          await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
+          await editReminderTimerStatus(reminderTimerMessage, role && role.role_id, timer);//Edit timer message to display that world boss has started
           await reminderTimerMessage.delete({ timeout: 1800000 }); //Delete timer message after 20 minutes as world boss has ended (30 minutes after the parent timeout)
         }, 601000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
       }, timerCountdown - 601000); //600000 - 10 minutes before world boss spawns 

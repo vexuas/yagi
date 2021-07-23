@@ -75,10 +75,17 @@ const insertNewRole = (role) => {
  */
 const deleteRole = (role) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
-    if(err){
-      console.log(err);
-    }
+  database.serialize(() => {
+    database.get(`SELECT * FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, (error, deletedRole) => {
+      if(deletedRole.used_for_reminder === 1){
+        database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${deletedRole.reminder_id}"`);
+      }
+    })
+    database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
+      if(err){
+        console.log(err);
+      }
+    })
   })
 }
 /**
