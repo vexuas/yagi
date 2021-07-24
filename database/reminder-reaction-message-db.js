@@ -61,7 +61,29 @@ const cacheExistingReminderReactionMessages = (guilds) => {
             console.log(error);
           }
           if(detail){
-            await channel.messages.fetch(detail.uuid);
+            try {
+              await channel.messages.fetch(detail.uuid);
+            }
+            catch(e){
+              //Delete reminder reaction data if message has been deleted in discord
+              database.serialize(() => {
+                database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${detail.uuid}`, (error, reminder) => {
+                  database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
+                })
+                database.get(`SELECT * FROM Reminder WHERE reaction_message_id = ${detail.uuid}`, (error, reminder) => {
+                  if(reminder){
+                    database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+                      database.each(`SELECT * FROM ReminderUser WHERE reminder_reaction_message_id = "${detail.uuid}"`, async (error, user) => {
+                        const memberToRemove = await guild.members.fetch(user.user_id);
+                        memberToRemove.roles.remove(role.role_id);
+                        database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`);
+                      })
+                    })
+                  }
+                })
+                database.run(`DELETE FROM ReminderReactionMessage WHERE uuid = "${detail.uuid}"`);
+              })
+            }
           }
         })
       })
@@ -99,7 +121,7 @@ const checkIfReminderReactionMessage = (message) => {
     }
   })
 }
-const deleteReminderReactionMessage = (message, client) => {
+const deleteReminderReactionMessage = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
