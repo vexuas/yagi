@@ -133,8 +133,10 @@ const deleteReminderReactionMessage = (message) => {
           database.get(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
             database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
               database.each(`SELECT * FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`, async (error, user) => {
-                const memberToRemove = await message.guild.members.fetch(user.user_id);
-                memberToRemove.roles.remove(role.role_id);
+                if(role){
+                  const memberToRemove = await message.guild.members.fetch(user.user_id);
+                  memberToRemove.roles.remove(role.role_id);
+                }
                 database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`);
               })
             })

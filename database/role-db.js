@@ -87,14 +87,20 @@ const deleteRole = (role, client) => {
           })
           database.run(`DELETE FROM ReminderUser WHERE guild_id = "${deletedRole.guild_id}"`);
           database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${deletedRole.guild_id}"`, async (error, reactionMessage) => {
-            const channel = await client.channels.fetch(reactionMessage.channel_id);
-            const message = await channel.messages.fetch(reactionMessage.uuid);
-            message.reactions.cache.forEach(async reaction => {
-              if(reaction.emoji.name === '🐐'){
-                await reaction.remove();
+            if(reactionMessage){
+              const channel = await client.channels.fetch(reactionMessage.channel_id);
+              try {
+                const message = await channel.messages.fetch(reactionMessage.uuid);
+                message.reactions.cache.forEach(async reaction => {
+                  if(reaction.emoji.name === '🐐'){
+                    await reaction.remove();
+                  }
+                })
+                await message.react('%F0%9F%90%90');
+              } catch(e){
+                throw e;
               }
-            })
-            await message.react('%F0%9F%90%90');
+            }
           })
         })
       }
