@@ -83,7 +83,7 @@ const removeReminderUser = (reaction, user) => {
  */
 const setReminderRoleToUser = (reaction, user, type) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.get(`SELECT * FROM Reminder WHERE guild_id = "${reaction.message.guild.id}" AND enabled = ${true}`, (error, reminder) => {
+  database.get(`SELECT * FROM Reminder WHERE guild_id = "${reaction.message.guild.id}"`, (error, reminder) => {
     if(error){
       console.log(error);
     }
