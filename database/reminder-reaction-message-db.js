@@ -116,7 +116,7 @@ const updateReminderReactionMessage = (reaction) => {
 const checkIfReminderReactionMessage = (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
-    if(reactionMessage && message.content === ''){
+    if(reactionMessage && message.content === '' && !(message.author.id === "582202266828668998" || message.author.id === "518196430104428579")){
       message.delete();
     }
   })

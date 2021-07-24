@@ -280,6 +280,22 @@ const disableReminderEmbed = (message, reminder) => {
   }
   return embed;
 }
+const disableReminderEmbedWhenRoleIsDeleted = () => {
+  const embed = {
+    title: "Reminder disabled!",
+    description: "The reminder role has been deleted, reminder has been temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    color: 16711680
+  }
+  return embed;
+}
+const disableReminderEmbedWhenReactionIsDeleted = () => {
+  const embed = {
+    title: "Reminder disabled!",
+    description: "The reaction message has been deleted, reminder has been temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    color: 16711680
+  }
+  return embed;
+}
 /**
  * Embed design used when enabling reminders
  * First checks if message was sent in the reminder-enabled channel and if reminder even exists
@@ -713,6 +729,8 @@ module.exports = {
   sendErrorLog,
   generateUUID,
   disableReminderEmbed,
+  disableReminderEmbedWhenRoleIsDeleted,
+  disableReminderEmbedWhenReactionIsDeleted,
   enableReminderEmbed,
   reminderInstructions,
   reminderDetails,

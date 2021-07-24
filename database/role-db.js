@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID } = require('../helpers');
+const { generateUUID, disableReminderEmbedWhenRoleIsDeleted } = require('../helpers');
 /**
  * Creates Role table inside the Yagi Database
  * Gets called in the client.once("ready") hook
@@ -80,11 +80,6 @@ const deleteRole = (role, client) => {
     database.get(`SELECT * FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, (error, deletedRole) => {
       if(deletedRole.used_for_reminder === 1){
         database.serialize(() => {
-          database.each(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}"`, (error, reminder) => {
-            if(reminder){
-              database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${reminder.uuid}"`);
-            }
-          })
           database.run(`DELETE FROM ReminderUser WHERE guild_id = "${deletedRole.guild_id}"`);
           database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${deletedRole.guild_id}"`, async (error, reactionMessage) => {
             if(reactionMessage){
@@ -100,6 +95,22 @@ const deleteRole = (role, client) => {
               } catch(e){
                 throw e;
               }
+            }
+          })
+          database.get(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}" AND enabled = ${true}`, async (error, reminder) => {
+            if(reminder){
+              if(reminder.timer){
+                clearTimeout(reminder.timer);
+              }
+              const embed = disableReminderEmbedWhenRoleIsDeleted();
+              const channelToSend = await client.channels.fetch(reminder.channel_id);
+              channelToSend.send({ embed });
+              database.run(`UPDATE Reminder SET timer = ${null}, enabled = ${false} WHERE uuid = "${reminder.uuid}"`);
+            }
+          })
+          database.each(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}"`, (error, reminder) => {
+            if(reminder){
+              database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${reminder.uuid}"`);
             }
           })
         })
