@@ -94,6 +94,7 @@ const deleteRole = (role, client) => {
                 await reaction.remove();
               }
             })
+            await message.react('%F0%9F%90%90');
           })
         })
       }

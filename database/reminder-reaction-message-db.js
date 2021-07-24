@@ -91,6 +91,22 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
+const deleteReminderReactionMessage = (message) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.serialize(() => {
+    database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
+      if(reactionMessage){
+        database.serialize(() => {
+          database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
+            database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
+          })
+          database.run(`DELETE FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`);
+        })
+      }
+    })
+    database.run(`DELETE FROM ReminderReactionMessage WHERE uuid = "${message.id}"`);
+  })
+}
 /**
  * Function to either send the reminder information or sending the reminder reaction message
  * We need to check if there's already an existing reaction message due to discord's current api limitation of not being able to force user reactions and move specific messages
@@ -136,5 +152,6 @@ module.exports = {
   insertNewReminderReactionMessage,
   cacheExistingReminderReactionMessages,
   updateReminderReactionMessage,
+  deleteReminderReactionMessage,
   sendReminderReactionMessage
 }
