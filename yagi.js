@@ -234,8 +234,8 @@ yagi.on('messageReactionRemove', (reaction, user) => {
   removeReminderUser(reaction, user);
 })
 //------
-yagi.on('messageUpdate', (_, newMessage) => {
-  checkIfReminderReactionMessage(newMessage);
+yagi.on('messageUpdate', (oldMessage, newMessage) => {
+  checkIfReminderReactionMessage(newMessage, oldMessage);
 })
 yagi.on('messageDelete', (message) => {
   deleteReminderReactionMessage(message, yagi);

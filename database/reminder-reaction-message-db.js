@@ -113,10 +113,10 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
-const checkIfReminderReactionMessage = (message) => {
+const checkIfReminderReactionMessage = (message, oldMessage) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
-    if(reactionMessage && message.content === '' && !(message.author.id === "582202266828668998" || message.author.id === "518196430104428579")){
+    if(reactionMessage && message.content === '' && oldMessage.embeds.length === 1 && message.embeds.length === 0 && (message.author.id === "582202266828668998" || message.author.id === "518196430104428579")){
       message.delete();
     }
   })
