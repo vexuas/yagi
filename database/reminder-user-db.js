@@ -88,7 +88,7 @@ const setReminderRoleToUser = (reaction, user, type) => {
       console.log(error);
     }
     if(reminder){
-      database.get(`SELECT * FROM Role WHERE reminder_id = "${reminder.uuid}"`, async (error, role) => {
+      database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, async (error, role) => {
         if(error){
           console.log(error);
         }
