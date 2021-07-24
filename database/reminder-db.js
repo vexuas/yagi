@@ -1,5 +1,6 @@
+const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage } = require('../helpers');
 const { sendReminderReactionMessage } = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
 
@@ -161,7 +162,7 @@ const enableReminder = (message, client) => {
  * Decided to go with updating just for the flexibility
  * @param message - message data object; taken from the on('message') event hook
  */
-const disableReminder = (message) => {
+const disableReminder = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
@@ -181,8 +182,19 @@ const disableReminder = (message) => {
             if(err){
               console.log(err);
             }
+            
             stopReminder(database, reminder);
             message.channel.send({ embed });
+          })
+          database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+            database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
+              if(reactionMessage){
+                const reactionChannel = await client.channels.fetch(reactionMessage.channel_id);
+                const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid);
+                const updatedReactionMessage = reminderReactionMessage(null, role && role.role_id);
+                await reactionMessageInChannel.edit(new Discord.MessageEmbed(updatedReactionMessage));
+              }
+            })
           })
         }
       } else {

@@ -395,12 +395,12 @@ const reminderReactionMessage = (channel, role) => {
     fields: [
       {
         name: "Active Channel",
-        value: `<#${channel}>`,
+        value: channel ? `<#${channel}>` : '-',
         inline: true
       },
       {
         name: "Reminder Role",
-        value: `<@&${role}>`,
+        value: role ? `<@&${role}>` : '@deleted-role',
         inline: true
       }
     ]
