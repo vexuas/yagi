@@ -59,13 +59,15 @@ const enableReminder = (message, client) => {
                 const embed = enableReminderEmbed(message, reminder)
                 message.channel.send({ embed });
               })
-              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, async (err, role) => {
+              database.get(`SELECT * FROM Role WHERE guild_id = "${message.guild.id}" AND used_for_reminder = ${true}`, async (err, role) => {
                 if(err){
                   console.log(err);
                 }
                 if(role){
-                  sendReminderReactionMessage(database, message, client, reminder, role);
-                  startIndividualReminder(database, reminder, role, client);
+                  database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminder.uuid}"`, error => {
+                    sendReminderReactionMessage(database, message, client, reminder, role);
+                    startIndividualReminder(database, reminder, role, client);
+                  });
                 } else {
                   createReminderRole(message, reminder, client);
                 }
@@ -73,6 +75,7 @@ const enableReminder = (message, client) => {
             })
           } else {
             //Creates a new reminder if it doesn't exist
+            console.log("insert new reminder");
             insertNewReminder(message, client);
           }
         })
