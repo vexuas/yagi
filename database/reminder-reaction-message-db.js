@@ -1,3 +1,4 @@
+const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
 const { reminderReactionMessage, reminderDetails } = require('../helpers');
 /**
@@ -110,6 +111,8 @@ const sendReminderReactionMessage = (database, message, client, reminder, role) 
        */
       const reactionChannel = await client.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
       const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+      const updatedReactionMessage = reminderReactionMessage(reminder.channel_id, role.role_id);
+      await reactionMessageInChannel.edit(new Discord.MessageEmbed(updatedReactionMessage));
       const embed = reminderDetails(reminder.channel_id, role.role_id, reactionMessageInChannel.url);
       database.run(`UPDATE Reminder SET reaction_message_id = "${reactionMessage.uuid}" WHERE uuid = "${reminder.uuid}"`, err => {
         message.channel.send({ embed });
