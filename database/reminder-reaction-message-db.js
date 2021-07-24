@@ -91,6 +91,14 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
+const checkIfReminderReactionMessage = (message) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
+    if(reactionMessage && message.content === ''){
+      message.delete();
+    }
+  })
+}
 const deleteReminderReactionMessage = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
@@ -160,6 +168,7 @@ module.exports = {
   insertNewReminderReactionMessage,
   cacheExistingReminderReactionMessages,
   updateReminderReactionMessage,
+  checkIfReminderReactionMessage,
   deleteReminderReactionMessage,
   sendReminderReactionMessage
 }

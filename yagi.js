@@ -9,7 +9,7 @@ const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildM
 const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
-const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, deleteReminderReactionMessage } = require('./database/reminder-reaction-message-db.js');
+const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, deleteReminderReactionMessage, checkIfReminderReactionMessage } = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
@@ -236,9 +236,8 @@ yagi.on('messageReactionRemove', (reaction, user) => {
   removeReminderUser(reaction, user);
 })
 //------
-yagi.on('messageUpdate', (oldMessage, newMessage) => {
-  console.log(newMessage.content);
-  console.log(newMessage.content === '');
+yagi.on('messageUpdate', (_, newMessage) => {
+  checkIfReminderReactionMessage(newMessage);
 })
 yagi.on('messageDelete', (message) => {
   deleteReminderReactionMessage(message);
