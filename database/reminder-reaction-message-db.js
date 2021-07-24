@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
-const { reminderReactionMessage, reminderDetails } = require('../helpers');
+const { reminderReactionMessage, reminderDetails, disableReminderEmbedWhenReactionIsDeleted } = require('../helpers');
 /**
  * Creates Reminder Details table inside the Yagi Database
  * Gets called in the client.once('ready') hook
@@ -121,15 +121,12 @@ const checkIfReminderReactionMessage = (message) => {
     }
   })
 }
-const deleteReminderReactionMessage = (message) => {
+const deleteReminderReactionMessage = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
       if(reactionMessage){
         database.serialize(() => {
-          database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
-            database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
-          })
           database.get(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
             database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
               database.each(`SELECT * FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`, async (error, user) => {
@@ -140,6 +137,20 @@ const deleteReminderReactionMessage = (message) => {
                 database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`);
               })
             })
+          })
+          database.get(`SELECT * FROM Reminder WHERE reaction_message_id = "${message.id}" AND enabled = ${true}`, async (error, reminder) => {
+            if(reminder){
+              if(reminder.timer){
+                clearTimeout(reminder.timer);
+              }
+              const embed = disableReminderEmbedWhenReactionIsDeleted();
+              const channelToSend = await client.channels.fetch(reminder.channel_id);
+              channelToSend.send({ embed });
+              database.run(`UPDATE Reminder SET timer = ${null}, enabled = ${false} WHERE uuid = "${reminder.uuid}"`);
+            }
+          })
+          database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
+            database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
           })
         })
       }

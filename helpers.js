@@ -283,7 +283,7 @@ const disableReminderEmbed = (message, reminder) => {
 const disableReminderEmbedWhenRoleIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reminder role has been deleted, reminder has been temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reminder role has been deleted, reminder is temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
@@ -291,7 +291,7 @@ const disableReminderEmbedWhenRoleIsDeleted = () => {
 const disableReminderEmbedWhenReactionIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reaction message has been deleted, reminder has been temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reaction message has been deleted, reminder is temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
