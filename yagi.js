@@ -5,8 +5,8 @@ const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('./helpers');
-const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
-const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
+const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
+const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
 const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, deleteReminderReactionMessage, checkIfReminderReactionMessage } = require('./database/reminder-reaction-message-db.js');
@@ -161,9 +161,7 @@ yagi.on('guildCreate', (guild) => {
 });
 yagi.on('guildDelete', (guild) => {
   try {
-    deleteGuild(guild);
-    deleteAllChannels(guild);
-    sendGuildUpdateNotification(yagi, guild, 'leave');
+    removeServerDataFromYagi(guild, yagi);
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -307,4 +305,19 @@ yagi.on('error', (error) => {
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
+}
+const removeServerDataFromYagi = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+  database.serialize(() => {
+    database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
+    database.run(`DELETE FROM Channel WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM Role WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM ReminderUser WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM ReminderReactionMessage WHERE guild_id = "${guild.id}"`);
+    database.each(`SELECT * FROM Reminder WHERE guild_id = "${guild.id}"`, (error, reminder) => {
+      clearTimeout(reminder.timer);
+      database.run(`DELETE FROM Reminder WHERE uuid = "${reminder.uuid}"`);
+    })
+    sendGuildUpdateNotification(yagi, guild, 'leave');
+  })
 }

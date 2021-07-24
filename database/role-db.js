@@ -119,9 +119,14 @@ const updateRole = (role) => {
     }
   })
 }
+const deleteAllRoles = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.run(`DELETE FROM Role WHERE guild_id = "${guild.id}"`);
+}
 module.exports = {
   createRoleTable,
   insertNewRole,
   deleteRole,
-  updateRole
+  updateRole,
+  deleteAllRoles
 }

@@ -75,7 +75,6 @@ const enableReminder = (message, client) => {
             })
           } else {
             //Creates a new reminder if it doesn't exist
-            console.log("insert new reminder");
             insertNewReminder(message, client);
           }
         })

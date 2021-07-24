@@ -109,6 +109,5 @@ const setReminderRoleToUser = (reaction, user, type) => {
 }
 module.exports = {
   createReminderUserTable,
-  reactToMessage,
-  removeReminderUser
+  reactToMessage
 }
