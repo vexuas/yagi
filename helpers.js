@@ -369,7 +369,7 @@ const reminderDetails = (channel, role, message) => {
       },
       {
         name: "Reaction Message",
-        value: `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})`,
+        value: message ? `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})` : '-'
 
       }
     ]

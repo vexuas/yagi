@@ -276,6 +276,9 @@ const sendReminderInformation = (message, yagi) => {
             const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
             const embed = reminderDetails(enabledReminder.channel_id, role && role.role_id, reactionMessageInChannel.url);
             message.channel.send({ embed })
+          } else {
+            const embed = reminderDetails(enabledReminder.channel_id, role && role.role_id, null);
+            await message.channel.send({ embed });
           }
         })
       })
