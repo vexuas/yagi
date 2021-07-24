@@ -91,7 +91,7 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
-const deleteReminderReactionMessage = (message) => {
+const deleteReminderReactionMessage = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
@@ -100,7 +100,15 @@ const deleteReminderReactionMessage = (message) => {
           database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
             database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
           })
-          database.run(`DELETE FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`);
+          database.get(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
+            database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+              database.each(`SELECT * FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`, async (error, user) => {
+                const memberToRemove = await message.guild.members.fetch(user.user_id);
+                memberToRemove.roles.remove(role.role_id);
+                database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`);
+              })
+            })
+          })
         })
       }
     })
