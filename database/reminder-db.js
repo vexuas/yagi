@@ -64,6 +64,7 @@ const enableReminder = (message, client) => {
                   console.log(err);
                 }
                 if(role){
+                  //Need to update reminder with role as there are edge cases when a role gets deleted and some reminders in our database would be null as their role uuid
                   database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminder.uuid}"`, error => {
                     sendReminderReactionMessage(database, message, client, reminder, role);
                     startIndividualReminder(database, reminder, role, client);
@@ -188,13 +189,14 @@ const disableReminder = (message, client) => {
             stopReminder(database, reminder);
             message.channel.send({ embed });
           })
+          //Edits the reaction message with the relevant data when disabling a reminder; active reminder is now -
           database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
             database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
               if(reactionMessage){
                 const reactionChannel = await client.channels.fetch(reactionMessage.channel_id);
                 const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid);
                 const updatedReactionMessage = reminderReactionMessage(null, role && role.role_id);
-                await reactionMessageInChannel.edit(new Discord.MessageEmbed(updatedReactionMessage));
+                await reactionMessageInChannel.edit(new Discord.MessageEmbed(updatedReactionMessage)); //Creates new discord embed and pass it in when editing the reaction message 
               }
             })
           })
@@ -271,6 +273,12 @@ const sendReminderInformation = (message, yagi) => {
           if(error){
             console.log(error)
           }
+          /**
+           * If a reaction message exists in our database, we send the reminder details with full data:
+           * Active Channel, Reminder Role and Reaction Message Link
+           * If it doesn't, we only send:
+           * Active Channel and Reminder Role
+           */
           if(reactionMessage){
             const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
             const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord

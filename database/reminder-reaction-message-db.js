@@ -113,6 +113,16 @@ const updateReminderReactionMessage = (reaction) => {
     }
   })
 }
+/**
+ * Function to check if the message being updated/edited is the reaction message
+ * This is solely to know if someone deletes the embed of the reaction message
+ * There's a lot of voodoo conditionals as there's no clear cut way of knowing if someone deleted the embed within a message
+ * Thankfully as the reaction message only has one embed, we can check if the old message had an embed and if the new message has none
+ * Also we only want to check if the message itself was written by the bots so we don't hook into random messages from users
+ * As for why we want to delete the message, I feel that it's pointless to keep the reaction message if the embed itself with all the reminder details has been deleted
+ * @param message - new updated message data object
+ * @param oldMessage - old message data object
+ */
 const checkIfReminderReactionMessage = (message, oldMessage) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
@@ -121,23 +131,36 @@ const checkIfReminderReactionMessage = (message, oldMessage) => {
     }
   })
 }
+/**
+ * Function to run when a user deletes the reminder reaction message
+ * As the reaction message is our source of truth of knowing which users want reminding, deleting it would require us to remove that data
+ * @param message - deleted message data object
+ * @param client - yagi client
+ */
 const deleteReminderReactionMessage = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${message.id}"`, (error, reactionMessage) => {
       if(reactionMessage){
         database.serialize(() => {
+          //Get reminder
           database.get(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
+            //Get reminder role
             database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+              //For each reminder user we want to remove the reminder role from them
               database.each(`SELECT * FROM ReminderUser WHERE reminder_reaction_message_id = "${message.id}"`, async (error, user) => {
                 if(role){
                   const memberToRemove = await message.guild.members.fetch(user.user_id);
                   memberToRemove.roles.remove(role.role_id);
                 }
-                database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`);
+                database.run(`DELETE FROM ReminderUser WHERE uuid = "${user.uuid}"`); //Deletes the reminder user
               })
             })
           })
+          /**
+           * To prevent complications, it's best to stop any active reminders when the reminder reaction is deleted
+           * We clear any timeouts that are active, send a special embed message and then update the reminder to be disabled
+           */
           database.get(`SELECT * FROM Reminder WHERE reaction_message_id = "${message.id}" AND enabled = ${true}`, async (error, reminder) => {
             if(reminder){
               if(reminder.timer){
@@ -149,13 +172,16 @@ const deleteReminderReactionMessage = (message, client) => {
               database.run(`UPDATE Reminder SET timer = ${null}, enabled = ${false} WHERE uuid = "${reminder.uuid}"`);
             }
           })
+          //Update every reminder with the associated deleted reaction message as null
           database.each(`SELECT * FROM Reminder WHERE reaction_message_id = ${message.id}`, (error, reminder) => {
             database.run(`UPDATE Reminder SET reaction_message_id = ${null} WHERE uuid = "${reminder.uuid}"`);
           })
+          //Delete the message from our database
+          database.run(`DELETE FROM ReminderReactionMessage WHERE uuid = "${message.id}"`);
         })
       }
     })
-    database.run(`DELETE FROM ReminderReactionMessage WHERE uuid = "${message.id}"`);
+    
   })
 }
 /**

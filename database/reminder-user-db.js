@@ -83,6 +83,7 @@ const removeReminderUser = (reaction, user) => {
  */
 const setReminderRoleToUser = (reaction, user, type) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  //Adding a role_uuid is not null check so that we're getting the most updated reminder; this is so that we can set also roles when reminders are disabled
   database.get(`SELECT * FROM Reminder WHERE guild_id = "${reaction.message.guild.id}" AND NOT role_uuid IS NULL`, (error, reminder) => {
     if(error){
       console.log(error);
@@ -94,6 +95,7 @@ const setReminderRoleToUser = (reaction, user, type) => {
         }
         if(role){
           const memberToSet = await reaction.message.guild.members.fetch(user.id);
+          //Add catch handlers as there are edge cases when roles are deleted in discord but not in our database; adding this comment to populate this handler later on
           switch(type){
             case 'add': 
               try{

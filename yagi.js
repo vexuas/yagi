@@ -234,6 +234,12 @@ yagi.on('messageReactionRemove', (reaction, user) => {
   removeReminderUser(reaction, user);
 })
 //------
+/**
+ * Event handlers for when message is updated and deleted
+ * messageUpdate - called when a user edits a cached message
+ * messageDelete - called when a user deletes a cached message
+ * More information about each function in their relevant database files
+ */
 yagi.on('messageUpdate', (oldMessage, newMessage) => {
   checkIfReminderReactionMessage(newMessage, oldMessage);
 })
@@ -306,6 +312,18 @@ const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
 }
+/**
+ * Function to delete all the relevant data in our database when yagi is removed from a server
+ * Removes:
+ * Guild
+ * Channel
+ * Role
+ * ReminderUser
+ * ReminderReactionMessage
+ * Reminder
+ * We clear any active reminders associated to the guild and then send the guild update notification to goat-servers in Yagi's Den
+ * @param guild - guild in which yagi was kicked in
+ */
 const removeServerDataFromYagi = (guild) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   database.serialize(() => {

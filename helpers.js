@@ -280,6 +280,9 @@ const disableReminderEmbed = (message, reminder) => {
   }
   return embed;
 }
+/**
+ * Embed design used when disabling reminders after the reminder role is deleted
+ */
 const disableReminderEmbedWhenRoleIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
@@ -288,6 +291,9 @@ const disableReminderEmbedWhenRoleIsDeleted = () => {
   }
   return embed;
 }
+/**
+ * Embed design used when disabling reminders after the reminder reaction message is deleted
+ */
 const disableReminderEmbedWhenReactionIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
@@ -380,12 +386,12 @@ const reminderDetails = (channel, role, message) => {
       },
       {
         name: "Reminder Role",
-        value: role ? `<@&${role}>` : '@deleted-role',
+        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
         inline: true
       },
       {
         name: "Reaction Message",
-        value: message ? `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})` : '-'
+        value: message ? `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})` : '-' //Add empty state if message does not exist
 
       }
     ]
@@ -411,12 +417,12 @@ const reminderReactionMessage = (channel, role) => {
     fields: [
       {
         name: "Active Channel",
-        value: channel ? `<#${channel}>` : '-',
+        value: channel ? `<#${channel}>` : '-', //Add empty state if channel does not exist
         inline: true
       },
       {
         name: "Reminder Role",
-        value: role ? `<@&${role}>` : '@deleted-role',
+        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
         inline: true
       }
     ]
@@ -638,7 +644,7 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
       }
     ]
   }
-  const roleId = role ? `<@&${role}>` : '@deleted-role';
+  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
   return channel.send(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
@@ -674,7 +680,7 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
       }
     ]
   }
-  const roleId = role ? `<@&${role}>` : '@deleted-role';
+  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
   return message.edit(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
