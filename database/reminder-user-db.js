@@ -96,10 +96,18 @@ const setReminderRoleToUser = (reaction, user, type) => {
           const memberToSet = await reaction.message.guild.members.fetch(user.id);
           switch(type){
             case 'add': 
-              await memberToSet.roles.add(role.role_id);
+              try{
+                await memberToSet.roles.add(role.role_id);
+              } catch(e){
+                console.log(e);
+              }
             break;
             case 'remove':
-              await memberToSet.roles.remove(role.role_id);
+              try{
+                await memberToSet.roles.remove(role.role_id);
+              } catch(e){
+                console.log(e);
+              }
               break;
           }
         }
