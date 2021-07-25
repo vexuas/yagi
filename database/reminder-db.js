@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage, sendHealthLog } = require('../helpers');
 const { sendReminderReactionMessage } = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
 
@@ -68,6 +68,9 @@ const enableReminder = (message, client) => {
                   database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminder.uuid}"`, error => {
                     sendReminderReactionMessage(database, message, client, reminder, role);
                     startIndividualReminder(database, reminder, role, client);
+
+                    const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+                    sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
                   });
                 } else {
                   createReminderRole(message, reminder, client);
@@ -143,6 +146,9 @@ const enableReminder = (message, client) => {
             }
             startIndividualReminder(database, reminder, role, client);
             sendReminderReactionMessage(database, message, client, reminder, role);
+
+            const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+            sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
           })
         })
       } else {
@@ -243,6 +249,9 @@ const disableReminder = (message, client) => {
             }
             sendReminderReactionMessage(database, message, client, reminder, role);
             startIndividualReminder(database, reminder, role, client);
+
+            const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+            sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
           })
         }
       })
