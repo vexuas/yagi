@@ -24,6 +24,7 @@ const { api } = require('./config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const grvAcnt = '`';
+const sqlite = require('sqlite3').verbose();
 
 //----------
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
@@ -693,34 +694,44 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
  * @param {*} trueData - validated world boss data
  */
 const sendHealthLog = (channel, rawData, trueData) => {
-  const embed = {
-    title: 'Yagi | Health Log',
-    description: 'Requested data from sheet',
-    color: trueData.accurate ? 3066993 : 16776960,
-    thumbnail: {
-      url:
-        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-    },
-    fields: [
-      {
-        name: 'Server Time',
-        value: codeBlock(trueData.serverTime)
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  database.get(`SELECT COUNT(uuid) FROM Reminder WHERE enabled = ${true}`, (error, activeReminders) => {
+    console.log(activeReminders);
+    const embed = {
+      title: 'Yagi | Health Log',
+      description: 'Requested data from sheet',
+      color: trueData.accurate ? 3066993 : 16776960,
+      thumbnail: {
+        url:
+          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
       },
-      {
-        name: 'Sheet Data',
-        value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(rawData.countdown)}`
-      },
-      {
-        name: 'True Data',
-        value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`
-      },
-      {
-        name: 'Accurate',
-        value: trueData.accurate ? 'Yes' : 'No'
-      }
-    ]
-  }
-  channel.send({ embed });
+      fields: [
+        {
+          name: 'Server Time',
+          value: codeBlock(trueData.serverTime)
+        },
+        {
+          name: 'Sheet Data',
+          value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(rawData.countdown)}`
+        },
+        {
+          name: 'True Data',
+          value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`
+        },
+        {
+          name: 'Accurate',
+          value: trueData.accurate ? 'Yes' : 'No',
+          inline: true
+        },
+        {
+          name: 'Active Reminders',
+          value: Object.values(activeReminders),
+          inline: true
+        }
+      ]
+    }
+    channel.send({ embed });
+  })
 }
 //----------
 module.exports = {
