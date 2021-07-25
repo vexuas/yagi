@@ -6,7 +6,7 @@
  * I do regret not implementing this right in the begininng but better late than never? It's been one hell of a learning experience anyway and I doubt I'll forget to add these in new projects
  * For reference: https://developer.mixpanel.com/docs/nodejs
  */
- const sendMixpanelEvent = (user, channel, guild, command, client) => {
+ const sendMixpanelEvent = (user, channel, guild, command, client, arguments) => {
   const eventToSend = `Use ${command} command`; //Name of event; string interpolated with command as best to write an event as an action a user is doing
   /**
    * Creates and updates a user profile
@@ -33,7 +33,8 @@
       channel_id: channel.id,
       guild: guild.name,
       guild_id: guild.id,
-      command: command
+      command: command,
+      arguments: arguments ? arguments : 'none'
     })
     /**
      * Sets a user profile properties only once
