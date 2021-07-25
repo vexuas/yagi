@@ -61,18 +61,6 @@ const insertNewGuild = (guild) => {
   })
 }
 /**
- * Deletes guild from Guild table
- * @param guild  - guild that yagi is removed in
- */
-const deleteGuild = (guild) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run(`DELETE FROM Guild WHERE uuid = ${guild.id}`, err => {
-    if(err){
-      console.log(err);
-    }
-  })
-}
-/**
  * Updates data of existing guild with new details in database
  * Only setting name as that's the only parameter we're saving in our database that can be edited by a user
  * @param guild - new updated details of guild
@@ -120,7 +108,6 @@ const updateGuildMemberCount = (member, type) => {
 module.exports = { 
   createGuildTable,
   insertNewGuild,
-  deleteGuild,
   updateGuild,
   updateGuildMemberCount
 }

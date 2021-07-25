@@ -5,11 +5,11 @@ const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
 const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('./helpers');
-const { createGuildTable, insertNewGuild, deleteGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
-const { createChannelTable, insertNewChannel, deleteChannel, deleteAllChannels, updateChannel } = require('./database/channel-db.js');
+const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
+const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
-const { cacheExistingReminderReactionMessages, updateReminderReactionMessage} = require('./database/reminder-reaction-message-db.js');
+const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, deleteReminderReactionMessage, checkIfReminderReactionMessage } = require('./database/reminder-reaction-message-db.js');
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
@@ -161,9 +161,7 @@ yagi.on('guildCreate', (guild) => {
 });
 yagi.on('guildDelete', (guild) => {
   try {
-    deleteGuild(guild);
-    deleteAllChannels(guild);
-    sendGuildUpdateNotification(yagi, guild, 'leave');
+    removeServerDataFromYagi(guild, yagi);
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -207,7 +205,7 @@ yagi.on('roleCreate', (role) => {
 })
 yagi.on('roleDelete', (role) => {
   try {
-    deleteRole(role);
+    deleteRole(role, yagi);
   } catch(e){
     sendErrorLog(yagi, e)
   }
@@ -234,6 +232,19 @@ yagi.on('messageReactionAdd', async (reaction, user) => {
 yagi.on('messageReactionRemove', (reaction, user) => {
   updateReminderReactionMessage(reaction);
   removeReminderUser(reaction, user);
+})
+//------
+/**
+ * Event handlers for when message is updated and deleted
+ * messageUpdate - called when a user edits a cached message
+ * messageDelete - called when a user deletes a cached message
+ * More information about each function in their relevant database files
+ */
+yagi.on('messageUpdate', (oldMessage, newMessage) => {
+  checkIfReminderReactionMessage(newMessage, oldMessage);
+})
+yagi.on('messageDelete', (message) => {
+  deleteReminderReactionMessage(message, yagi);
 })
 //------
 /**
@@ -300,4 +311,31 @@ yagi.on('error', (error) => {
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
+}
+/**
+ * Function to delete all the relevant data in our database when yagi is removed from a server
+ * Removes:
+ * Guild
+ * Channel
+ * Role
+ * ReminderUser
+ * ReminderReactionMessage
+ * Reminder
+ * We clear any active reminders associated to the guild and then send the guild update notification to goat-servers in Yagi's Den
+ * @param guild - guild in which yagi was kicked in
+ */
+const removeServerDataFromYagi = (guild) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+  database.serialize(() => {
+    database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
+    database.run(`DELETE FROM Channel WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM Role WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM ReminderUser WHERE guild_id = "${guild.id}"`);
+    database.run(`DELETE FROM ReminderReactionMessage WHERE guild_id = "${guild.id}"`);
+    database.each(`SELECT * FROM Reminder WHERE guild_id = "${guild.id}"`, (error, reminder) => {
+      clearTimeout(reminder.timer);
+      database.run(`DELETE FROM Reminder WHERE uuid = "${reminder.uuid}"`);
+    })
+    sendGuildUpdateNotification(yagi, guild, 'leave');
+  })
 }

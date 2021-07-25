@@ -1,5 +1,5 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID } = require('../helpers');
+const { generateUUID, disableReminderEmbedWhenRoleIsDeleted } = require('../helpers');
 /**
  * Creates Role table inside the Yagi Database
  * Gets called in the client.once("ready") hook
@@ -70,15 +70,70 @@ const insertNewRole = (role) => {
   })
 }
 /**
- * Deletes crole from Role table
+ * Deletes role from Role table
+ * Additional statements when role is being used for reminders
  * @param role - role that has been deleted
  */
-const deleteRole = (role) => {
+const deleteRole = (role, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-  database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
-    if(err){
-      console.log(err);
-    }
+  database.serialize(() => {
+    database.get(`SELECT * FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, (error, deletedRole) => {
+      //Checks if deleted role is used in a reminder
+      if(deletedRole.used_for_reminder === 1){
+        database.serialize(() => {
+          //Delete all reminder users from our database in the current guild
+          database.run(`DELETE FROM ReminderUser WHERE guild_id = "${deletedRole.guild_id}"`);
+          database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${deletedRole.guild_id}"`, async (error, reactionMessage) => {
+            if(reactionMessage){
+              /**
+               * As the reminder role is deleted, we don't need to keep track of who still has reacted to the reaction message
+               * We remove all the goat reactions on the reaction message
+               * After they are all removed, the bot then reacts again. This is placeholder for now as there are no handlers to when users react to the message when there are no roles
+               */
+              const channel = await client.channels.fetch(reactionMessage.channel_id);
+              try {
+                const message = await channel.messages.fetch(reactionMessage.uuid);
+                message.reactions.cache.forEach(async reaction => {
+                  if(reaction.emoji.name === '🐐'){
+                    await reaction.remove();
+                  }
+                })
+                await message.react('%F0%9F%90%90');
+              } catch(e){
+                throw e;
+              }
+            }
+          })
+          /**
+           * To prevent complications, it's best to stop any active reminders when the reminder role is deleted
+           * We clear any timeouts that are active, send a special embed message and then update the reminder to be disabled
+           */
+          database.get(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}" AND enabled = ${true}`, async (error, reminder) => {
+            if(reminder){
+              if(reminder.timer){
+                clearTimeout(reminder.timer);
+              }
+              const embed = disableReminderEmbedWhenRoleIsDeleted();
+              const channelToSend = await client.channels.fetch(reminder.channel_id);
+              channelToSend.send({ embed });
+              database.run(`UPDATE Reminder SET timer = ${null}, enabled = ${false} WHERE uuid = "${reminder.uuid}"`);
+            }
+          })
+          //Update every reminder with the associated deleted role
+          database.each(`SELECT * FROM Reminder WHERE role_uuid = "${deletedRole.uuid}"`, (error, reminder) => {
+            if(reminder){
+              database.run(`UPDATE Reminder SET role_uuid = ${null} WHERE uuid = "${reminder.uuid}"`);
+            }
+          })
+        })
+      }
+    })
+    //Delete role from our database
+    database.run(`DELETE FROM Role WHERE role_id = ${role.id} AND guild_id = ${role.guild.id}`, err => {
+      if(err){
+        console.log(err);
+      }
+    })
   })
 }
 /**

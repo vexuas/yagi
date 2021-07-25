@@ -1,5 +1,6 @@
+const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage } = require('../helpers');
 const { sendReminderReactionMessage } = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
 
@@ -58,13 +59,16 @@ const enableReminder = (message, client) => {
                 const embed = enableReminderEmbed(message, reminder)
                 message.channel.send({ embed });
               })
-              database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, async (err, role) => {
+              database.get(`SELECT * FROM Role WHERE guild_id = "${message.guild.id}" AND used_for_reminder = ${true}`, async (err, role) => {
                 if(err){
                   console.log(err);
                 }
                 if(role){
-                  sendReminderReactionMessage(database, message, client, reminder, role);
-                  startIndividualReminder(database, reminder, role, client);
+                  //Need to update reminder with role as there are edge cases when a role gets deleted and some reminders in our database would be null as their role uuid
+                  database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminder.uuid}"`, error => {
+                    sendReminderReactionMessage(database, message, client, reminder, role);
+                    startIndividualReminder(database, reminder, role, client);
+                  });
                 } else {
                   createReminderRole(message, reminder, client);
                 }
@@ -161,7 +165,7 @@ const enableReminder = (message, client) => {
  * Decided to go with updating just for the flexibility
  * @param message - message data object; taken from the on('message') event hook
  */
-const disableReminder = (message) => {
+const disableReminder = (message, client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   //Wrapped in a serialize to ensure that each method is called in order which its initialised
   database.serialize(() => {
@@ -181,8 +185,20 @@ const disableReminder = (message) => {
             if(err){
               console.log(err);
             }
+            
             stopReminder(database, reminder);
             message.channel.send({ embed });
+          })
+          //Edits the reaction message with the relevant data when disabling a reminder; active reminder is now -
+          database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
+            database.get(`SELECT * FROM ReminderReactionMessage WHERE guild_id = "${message.guild.id}"`, async (error, reactionMessage) => {
+              if(reactionMessage){
+                const reactionChannel = await client.channels.fetch(reactionMessage.channel_id);
+                const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid);
+                const updatedReactionMessage = reminderReactionMessage(null, role && role.role_id);
+                await reactionMessageInChannel.edit(new Discord.MessageEmbed(updatedReactionMessage)); //Creates new discord embed and pass it in when editing the reaction message 
+              }
+            })
           })
         }
       } else {
@@ -253,19 +269,26 @@ const sendReminderInformation = (message, yagi) => {
         if(error){
           console.log(error);
         }
-        if(role){
-          database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
-            if(error){
-              console.log(error)
-            }
-            if(reactionMessage){
-              const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
-              const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
-              const embed = reminderDetails(enabledReminder.channel_id, role.role_id, reactionMessageInChannel.url);
-              message.channel.send({ embed })
-            }
-          })
-        }
+        database.get(`SELECT * FROM ReminderReactionMessage WHERE uuid = "${enabledReminder.reaction_message_id}"`, async (error, reactionMessage) => {
+          if(error){
+            console.log(error)
+          }
+          /**
+           * If a reaction message exists in our database, we send the reminder details with full data:
+           * Active Channel, Reminder Role and Reaction Message Link
+           * If it doesn't, we only send:
+           * Active Channel and Reminder Role
+           */
+          if(reactionMessage){
+            const reactionChannel = await yagi.channels.fetch(reactionMessage.channel_id); //Fetches channel data from discord
+            const reactionMessageInChannel = await reactionChannel.messages.fetch(reactionMessage.uuid); //Fetches message data from discord
+            const embed = reminderDetails(enabledReminder.channel_id, role && role.role_id, reactionMessageInChannel.url);
+            message.channel.send({ embed })
+          } else {
+            const embed = reminderDetails(enabledReminder.channel_id, role && role.role_id, null);
+            await message.channel.send({ embed });
+          }
+        })
       })
     } else {
       const embed = reminderInstructions();
@@ -314,9 +337,9 @@ const startReminders = (database, client) => {
     if(timerCountdown >= 601000) {
       console.log('Restarting Reminders');
       const reminderTimeout = setTimeout(async () => {
-        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role.role_id, timer);
+        const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role && role.role_id, timer);
         setTimeout(async () => {
-          await editReminderTimerStatus(reminderTimerMessage, role.role_id, timer);//Edit timer message to display that world boss has started
+          await editReminderTimerStatus(reminderTimerMessage, role && role.role_id, timer);//Edit timer message to display that world boss has started
           await reminderTimerMessage.delete({ timeout: 1800000 }); //Delete timer message after 20 minutes as world boss has ended (30 minutes after the parent timeout)
         }, 601000); //600000 - Fired 10 minutes after timer message is sent; during when world boss has started
       }, timerCountdown - 601000); //600000 - 10 minutes before world boss spawns 

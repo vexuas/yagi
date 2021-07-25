@@ -281,6 +281,28 @@ const disableReminderEmbed = (message, reminder) => {
   return embed;
 }
 /**
+ * Embed design used when disabling reminders after the reminder role is deleted
+ */
+const disableReminderEmbedWhenRoleIsDeleted = () => {
+  const embed = {
+    title: "Reminder disabled!",
+    description: "The reminder role has been deleted, reminder is temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    color: 16711680
+  }
+  return embed;
+}
+/**
+ * Embed design used when disabling reminders after the reminder reaction message is deleted
+ */
+const disableReminderEmbedWhenReactionIsDeleted = () => {
+  const embed = {
+    title: "Reminder disabled!",
+    description: "The reaction message has been deleted, reminder is temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    color: 16711680
+  }
+  return embed;
+}
+/**
  * Embed design used when enabling reminders
  * First checks if message was sent in the reminder-enabled channel and if reminder even exists
  * If it does, we check if it the reminder is disabled and send an embed notifying the reminder has been enabled
@@ -364,12 +386,12 @@ const reminderDetails = (channel, role, message) => {
       },
       {
         name: "Reminder Role",
-        value: `<@&${role}>`,
+        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
         inline: true
       },
       {
         name: "Reaction Message",
-        value: `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})`,
+        value: message ? `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})` : '-' //Add empty state if message does not exist
 
       }
     ]
@@ -395,12 +417,12 @@ const reminderReactionMessage = (channel, role) => {
     fields: [
       {
         name: "Active Channel",
-        value: `<#${channel}>`,
+        value: channel ? `<#${channel}>` : '-', //Add empty state if channel does not exist
         inline: true
       },
       {
         name: "Reminder Role",
-        value: `<@&${role}>`,
+        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
         inline: true
       }
     ]
@@ -622,7 +644,8 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
       }
     ]
   }
-  return channel.send(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
+  return channel.send(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 /**
@@ -657,7 +680,8 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
       }
     ]
   }
-  return message.edit(`<@&${role}> Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
+  return message.edit(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
 }
 //----------
 /**
@@ -711,6 +735,8 @@ module.exports = {
   sendErrorLog,
   generateUUID,
   disableReminderEmbed,
+  disableReminderEmbedWhenRoleIsDeleted,
+  disableReminderEmbedWhenReactionIsDeleted,
   enableReminderEmbed,
   reminderInstructions,
   reminderDetails,
