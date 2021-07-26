@@ -16,7 +16,7 @@ module.exports = {
         fields: [
           {
             name: 'Timer',
-            value: '`goats`'
+            value: '`goats`, `remind`'
           },
           {
             name: 'Information',
@@ -25,7 +25,7 @@ module.exports = {
           {
             name: 'Miscellaneous',
             value:
-              '`loot`, `contacts`, `website`\n\nFor more detailed information about a command, use `' +
+              '`loot`, `contacts`, `website`, `feedback`\n\nFor more detailed information about a command, use `' +
               yagiPrefix +
               'help <Command>`'
           }
