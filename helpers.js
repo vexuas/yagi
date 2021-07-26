@@ -290,7 +290,7 @@ const disableReminderEmbed = (message, reminder) => {
 const disableReminderEmbedWhenRoleIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reminder role has been deleted, reminder is temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reminder role has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
@@ -301,7 +301,7 @@ const disableReminderEmbedWhenRoleIsDeleted = () => {
 const disableReminderEmbedWhenReactionIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reaction message has been deleted, reminder is temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reaction message has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
@@ -358,6 +358,10 @@ const reminderInstructions = () => {
       {
         name: "How to disable",
         value: "1. Type `$yagi-remind disable` in the channel where reminders was enabled. This will deactivate reminders on the current channel."
+      },
+      {
+        name: 'Deleting Reminder Role/Reaction Message',
+        value: '1. If the reminder role or the reaction message gets deleted, any active reminders will be temporarily disabled\n2. Reactions will also be cleared and existing users would lose the role\n3. Re-enabling a reminder would recreate the deleted role/reaction message and users can react again to get the role'
       }
     ]
   }
