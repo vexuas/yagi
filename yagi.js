@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance } = require('./helpers');
 const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -97,11 +97,12 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
+    isInWeeklyMaintenance();
     setInterval(() => {
       getCurrentTimerData(yagi);
     }, 1800000, yagi) //1800000 - 30 minutes
     const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
-    sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
+    sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
   } catch(e){
     sendErrorLog(yagi, e);
   }
@@ -291,7 +292,7 @@ yagi.on('message', async (message) => {
           await message.channel.send("That command doesn't accept arguments （・□・；）");
         } else {
           await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
-          sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel); //Send tracking event to mixpanel
+          sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
         }
       } else {
         await message.channel.send("I'm not sure what you meant by that! （・□・；）");

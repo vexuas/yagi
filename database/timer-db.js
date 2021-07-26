@@ -89,7 +89,7 @@ const getCurrentTimerData = (client) => {
         const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
         updateTimerData(database, validatedWorldBossData, timer);
         
-        sendHealthLog(healthChannel, worldBossData, validatedWorldBossData);
+        sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
       }
     })
     startReminders(database, client);

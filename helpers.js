@@ -16,7 +16,8 @@ const {
   format,
   isWithinRange,
   startOfDay,
-  endOfDay
+  endOfDay,
+  isWednesday
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
@@ -24,6 +25,7 @@ const { api } = require('./config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const grvAcnt = '`';
+const sqlite = require('sqlite3').verbose();
 
 //----------
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {
@@ -692,35 +694,104 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
  * @param {*} rawData - data from olympus spreadsheet
  * @param {*} trueData - validated world boss data
  */
-const sendHealthLog = (channel, rawData, trueData) => {
-  const embed = {
-    title: 'Yagi | Health Log',
-    description: 'Requested data from sheet',
-    color: trueData.accurate ? 3066993 : 16776960,
-    thumbnail: {
-      url:
-        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-    },
-    fields: [
-      {
-        name: 'Server Time',
-        value: codeBlock(trueData.serverTime)
-      },
-      {
-        name: 'Sheet Data',
-        value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(rawData.countdown)}`
-      },
-      {
-        name: 'True Data',
-        value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`
-      },
-      {
-        name: 'Accurate',
-        value: trueData.accurate ? 'Yes' : 'No'
-      }
-    ]
+const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+  switch(type){
+    case 'timer':
+      database.get(`SELECT COUNT(uuid) FROM Reminder WHERE enabled = ${true}`, (error, activeReminders) => {
+        const embed = {
+          title: 'Yagi | Health Log',
+          description: 'Requested data from sheet',
+          color: trueData.accurate ? 3066993 : 16776960,
+          thumbnail: {
+            url:
+              'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+          },
+          fields: [
+            {
+              name: 'Server Time',
+              value: codeBlock(trueData.serverTime)
+            },
+            {
+              name: 'Sheet Data',
+              value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(rawData.countdown)}`
+            },
+            {
+              name: 'True Data',
+              value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(trueData.countdown)}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`
+            },
+            {
+              name: 'Accurate',
+              value: trueData.accurate ? 'Yes' : 'No',
+              inline: true
+            },
+            {
+              name: 'Active Reminders',
+              value: Object.values(activeReminders),
+              inline: true
+            }
+          ]
+        }
+        channel.send({ embed });
+      })
+      break;
+    case 'reminder':
+      database.get(`SELECT COUNT(uuid) FROM Reminder WHERE enabled = ${true}`, async (error, activeReminders) => {
+        const reminderGuild = await client.guilds.fetch(reminder.guild_id);
+        const reminderChannel = await client.channels.fetch(reminder.channel_id);
+        const reminderUser = await reminderGuild.members.fetch(reminder.enabled_by);
+        const embed = {
+          title: 'Yagi | Health Log',
+          description: 'New Reminder enabled!',
+          color: 15844367,
+          thumbnail: {
+            url:
+              'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+          },
+          fields: [
+            {
+              name: 'Server',
+              value: codeBlock(reminderGuild.name),
+            },
+            {
+              name: 'Channel',
+              value: codeBlock(reminderChannel.name),
+            },
+            {
+              name: 'Enabled By',
+              value: codeBlock(reminderUser.user.tag),
+            },
+            {
+              name: 'Enabled At',
+              value: codeBlock(format(new Date(), 'MMMM D YYYY h:mm:ss A')),
+            },
+            {
+              name: 'Active Reminders',
+              value: Object.values(activeReminders),
+            }
+          ]
+        }
+        channel.send({ embed });
+      })
+      break;
   }
-  channel.send({ embed });
+}
+//----------
+/**
+ * Function to check if the game's servers down for weekly maintenance
+ * Currently this is just an assumption as there's nothing set up to get the server status
+ * Using a fixed date based on when maintenance usually happens i.e. on Wednesdays early morning
+ * Usually it starts at 3AM which is accurate enough but the end time varies
+ * To try to be as accurate as possible, I put the end time to 12pm and check if the timer data is accurate
+ * As leads would most certainly be updating the sheet after maintenance, this should be accurate enough
+ * @param timerIsAccurate - if validated world boss data is accurate
+ */
+const isInWeeklyMaintenance = (timerIsAccurate) => {
+  const serverTime = getServerTime();
+  const isOnWednesday = isWednesday(serverTime);
+  const startOfMaint = `${format(serverTime, 'MMMM D YYYY 3:00:00')} AM`;
+  const endOfMaint = `${format(serverTime, 'MMMM D YYYY 12:00:00')} PM`; 
+  return isOnWednesday && isWithinRange(serverTime, startOfMaint, endOfMaint) && !timerIsAccurate;
 }
 //----------
 module.exports = {
@@ -746,5 +817,6 @@ module.exports = {
   codeBlock,
   sendReminderTimerEmbed,
   editReminderTimerStatus,
-  sendHealthLog
+  sendHealthLog,
+  isInWeeklyMaintenance
 }

@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage } = require('../helpers');
+const { generateUUID, disableReminderEmbed, enableReminderEmbed, reminderInstructions, reminderDetails, sendReminderTimerEmbed, getServerTime, editReminderTimerStatus, reminderReactionMessage, sendHealthLog, isInWeeklyMaintenance } = require('../helpers');
 const { sendReminderReactionMessage } = require('./reminder-reaction-message-db.js');
 const { differenceInMilliseconds } = require('date-fns');
 
@@ -68,6 +68,9 @@ const enableReminder = (message, client) => {
                   database.run(`UPDATE Reminder SET role_uuid = "${role.uuid}" WHERE uuid = "${reminder.uuid}"`, error => {
                     sendReminderReactionMessage(database, message, client, reminder, role);
                     startIndividualReminder(database, reminder, role, client);
+
+                    const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+                    sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
                   });
                 } else {
                   createReminderRole(message, reminder, client);
@@ -143,6 +146,9 @@ const enableReminder = (message, client) => {
             }
             startIndividualReminder(database, reminder, role, client);
             sendReminderReactionMessage(database, message, client, reminder, role);
+
+            const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+            sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
           })
         })
       } else {
@@ -243,6 +249,9 @@ const disableReminder = (message, client) => {
             }
             sendReminderReactionMessage(database, message, client, reminder, role);
             startIndividualReminder(database, reminder, role, client);
+
+            const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+            sendHealthLog(healthChannel, null, null, 'reminder', reminder, client);
           })
         }
       })
@@ -308,10 +317,13 @@ const startReminders = (database, client) => {
   database.each(`SELECT * FROM Reminder WHERE enabled = ${true}`, (error, reminder) => {
     if(reminder){
       database.get(`SELECT * FROM Role WHERE uuid = "${reminder.role_uuid}"`, (error, role) => {
-        if(reminder.timer){
-          clearTimeout(reminder.timer);
-        }
-        startIndividualReminder(database, reminder, role, client);
+        database.serialize(() => {
+          if(reminder.timer){
+            clearTimeout(reminder.timer);
+            database.run(`UPDATE Reminder SET timer = ${null} WHERE uuid = "${reminder.uuid}"`);
+          }
+          startIndividualReminder(database, reminder, role, client);
+        })
       })
     }
   })
@@ -334,7 +346,7 @@ const startReminders = (database, client) => {
     const timerCountdown = differenceInMilliseconds(timer.next_spawn, getServerTime());
     const reminderChannel = client.channels.cache.get(reminder.channel_id);
     //Only start timers if nextSpawn date is after current server time
-    if(timerCountdown >= 601000) {
+    if(timerCountdown >= 601000 && !isInWeeklyMaintenance(timer.accurate === 1)) {
       console.log('Restarting Reminders');
       const reminderTimeout = setTimeout(async () => {
         const reminderTimerMessage = await sendReminderTimerEmbed(reminderChannel, role && role.role_id, timer);
