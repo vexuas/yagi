@@ -1,7 +1,7 @@
 const { api } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const { getServerTime, formatCountdown, formatLocation } = require('../../helpers');
+const { getServerTime, formatCountdown, formatLocation, isInWeeklyMaintenance } = require('../../helpers');
 const { PSA, PSAmessage } = require('../../config/psa.json');
 const {
   format,
@@ -14,6 +14,7 @@ const {
   startOfDay,
   endOfDay
 } = require('date-fns');
+const { validate } = require('uuid');
 //----------
 /**
  * GET request to spreadsheet for values
@@ -150,6 +151,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
  * but sticking to this since I got used to it
  */
 const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
+  let embedData;
   const grvAcnt = '`'; //Making this a variable to make use of concatenation
 
   const serverTimeDesc = `Server Time: ${grvAcnt}${format(
@@ -169,34 +171,53 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
     countdownSheet[2]
   } secs`;
   **/
-  const embedData = {
-    title: 'Olympus | World Boss',
-    description: `${serverTimeDesc}\n${spawnDesc}`,
-    color: 32896,
-    thumbnail: {
-      url:
-        'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-    },
-    footer: {
-      text: spawnFooter
-    },
-    fields: [
-      {
-        name: 'Location',
-        value: '```fix\n\n' + formatLocation(worldBossData.location) + '```'
+  const isTimerAccurate = validateSpawn(worldBossData, getServerTime()).accurate;
+  if(isInWeeklyMaintenance(isTimerAccurate)){
+    embedData = {
+      title: 'Olympus | World Boss',
+      description: `${serverTimeDesc}`,
+      color: 16776960,
+      thumbnail: {
+        url:
+          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
       },
-      {
-        name: 'Countdown',
-        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).countdown + '```',
-        inline: true
+      fields: [
+        {
+          name: 'Status',
+          value: 'Game servers have went down for weekly maintenance. Timer will be offline for a while; To get the next world boss spawn, refer to the [Olympus sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/htmlview?pru=AAABetvDVTc*CUO1z4a8sJgbuqturEfCGQ#) or wait in-game for world boss leads instructions'
+        }
+      ]
+    }
+  } else {
+    embedData = {
+      title: 'Olympus | World Boss',
+      description: `${serverTimeDesc}\n${spawnDesc}`,
+      color: 32896,
+      thumbnail: {
+        url:
+          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
       },
-      {
-        name: 'Time of Spawn',
-        value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).nextSpawn + '```',
-        inline: true
-      }
-    ]
-  };
+      footer: {
+        text: spawnFooter
+      },
+      fields: [
+        {
+          name: 'Location',
+          value: '```fix\n\n' + formatLocation(worldBossData.location) + '```'
+        },
+        {
+          name: 'Countdown',
+          value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).countdown + '```',
+          inline: true
+        },
+        {
+          name: 'Time of Spawn',
+          value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).nextSpawn + '```',
+          inline: true
+        }
+      ]
+    };
+  }
   return embedData;
 };
 //----------

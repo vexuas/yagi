@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance } = require('./helpers');
 const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -97,6 +97,7 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
+    isInWeeklyMaintenance();
     setInterval(() => {
       getCurrentTimerData(yagi);
     }, 1800000, yagi) //1800000 - 30 minutes

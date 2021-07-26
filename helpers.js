@@ -16,7 +16,9 @@ const {
   format,
   isWithinRange,
   startOfDay,
-  endOfDay
+  endOfDay,
+  isWednesday,
+  isMonday
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
@@ -776,6 +778,14 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
   }
 }
 //----------
+const isInWeeklyMaintenance = (timerIsAccurate) => {
+  const serverTime = getServerTime();
+  const isOnMonday = isMonday(serverTime);
+  const startOfMaint = `${format(serverTime, 'MMMM D YYYY 3:00:00')} AM`;
+  const endOfMaint = `${format(serverTime, 'MMMM D YYYY 12:00:00')} PM`;
+  return isOnMonday && isWithinRange(serverTime, startOfMaint, endOfMaint);
+}
+//----------
 module.exports = {
   getServerTime,
   formatCountdown,
@@ -799,5 +809,6 @@ module.exports = {
   codeBlock,
   sendReminderTimerEmbed,
   editReminderTimerStatus,
-  sendHealthLog
+  sendHealthLog,
+  isInWeeklyMaintenance
 }
