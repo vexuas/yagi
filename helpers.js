@@ -17,8 +17,7 @@ const {
   isWithinRange,
   startOfDay,
   endOfDay,
-  isWednesday,
-  isMonday
+  isWednesday
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('./config/offset.json');
@@ -778,12 +777,21 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
   }
 }
 //----------
+/**
+ * Function to check if the game's servers down for weekly maintenance
+ * Currently this is just an assumption as there's nothing set up to get the server status
+ * Using a fixed date based on when maintenance usually happens i.e. on Wednesdays early morning
+ * Usually it starts at 3AM which is accurate enough but the end time varies
+ * To try to be as accurate as possible, I put the end time to 12pm and check if the timer data is accurate
+ * As leads would most certainly be updating the sheet after maintenance, this should be accurate enough
+ * @param timerIsAccurate - if validated world boss data is accurate
+ */
 const isInWeeklyMaintenance = (timerIsAccurate) => {
   const serverTime = getServerTime();
-  const isOnMonday = isMonday(serverTime);
+  const isOnWednesday = isWednesday(serverTime);
   const startOfMaint = `${format(serverTime, 'MMMM D YYYY 3:00:00')} AM`;
-  const endOfMaint = `${format(serverTime, 'MMMM D YYYY 12:00:00')} PM`;
-  return isOnMonday && isWithinRange(serverTime, startOfMaint, endOfMaint);
+  const endOfMaint = `${format(serverTime, 'MMMM D YYYY 12:00:00')} PM`; 
+  return isOnWednesday && isWithinRange(serverTime, startOfMaint, endOfMaint) && !timerIsAccurate;
 }
 //----------
 module.exports = {
