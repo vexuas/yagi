@@ -184,20 +184,22 @@ const descriptionEmbed = function generatesDescriptionEmbedForCommands(
 ) {
   const commandName = `${grvAcnt}${currentPrefix}${command}${grvAcnt}`;
   const argumentUsage = `${grvAcnt}${currentPrefix}${command} ${exampleArgument}${grvAcnt}`;
+  let embed;
 
-  const embed = {
-    color: 32896,
-    fields: [
-      {
-        name: commandName,
-        value: description,
-      },
-      {
-        name: 'Usage',
-        value: hasArguments ? `${commandName} | ${argumentUsage}` : commandName,
-      },
-    ],
-  };
+  if(command !== 'remind'){
+    embed = {
+      description: description,
+      color: 32896,
+      fields: [
+        {
+          name: 'Usage',
+          value: hasArguments ? `${commandName} | ${argumentUsage}` : commandName,
+        },
+      ],
+    };
+  } else {
+    embed = reminderInstructions();
+  }
   return embed;
 };
 //----------
@@ -288,7 +290,7 @@ const disableReminderEmbed = (message, reminder) => {
 const disableReminderEmbedWhenRoleIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reminder role has been deleted, reminder is temporarily disabled. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reminder role has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
@@ -299,7 +301,7 @@ const disableReminderEmbedWhenRoleIsDeleted = () => {
 const disableReminderEmbedWhenReactionIsDeleted = () => {
   const embed = {
     title: "Reminder disabled!",
-    description: "The reaction message has been deleted, reminder is temporarily disabled. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
+    description: "The reaction message has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.",
     color: 16711680
   }
   return embed;
@@ -351,11 +353,15 @@ const reminderInstructions = () => {
       },
       {
         name: "How to use",
-        value: "1. When a channel is activated, Yagi creates a new role in the server `@Goat Hunters`\n2. To get reminders, simply react on the special message with :goat: and you will automatically get the role. *Note that by removing the reaction you will lose the role*\n3. When world boss is spawning soon, Yagi will ping the role\n\n*To get the special message again, type `$yagi-remind`. You can also edit the role to customise its name/color*"
+        value: "1. When a channel is activated, Yagi creates a new role in the server `@Goat Hunters`\n2. To get reminders, simply react on the special message with :goat: and you will automatically get the role. *Note that by removing the reaction you will lose the role*\n3. When world boss is spawning soon, Yagi will ping the role\n\n*To see the reminder details, type `$yagi-remind`. You can also edit the role to customise its name/color*"
       },
       {
         name: "How to disable",
         value: "1. Type `$yagi-remind disable` in the channel where reminders was enabled. This will deactivate reminders on the current channel."
+      },
+      {
+        name: 'Deleting Reminder Role/Reaction Message',
+        value: '1. If the reminder role or the reaction message gets deleted, any active reminders will be temporarily disabled\n2. Reactions will also be cleared and existing users would lose the role\n3. Re-enabling a reminder would recreate the deleted role/reaction message and users can react again to get the role'
       }
     ]
   }
@@ -665,7 +671,7 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
   const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
  
   //Don't forget to add typeform and yagi's discord server invite
-  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://www.google.com/)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`
+  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://cyhmwysg8uq.typeform.com/to/szg4bUPU)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`
 
   const embed = {
     title: 'Olympus | World Boss',

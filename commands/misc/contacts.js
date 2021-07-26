@@ -23,10 +23,7 @@ module.exports = {
         },
         {
           name: 'Yagi',
-          value:
-            "• Use yagi's `message` command\n• This sends a message through the bot to me and I'll try to reply whenever I can!\n• For help, type `" +
-            currentPrefix +
-            'help message`'
+          value: '• [Discord Support Server](https://discord.gg/7nAYYDm)\n• [Codebase](https://github.com/vexuas/yagi)',
         },
         {
           name: 'Others',
