@@ -18,7 +18,8 @@ const activitylist = [
   'ping me for prefix!',
   'goats | Olympus wb',
   'help | command list',
-  'Last update: 10/03/2021',
+  'remind | wb reminder notification',
+  'Last update: 27/07/2021',
   'checkout Ama for eidolons!',
 ];
 let mixpanel;
