@@ -43,8 +43,8 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi, yagiP
         inline: true
       },
       {
-        name: 'Dev Update | 10 March 2021',
-        value: `Hey guys! Think it's been just over a month since my last update, haven't really been adding any major stuff to yagi. Mostly maintenance and dev commands. My main focus has been elsewhere extracting data and building an API for the game. But before I put in all my efforts in all that interesting stuff, I'll be releasing one more major feature to yagi: [Reminders](https://miro.com/app/board/o9J_lUIhhl0=/)! Will probably get this out in the next couple of weeks and after that, I don't expect to update yagi much until I get the API up and running. Till then o/`
+        name: 'Dev Update | 27 July 2021',
+        value: `Look who's alive! After 4 months I have finally emerged from my dark cave heh. My bad on that, got so preoccupied with life that I kinda lost motivation in building yagi :x But better late than never amirite? And bois do I have a big update for ya'll. Reminders are finally here!! And a couple of quality of life changes too but who cares about that, Reminders wooo!! Gosh this was such a headache to design and develop but I think it turned out pretty well! I have no updates about what's next after this, primarily cuz I want to rest up and avoid burnout but I'll get some plans out soon. Oh and I finally set up a [discord server](https://discord.gg/7nAYYDm) for yagi, so come join if you're into that kind of thing I guess`
       }
     ]
   };
