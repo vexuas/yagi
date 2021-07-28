@@ -42,26 +42,6 @@ yagi.once('ready', async () => {
   try {
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
-    console.log("I'm ready! (◕ᴗ◕✿)");
-    /**
-     * Displays people and guilds using yagi along with roles inside guilds
-     */
-    yagi.guilds.cache.forEach(guild => {
-      guild.members.fetch(guild.ownerID).then(guildMember => {
-        console.log(`Guild: ${guild.name} - ${guild.region} : ${guild.memberCount} : ${guildMember.user.tag}`)
-      })
-      guild.roles.cache.forEach(role => {
-        guild.members.fetch().then(members => {
-          console.log(`Role: ${role.name} : ${guild.name} : ${role.members.size} : ${role.hexColor}`);
-        }) 
-      })
-      guild.members.fetch().then(members => {
-        members.forEach(member => {
-          console.log(`Member: ${member.user.username} : ${guild.name}`);
-        })
-      })
-    })
-    console.log(`Number of guilds: ${yagi.guilds.cache.size}`);
     /**
      * Initial call to the Olympus spreadsheet and get world boss data
      * As the public sheet isn't accurate with the timestamps given (only returns time and not date), we validate the data first. See more info in the helpers file
@@ -98,7 +78,6 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
-    isInWeeklyMaintenance();
     setInterval(() => {
       getCurrentTimerData(yagi);
     }, 1800000, yagi) //1800000 - 30 minutes
