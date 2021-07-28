@@ -733,7 +733,7 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
             },
             {
               name: 'Active Reminders',
-              value: Object.values(activeReminders),
+              value: activeReminders ? Object.values(activeReminders) : 0,
               inline: true
             }
           ]
@@ -773,7 +773,7 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
             },
             {
               name: 'Active Reminders',
-              value: Object.values(activeReminders),
+              value: activeReminders ? Object.values(activeReminders) : 0,
             }
           ]
         }
