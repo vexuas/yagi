@@ -14,7 +14,6 @@ const {
   startOfDay,
   endOfDay
 } = require('date-fns');
-const { validate } = require('uuid');
 //----------
 /**
  * GET request to spreadsheet for values
@@ -158,11 +157,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
     getServerTime(),
     'dddd, h:mm:ss A'
   )}${grvAcnt}`;
-
-  const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
-    validateSpawn(worldBossData, getServerTime()).nextSpawn
-  }${grvAcnt}`;
-  const spawnFooter = validateSpawn(worldBossData, getServerTime()).accurate ? '' : `**Note that sheet data isn't up to date, timer accuracy might be off`;
+  const validatedSpawn = validateSpawn(worldBossData, getServerTime());
   /** 
    * This is far easier to get countdown but it isn't as reliable and accurate
    * I'll just leave it here for reference
@@ -171,7 +166,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
     countdownSheet[2]
   } secs`;
   **/
-  const isTimerAccurate = validateSpawn(worldBossData, getServerTime()).accurate;
+  const isTimerAccurate = validatedSpawn && validatedSpawn.accurate;
   if(isInWeeklyMaintenance(isTimerAccurate)){
     embedData = {
       title: 'Olympus | World Boss',
@@ -189,6 +184,8 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
       ]
     }
   } else {
+    const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${validatedSpawn.nextSpawn}${grvAcnt}`;
+    const spawnFooter = validatedSpawn.accurate ? '' : `**Note that sheet data isn't up to date, timer accuracy might be off`;
     embedData = {
       title: 'Olympus | World Boss',
       description: `${serverTimeDesc}\n${spawnDesc}`,

@@ -20,7 +20,6 @@ const createRoleTable = async (database, guilds) => {
      **/ 
     guilds.forEach(guild => {
       guild.roles.cache.forEach(async role => {
-        await guild.members.fetch();
         database.get(`SELECT * FROM Role WHERE role_id = ${role.id} AND guild_id = ${guild.id}`, (error, row) => {
           if(error){
             console.log(error);
