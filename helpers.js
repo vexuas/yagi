@@ -340,7 +340,7 @@ const enableReminderEmbed = (message, reminder) => {
  */
 const reminderInstructions = () => {
   const embed = {
-    description: "Personal reminder to notify you when world boss is spawning soon.\nCan only be activated in one channel per server by an admin.\n\n",
+    description: "Personal reminder to notify you when world boss is spawning soon.\nCan only be activated in one channel per server by an admin.\n\nVisual guides: [Github](https://github.com/vexuas/yagi#setting-up-reminders) | Youtube",
     color: 32896,
     thumbnail: {
       url:
