@@ -52,7 +52,7 @@ Automatic notifications 10 minutes before every world boss spawn
 <img src="https://user-images.githubusercontent.com/42207245/127491835-2eaa4ae2-6514-45ee-966d-dcadd42a750f.png" width=800px  />
 
 - **Interactions**
-  - When a reminder gets enabled, yagi creates a new role in the server called `@Goat Hunters`. This role will be used to ping you when world boss is soon 
+  - When a reminder gets enabled, yagi creates a new role in the server called `@Goat Hunters`. This role will be used to ping you when world boss is soon. _Note that you can customise this role i.e. editing its name and color_
   - To get the `@Goat Hunters` role, react to the reaction message with :goat:
 <img src="https://user-images.githubusercontent.com/42207245/127494128-ca52b7dc-a35c-4698-aaa2-f718a3b94b9d.png" width=800px  />
 
