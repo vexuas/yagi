@@ -14,6 +14,7 @@ const {
   startOfDay,
   endOfDay
 } = require('date-fns');
+const sqlite = require('sqlite3').verbose();
 //----------
 /**
  * GET request to spreadsheet for values
@@ -204,12 +205,12 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
         },
         {
           name: 'Countdown',
-          value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).countdown + '```',
+          value: '```xl\n\n' + validatedSpawn.countdown + '```',
           inline: true
         },
         {
           name: 'Time of Spawn',
-          value: '```xl\n\n' + validateSpawn(worldBossData, getServerTime()).nextSpawn + '```',
+          value: '```xl\n\n' + validatedSpawn.nextSpawn + '```',
           inline: true
         }
       ]
@@ -223,8 +224,15 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
  * Passed in another function as a parameter so it gets called after everything else is done
  * */
 const sendMessage = function sendMessageToUser(message, embedData) {
-  const embed = embedData;
-  message.channel.send({ embed });
+  let embed = embedData;
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+
+  database.get(`SELECT * FROM Reminder WHERE guild_id = "${message.guild.id}" AND enabled = ${true}`, (error, reminder) => {
+    if(!reminder && embed.color === 32896){
+      embed.description = embed.description + "\n\n*Try out [reminders](https://github.com/vexuas/yagi#setting-up-reminders) to get notified automatically!*"
+    }
+    message.channel.send({ embed });
+  })
 };
 //----------
 module.exports = {
