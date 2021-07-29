@@ -1,3 +1,34 @@
+# v2.5.1 (Thu Jul 29 2021)
+
+### Release Notes
+
+#### Reminder tweaks ([#79](https://github.com/vexuas/yagi/pull/79))
+
+Add link to set up reminders in goats command if server doesn't have any current active reminders
+
+#### Fix bugs ([#78](https://github.com/vexuas/yagi/pull/78))
+
+Fix breaking v2.5.0 bugs
+
+---
+
+#### 🐛 Bug Fix
+
+- Update README.md [#81](https://github.com/vexuas/yagi/pull/81) ([@vexuas](https://github.com/vexuas))
+- Update README.md [#80](https://github.com/vexuas/yagi/pull/80) ([@vexuas](https://github.com/vexuas))
+- Reminder tweaks [#79](https://github.com/vexuas/yagi/pull/79) ([@vexuas](https://github.com/vexuas))
+- Fix bugs [#78](https://github.com/vexuas/yagi/pull/78) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2021 07 27 [#77](https://github.com/vexuas/yagi/pull/77) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.5.0 (Tue Jul 27 2021)
 
 ### Release Notes
