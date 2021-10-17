@@ -41,10 +41,6 @@ const sendInfoEmbed = function designOfYagiInformationEmbed(message, yagi, yagiP
         name: 'Feedback Form',
         value: '[Click me! (◕ᴗ◕✿)](https://cyhmwysg8uq.typeform.com/to/szg4bUPU)',
         inline: true
-      },
-      {
-        name: 'Dev Update | 27 July 2021',
-        value: `Look who's alive! After 4 months I have finally emerged from my dark cave heh. My bad on that, got so preoccupied with life that I kinda lost motivation in building yagi :x But better late than never amirite? And bois do I have a big update for ya'll. Reminders are finally here!! And a couple of quality of life changes too but who cares about that, Reminders wooo!! Gosh this was such a headache to design and develop but I think it turned out pretty well! I have no updates about what's next after this, primarily cuz I want to rest up and avoid burnout but I'll get some plans out soon. Oh and I finally set up a [discord server](https://discord.gg/7nAYYDm) for yagi, so come join if you're into that kind of thing I guess`
       }
     ]
   };
