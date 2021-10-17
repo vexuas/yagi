@@ -225,14 +225,8 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
  * */
 const sendMessage = function sendMessageToUser(message, embedData) {
   let embed = embedData;
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
-  database.get(`SELECT * FROM Reminder WHERE guild_id = "${message.guild.id}" AND enabled = ${true}`, (error, reminder) => {
-    if(!reminder && embed.color === 32896){
-      embed.description = embed.description + "\n\n*Try out [reminders](https://github.com/vexuas/yagi#setting-up-reminders) to get notified automatically!*"
-    }
-    message.channel.send({ embed });
-  })
+  message.channel.send({ embed });
 };
 //----------
 module.exports = {
