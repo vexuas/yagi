@@ -273,8 +273,6 @@ yagi.on('message', async (message) => {
           await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
           sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
         }
-      } else {
-        await message.channel.send("I'm not sure what you meant by that! （・□・；）");
       }
     } else {
       return;
