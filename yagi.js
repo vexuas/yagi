@@ -19,7 +19,7 @@ const activitylist = [
   'goats | Olympus wb',
   'help | command list',
   'remind | wb reminder notification',
-  'Last update: 27/07/2021'
+  'Last update: 17/10/2021'
 ];
 let mixpanel;
 //----------

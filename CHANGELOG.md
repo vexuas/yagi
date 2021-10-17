@@ -1,3 +1,37 @@
+# v2.6.0 (Sun Oct 17 2021)
+
+### Release Notes
+
+#### Remove beta information of reminder ([#85](https://github.com/vexuas/yagi/pull/85))
+
+Remove beta information of reminder
+
+#### Clean up code and links ([#84](https://github.com/vexuas/yagi/pull/84))
+
+Clean up code and links
+
+#### Remove reply when wrong command ([#83](https://github.com/vexuas/yagi/pull/83))
+
+Remove reply when wrong command
+
+---
+
+#### 🚀 Enhancement
+
+- Remove beta information of reminder [#85](https://github.com/vexuas/yagi/pull/85) ([@vexuas](https://github.com/vexuas))
+- Clean up code and links [#84](https://github.com/vexuas/yagi/pull/84) ([@vexuas](https://github.com/vexuas))
+- Remove reply when wrong command [#83](https://github.com/vexuas/yagi/pull/83) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2021 07 29 [#82](https://github.com/vexuas/yagi/pull/82) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.5.1 (Thu Jul 29 2021)
 
 ### Release Notes
