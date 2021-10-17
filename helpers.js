@@ -626,7 +626,7 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
 
   const embed = {
     title: 'Olympus | World Boss',
-    description: `${serverTimeDescription}\n${spawnDescription}\n\n${spawnFooter}`,
+    description: `${serverTimeDescription}\n${spawnDescription}`,
     thumbnail: {
       url:
         'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png'
