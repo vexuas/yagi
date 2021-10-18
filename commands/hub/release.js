@@ -4,7 +4,7 @@ module.exports = {
   execute(message) {
     const release = '```FINALLY REMINDERSSSSSS```';
     const embed = {
-      description: `${message.author} | Latest Release: [v2.6.0](https://github.com/Vexuas/yagi/releases)\n${release}`,
+      description: `${message.author} | Latest Release: [v2.6.1](https://github.com/Vexuas/yagi/releases)\n${release}`,
       color: 32896,
     };
     message.channel.send({ embed });
