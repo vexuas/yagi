@@ -1,3 +1,27 @@
+# v2.6.1 (Mon Oct 18 2021)
+
+### Release Notes
+
+#### Update invite links ([#87](https://github.com/vexuas/yagi/pull/87))
+
+Update invite links
+
+---
+
+#### 🐛 Bug Fix
+
+- Update invite links [#87](https://github.com/vexuas/yagi/pull/87) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2021 10 17 [#86](https://github.com/vexuas/yagi/pull/86) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.6.0 (Sun Oct 17 2021)
 
 ### Release Notes
