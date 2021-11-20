@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { defaultPrefix, token, bisoMixpanel, yagiMixpanel } = require('./config/yagi.json');
+const { defaultPrefix, token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
@@ -13,6 +13,7 @@ const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, de
 const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
+const { AutoPoster } = require('topgg-autoposter');
 const activitylist = [
   'info | bot information',
   'ping me for prefix!',
@@ -30,6 +31,7 @@ let mixpanel;
 const initialize = async () => {
   await yagi.login(token);
   mixpanel = Mixpanel.init(checkIfInDevelopment(yagi) ? bisoMixpanel : yagiMixpanel);
+  !checkIfInDevelopment(yagi) && AutoPoster(topggToken, yagi);
 }
 initialize();
 
