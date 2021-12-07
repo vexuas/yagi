@@ -15,7 +15,23 @@ const generateInfoEmbed = (prefix) => {
   };
   return embed;
 };
-
+const generateSuccessEmbed = (newPrefix) => {
+  const embed = {
+    color: 3066993,
+    title: 'Yay!',
+    description: 'New prefix successfully set!',
+    fields: [{
+      name: 'Current Prefix',
+      value: codeBlock(newPrefix)
+    },
+    {
+      name: 'Example Usage',
+      value: codeBlock(`${newPrefix}goats`)
+    }
+  ]
+  }
+  return embed;
+}
 const generateErrorEmbed = (type, prefix) => {
   let embed = {
     color: 16711680,
@@ -68,7 +84,8 @@ module.exports = {
           if(err){
             console.log(err);
           }
-          return message.channel.send('New prefix successfully set!' + ` ${codeBlock(newPrefix)}`);
+          const embed = generateSuccessEmbed(newPrefix);
+          return message.channel.send({ embed });
         });
       }
     } else {
