@@ -282,7 +282,7 @@ yagi.on('message', async (message) => {
           if (arguments.length > 0 && !commands[command].hasArguments) {
             await message.channel.send("That command doesn't accept arguments （・□・；）");
           } else {
-            await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
+            await commands[command].execute(message, arguments, yagi, commands, yagiPrefix); //Refactor to accept an object instead of passing in each argument
             sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
           }
         }

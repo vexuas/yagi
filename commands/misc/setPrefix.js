@@ -24,10 +24,21 @@ module.exports = {
   name: 'setprefix',
   description: `Sets yagi's prefix to a custom one`,
   hasArguments: true,
-  execute(message) {
+  execute(message, arguments, yagi, commands, yagiPrefix) {
     const currentPrefix = defaultPrefix;
-    const embed = generateEmbed(currentPrefix);
-    message.channel.send('setprefix command');
-    // message.channel.send({ embed });
-  },
+    
+    if(!arguments){
+      return message.channel.send('help embed go here');
+    }
+    if(arguments.startsWith("`") && arguments.endsWith("`") && arguments.length >= 2){
+      if(arguments.length === 2){
+        return message.channel.send('New prefix cannot be empty');
+      }
+      if(arguments.length > 2){
+        return message.channel.send('New prefix successfully set!');
+      }
+    } else {
+      return message.channel.send('To set a new prefix, make sure to add your new prefix between ``')
+    }
+  }
 };
