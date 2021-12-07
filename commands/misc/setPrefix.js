@@ -2,6 +2,19 @@
 const { defaultPrefix } = require('../../config/yagi.json');
 const { codeBlock } = require('../../helpers');
 
+const generateInfoEmbed = (prefix) => {
+  const embed = {
+    color: 3447003,
+    title: 'Custom Prefix',
+    description: 'To set a new prefix, add your new prefix between ``\n\nNote:\n1. Only users with Admin privileges can set a new custom prefix.\n2. Custom prefix cannot be empty.',
+    fields: [{
+      name: 'Example',
+      value: '```fix\n\n' + `${prefix}setprefix` +' `newPrefixHere`\n' + '```'
+    }],
+  };
+  return embed;
+};
+
 const generateErrorEmbed = (type, prefix) => {
   let embed = {
     color: 16711680,
@@ -10,7 +23,7 @@ const generateErrorEmbed = (type, prefix) => {
     fields: [
       {
         name: 'Example',
-        value: '```fix\n\n' + `${prefix}setprefix` +' `newPrefix`\n' + '```'
+        value: '```fix\n\n' + `${prefix}setprefix` +' `newPrefixHere`\n' + '```'
       }
     ]
   }
@@ -34,7 +47,8 @@ module.exports = {
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix) {
     if(!arguments){
-      return message.channel.send('help embed go here');
+      const embed = generateInfoEmbed(yagiPrefix);
+      return message.channel.send({ embed });
     }
     if(!message.member.hasPermission("ADMINISTRATOR")){
       const embed = generateErrorEmbed('admin', yagiPrefix);
