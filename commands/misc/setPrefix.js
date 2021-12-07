@@ -1,6 +1,7 @@
 //Reminder to add custom prefix before v3
 const { defaultPrefix } = require('../../config/yagi.json');
 const { codeBlock } = require('../../helpers');
+const sqlite = require('sqlite3').verbose();
 
 const generateInfoEmbed = (prefix) => {
   const embed = {
@@ -61,7 +62,14 @@ module.exports = {
       }
       if(arguments.length > 2){
         const newPrefix = arguments.replace(/\`/g, '');
-        return message.channel.send('New prefix successfully set!' + ` ${codeBlock(newPrefix)}`);
+        let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+
+        database.run(`UPDATE Guild SET prefix = "${newPrefix}" WHERE uuid = ${message.guild.id}`, err => {
+          if(err){
+            console.log(err);
+          }
+          return message.channel.send('New prefix successfully set!' + ` ${codeBlock(newPrefix)}`);
+        });
       }
     } else {
       const embed = generateErrorEmbed('incorrect', yagiPrefix);
