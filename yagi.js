@@ -4,7 +4,7 @@ const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance, codeBlock } = require('./helpers');
 const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -265,7 +265,7 @@ yagi.on('message', async (message) => {
       message.mentions.users.forEach((user) => {
         //shows current prefix when @
         if (user === yagi.user) {
-          return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '. For list of commands, type '+ '`' + `${yagiPrefix}help` + '`');
+          return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '\nTo set a new custom prefix, type ' + ` ${codeBlock(`${yagiPrefix}setprefix`)}`);
         }
       });
       //Ignores messages without a prefix
