@@ -1,6 +1,7 @@
 const { codeBlock } = require('../../helpers');
 const sqlite = require('sqlite3').verbose();
 
+//Embed to show when sending information about setprefix
 const generateInfoEmbed = (prefix) => {
   const embed = {
     color: 3447003,
@@ -13,6 +14,7 @@ const generateInfoEmbed = (prefix) => {
   };
   return embed;
 };
+// Embed to show after setting new custom prefix
 const generateSuccessEmbed = (newPrefix) => {
   const embed = {
     color: 3066993,
@@ -30,6 +32,12 @@ const generateSuccessEmbed = (newPrefix) => {
   }
   return embed;
 }
+/**
+ * Embeds to show when user wrongly uses the command
+ * 'empty': when setting a new prefix is empty ``
+ * 'incorrect': when setting a new prefix without ``
+ * 'admin': when setting a new prefix when user is not an admin
+ */
 const generateErrorEmbed = (type, prefix) => {
   let embed = {
     color: 16711680,
@@ -61,14 +69,22 @@ module.exports = {
   description: `Sets yagi's prefix to a custom one`,
   hasArguments: true,
   execute(message, arguments, yagi, commands, yagiPrefix) {
+    //When user only types setprefix; shows information about command
     if(!arguments){
       const embed = generateInfoEmbed(yagiPrefix);
       return message.channel.send({ embed });
     }
+    //When user is not an admin; shows admin error message
     if(!message.member.hasPermission("ADMINISTRATOR")){
       const embed = generateErrorEmbed('admin', yagiPrefix);
       return message.channel.send({ embed });
     }
+    /**
+     * If user sets the new prefix correctly with ``
+     * - if the number of arguments are exactly 2, send error empty message
+     * - if the number of arguments are more than 2, parse out grave accents and update guild prefix with new prefix in our database
+     * Else send incorrect error message
+     */
     if(arguments.startsWith("`") && arguments.endsWith("`") && arguments.length >= 2){
       if(arguments.length === 2){
         const embed = generateErrorEmbed('empty', yagiPrefix);
