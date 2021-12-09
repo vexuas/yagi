@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { defaultPrefix, token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
+const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();

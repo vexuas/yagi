@@ -1,11 +1,8 @@
 //Reminder comment to add Yagi discord server in contacts before v2.5
-const { defaultPrefix } = require('../../config/yagi.json');
-
 module.exports = {
   name: 'contacts',
   description: 'Shows platforms in which you can contact the owner',
   execute(message) {
-    const currentPrefix = defaultPrefix;
     const embed = {
       description:
         'If you have any feedback or just want to hit me up, you can reach me through any of the platforms listed below!',
@@ -14,24 +11,25 @@ module.exports = {
         {
           name: 'Discord',
           value: '• ID: `Vexuas#8141`\n• `AKUS Server`',
-          inline: true
+          inline: true,
         },
         {
           name: 'Aura Kingdom',
           value: '• Olympus(ex-Chimera): `Vexuas`',
-          inline: true
+          inline: true,
         },
         {
           name: 'Yagi',
-          value: '• [Discord Support Server](https://discord.gg/7nAYYDm)\n• [Codebase](https://github.com/vexuas/yagi)',
+          value:
+            '• [Discord Support Server](https://discord.gg/7nAYYDm)\n• [Codebase](https://github.com/vexuas/yagi)',
         },
         {
           name: 'Others',
           value:
-            'Twitter: [@cptvxcltch](https://twitter.com/cptvxcltch)\nGithub: [vexuas](https://github.com/vexuas)'
-        }
-      ]
+            'Twitter: [@cptvxcltch](https://twitter.com/cptvxcltch)\nGithub: [vexuas](https://github.com/vexuas)',
+        },
+      ],
     };
     message.channel.send({ embed });
-  }
+  },
 };

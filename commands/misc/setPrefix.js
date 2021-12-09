@@ -1,5 +1,3 @@
-//Reminder to add custom prefix before v3
-const { defaultPrefix } = require('../../config/yagi.json');
 const { codeBlock } = require('../../helpers');
 const sqlite = require('sqlite3').verbose();
 

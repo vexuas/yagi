@@ -1,6 +1,3 @@
-//Reminder to add custom prefix before v3
-const { defaultPrefix } = require('../../config/yagi.json');
-
 const generateEmbed = function designOfPrefixEmbed(currentPrefix) {
   const embed = {
     color: 32896,
@@ -8,14 +5,14 @@ const generateEmbed = function designOfPrefixEmbed(currentPrefix) {
       {
         name: 'Current Prefix',
         value: currentPrefix,
-        inline: true
+        inline: true,
       },
       {
         name: 'Usage Example',
         value: `${currentPrefix}help`,
-        inline: true
-      }
-    ]
+        inline: true,
+      },
+    ],
   };
   return embed;
 };
@@ -24,9 +21,9 @@ module.exports = {
   name: 'prefix',
   description: 'Shows current prefix',
   hasArguments: false,
-  execute(message) {
-    const currentPrefix = defaultPrefix;
+  execute(message, arguments, yagi, commands, yagiPrefix) {
+    const currentPrefix = yagiPrefix;
     const embed = generateEmbed(currentPrefix);
     message.channel.send({ embed });
-  }
+  },
 };
