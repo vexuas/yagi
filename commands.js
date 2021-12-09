@@ -30,6 +30,7 @@ module.exports = {
   website: require('./commands/misc/website'),
   contacts: require('./commands/misc/contacts'),
   feedback: require('./commands/misc/feedback'),
-  prefix: require('./commands/misc/prefix')
+  prefix: require('./commands/misc/prefix'),
+  setprefix: require('./commands/misc/setprefix'),
   // ----------
 };

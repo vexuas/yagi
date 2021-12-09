@@ -1,10 +1,10 @@
 const Discord = require('discord.js');
-const { defaultPrefix, token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
+const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
 const commands = require('./commands');
 const yagi = new Discord.Client();
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance } = require('./helpers');
+const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance, codeBlock } = require('./helpers');
 const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
 const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
@@ -244,44 +244,55 @@ yagi.on('message', async (message) => {
     sendMixpanelEvent(message.author, message.channel, guildDM, '', mixpanel);
     return;
   }
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
-  const yagiPrefix = defaultPrefix; //Keeping this way for now to remind myself to add a better way for custom prefixes
-
-  try {
-    /**
-     * Yagi checks if messages contains any mentions
-     * If it does and if one of the mentions contains yagi's user, returns a message with the current prefix
-     */
-    message.mentions.users.forEach((user) => {
-      //shows current prefix when @
-      if (user === yagi.user) {
-        return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '. For list of commands, type '+ '`' + `${yagiPrefix}help` + '`');
-      }
-    });
-    //Ignores messages without a prefix
-    if (message.content.startsWith(yagiPrefix)) {
-      const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
-      const command = args.shift().toLowerCase(); //gets command as a string from array
-      const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
-      /**
-       * If command exists in command file, send command reply
-       * Also checks if command has arguments
-       * Else send error message
-       */
-      if (commands[command]) {
-        if (arguments.length > 0 && !commands[command].hasArguments) {
-          await message.channel.send("That command doesn't accept arguments （・□・；）");
-        } else {
-          await commands[command].execute(message, arguments, yagi, commands, yagiPrefix);
-          sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
-        }
-      }
-    } else {
-      return;
+  database.get(`SELECT * FROM Guild WHERE uuid = ${message.guild.id}`, async (error, row) => {
+    if(error){
+      console.log(error);
     }
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
+     /**
+     * Opens the yagi database and finds the guild data where the message was used
+     * This is primarily to know the current prefix of the guild; important when users are using a custom prefix
+     */
+    const yagiPrefix = row.prefix; //Wonder if we need to add a null check here and return the default prefix? Tho only ever applicable if somehow we mess up with the database interactions
+
+    //Refactor this into its own function and pass as a callback for better readability in the future
+    try {
+      /**
+       * Yagi checks if messages contains any mentions
+       * If it does and if one of the mentions contains yagi's user, returns a message with the current prefix
+       */
+      message.mentions.users.forEach((user) => {
+        //shows current prefix when @
+        if (user === yagi.user) {
+          return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '\nTo set a new custom prefix, type ' + ` ${codeBlock(`${yagiPrefix}setprefix`)}`);
+        }
+      });
+      //Ignores messages without a prefix
+      if (message.content.startsWith(yagiPrefix)) {
+        const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
+        const command = args.shift().toLowerCase(); //gets command as a string from array
+        const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
+        /**
+         * If command exists in command file, send command reply
+         * Also checks if command has arguments
+         * Else send error message
+         */
+        if (commands[command]) {
+          if (arguments.length > 0 && !commands[command].hasArguments) {
+            await message.channel.send("That command doesn't accept arguments （・□・；）");
+          } else {
+            await commands[command].execute(message, arguments, yagi, commands, yagiPrefix); //Refactor to accept an object instead of passing in each argument
+            sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
+          }
+        }
+      } else {
+        return;
+      }
+    } catch (e) {
+      sendErrorLog(yagi, e);
+    }
+  })
 });
 yagi.on('error', (error) => {
   sendErrorLog(yagi, error);
