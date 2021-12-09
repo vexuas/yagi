@@ -40,7 +40,6 @@ module.exports = {
           commands[arguments].description,
           yagiPrefix,
           commands[arguments].hasArguments,
-          commands[arguments].exampleArgument
         );
         return message.channel.send({ embed });
       } else {
