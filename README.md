@@ -2,7 +2,7 @@
   <img src="https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png" width=120px/>
 </div>
 
-# yagi | v2.6.1 <br>Aura Kingdom EN World Boss Timer for Discord
+# yagi | v2.7.0 <br>Aura Kingdom EN World Boss Timer for Discord
 
 Discord bot created for the MMORPG [Aura Kingdom](https://aurakingdom.aeriagames.com/). Its main
 function is to give information of when the next spawn of the world bosses of Vulture's Vale and
@@ -50,6 +50,7 @@ Yagi, thanks a lot I really appreciate it! (◕ᴗ◕✿)
 - `website` - web page of VV/BB world boss timer (Outdated)
 - `feedback`- links of feedback form and Yagi's support server
 - `remind` - personal reminder to notify you when world boss is soon
+- `setprefix` - set custom prefix
 
 ## Setting up Reminders
 

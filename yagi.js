@@ -20,7 +20,8 @@ const activitylist = [
   'goats | Olympus wb',
   'help | command list',
   'remind | wb reminder notification',
-  'v2.6.1 | 18/10/2021'
+  'setprefix | custom prefix',
+  'v2.7.0 | 11/12/2021'
 ];
 let mixpanel;
 //----------
