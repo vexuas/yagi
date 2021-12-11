@@ -1,7 +1,12 @@
-const { api } = require('../../config/yagi.json');
+const { api, defaultPrefix } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const { getServerTime, formatCountdown, formatLocation, isInWeeklyMaintenance } = require('../../helpers');
+const {
+  getServerTime,
+  formatCountdown,
+  formatLocation,
+  isInWeeklyMaintenance,
+} = require('../../helpers');
 const { PSA, PSAmessage } = require('../../config/psa.json');
 const {
   format,
@@ -12,7 +17,7 @@ const {
   isAfter,
   isWithinRange,
   startOfDay,
-  endOfDay
+  endOfDay,
 } = require('date-fns');
 const sqlite = require('sqlite3').verbose();
 //----------
@@ -34,10 +39,10 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
 
     ranges: ['C4', 'C6', 'C8', 'C10'],
 
-    auth: authClient
+    auth: authClient,
   };
 
-  sheets.spreadsheets.values.batchGet(request, function(err, response) {
+  sheets.spreadsheets.values.batchGet(request, function (err, response) {
     try {
       const rawSheetValues = response.data.valueRanges;
       /**
@@ -50,7 +55,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
        * Then sets the value to its corresponding data key
        */
       let actualSheetValues = [];
-      rawSheetValues.forEach(item => {
+      rawSheetValues.forEach((item) => {
         console.log(item.values);
         actualSheetValues.push(item.values[0][0]);
       });
@@ -58,7 +63,7 @@ const getWorldBossData = function requestToExternalSpreadsheetAndReturnReadableD
         location: actualSheetValues[0],
         lastSpawn: actualSheetValues[1],
         nextSpawn: actualSheetValues[2],
-        countdown: actualSheetValues[3]
+        countdown: actualSheetValues[3],
       };
       console.log(worldBossData.countdown);
       sendMessageCallback(message, generateEmbed(worldBossData));
@@ -116,7 +121,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss A'),
       countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
-      accurate: false
+      accurate: false,
     };
   } else if (countdownValidity >= 0) {
     //normal timer (12am - 7:59pm server time) with updated sheet
@@ -124,7 +129,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: worldBossData.nextSpawn,
       countdown: formatCountdown(nextSpawnDate, serverTime),
-      accurate: true
+      accurate: true,
     };
   } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
     //late night timer; servertime is over 8pm and sheet is updated
@@ -132,7 +137,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: worldBossData.nextSpawn,
       countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
-      accurate: true
+      accurate: true,
     };
   } else if (countdownValidity < 0) {
     //Edge case - no editor updated sheet for both normal and late night flow
@@ -140,7 +145,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
     return {
       nextSpawn: format(addHours(nextSpawnDate, 4), 'h:mm:ss A'),
       countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
-      accurate: false
+      accurate: false,
     };
   }
 };
@@ -168,52 +173,55 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   } secs`;
   **/
   const isTimerAccurate = validatedSpawn && validatedSpawn.accurate;
-  if(isInWeeklyMaintenance(isTimerAccurate)){
+  if (isInWeeklyMaintenance(isTimerAccurate)) {
     embedData = {
       title: 'Olympus | World Boss',
       description: `${serverTimeDesc}`,
       color: 16776960,
       thumbnail: {
-        url:
-          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+        url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
       },
       fields: [
         {
           name: 'Status',
-          value: 'Game servers have went down for weekly maintenance. Timer will be offline for a while; To get the next world boss spawn, refer to the [Olympus sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/htmlview?pru=AAABetvDVTc*CUO1z4a8sJgbuqturEfCGQ#) or wait in-game for world boss leads instructions'
-        }
-      ]
-    }
+          value:
+            'Game servers have went down for weekly maintenance. Timer will be offline for a while; To get the next world boss spawn, refer to the [Olympus sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/htmlview?pru=AAABetvDVTc*CUO1z4a8sJgbuqturEfCGQ#) or wait in-game for world boss leads instructions',
+        },
+      ],
+    };
   } else {
-    const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${validatedSpawn.nextSpawn}${grvAcnt}`;
-    const spawnFooter = validatedSpawn.accurate ? '' : `**Note that sheet data isn't up to date, timer accuracy might be off`;
+    const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
+      validatedSpawn.nextSpawn
+    }${grvAcnt}`;
+    const spawnFooter = validatedSpawn.accurate
+      ? ''
+      : `**Note that sheet data isn't up to date, timer accuracy might be off`;
     embedData = {
       title: 'Olympus | World Boss',
       description: `${serverTimeDesc}\n${spawnDesc}`,
       color: 32896,
       thumbnail: {
-        url:
-          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+        url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
       },
       footer: {
-        text: spawnFooter
+        text: spawnFooter,
       },
       fields: [
         {
           name: 'Location',
-          value: '```fix\n\n' + formatLocation(worldBossData.location) + '```'
+          value: '```fix\n\n' + formatLocation(worldBossData.location) + '```',
         },
         {
           name: 'Countdown',
           value: '```xl\n\n' + validatedSpawn.countdown + '```',
-          inline: true
+          inline: true,
         },
         {
           name: 'Time of Spawn',
           value: '```xl\n\n' + validatedSpawn.nextSpawn + '```',
-          inline: true
-        }
-      ]
+          inline: true,
+        },
+      ],
     };
   }
   return embedData;
@@ -225,8 +233,16 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
  * */
 const sendMessage = function sendMessageToUser(message, embedData) {
   let embed = embedData;
+  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
-  message.channel.send({ embed });
+  database.get(`SELECT * FROM GUILD WHERE uuid = "${message.guild.id}"`, (error, guild) => {
+    if (guild.prefix === defaultPrefix) {
+      embed.description =
+        embed.description +
+        '\n\n*Want to use a custom prefix?\n Try the new `setprefix` command for more information!*';
+    }
+    message.channel.send({ embed });
+  });
 };
 //----------
 module.exports = {
@@ -237,9 +253,9 @@ module.exports = {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
     message.channel.startTyping();
     try {
-      if(PSA){
+      if (PSA) {
         message.channel.send(PSAmessage);
-      }else {
+      } else {
         getWorldBossData(message, sendMessage);
       }
     } catch (e) {
@@ -247,5 +263,5 @@ module.exports = {
       message.channel.send(e.message);
     }
     message.channel.stopTyping();
-  }
+  },
 };
