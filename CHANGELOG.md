@@ -1,3 +1,37 @@
+# v2.7.0 (Sat Dec 11 2021)
+
+### Release Notes
+
+#### Advertise setprefix when using goats command ([#91](https://github.com/vexuas/yagi/pull/91))
+
+Advertise setprefix when using goats command
+
+#### Add custom prefix ([#90](https://github.com/vexuas/yagi/pull/90))
+
+Add custom prefix
+
+#### Wire up post stats to topgg ([#89](https://github.com/vexuas/yagi/pull/89))
+
+Wire up posting of stats to top.gg
+
+---
+
+#### 🚀 Enhancement
+
+- Advertise setprefix when using goats command [#91](https://github.com/vexuas/yagi/pull/91) ([@vexuas](https://github.com/vexuas))
+- Add custom prefix [#90](https://github.com/vexuas/yagi/pull/90) ([@vexuas](https://github.com/vexuas))
+- Wire up post stats to topgg [#89](https://github.com/vexuas/yagi/pull/89) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2021 10 18 [#88](https://github.com/vexuas/yagi/pull/88) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.6.1 (Mon Oct 18 2021)
 
 ### Release Notes
