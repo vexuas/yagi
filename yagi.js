@@ -1,16 +1,47 @@
 const Discord = require('discord.js');
 const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
 const commands = require('./commands');
-const yagi = new Discord.Client();
+const yagi = new Discord.Client({
+  intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+});
 const sqlite = require('sqlite3').verbose();
 const Mixpanel = require('mixpanel');
-const { sendGuildUpdateNotification, sendErrorLog, checkIfInDevelopment, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog, isInWeeklyMaintenance, codeBlock } = require('./helpers');
-const { createGuildTable, insertNewGuild, updateGuild, updateGuildMemberCount } = require('./database/guild-db.js');
-const { createChannelTable, insertNewChannel, deleteChannel, updateChannel } = require('./database/channel-db.js');
+const {
+  sendGuildUpdateNotification,
+  sendErrorLog,
+  checkIfInDevelopment,
+  getWorldBossData,
+  getServerTime,
+  validateWorldBossData,
+  sendHealthLog,
+  isInWeeklyMaintenance,
+  codeBlock,
+} = require('./helpers');
+const {
+  createGuildTable,
+  insertNewGuild,
+  updateGuild,
+  updateGuildMemberCount,
+} = require('./database/guild-db.js');
+const {
+  createChannelTable,
+  insertNewChannel,
+  deleteChannel,
+  updateChannel,
+} = require('./database/channel-db.js');
 const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
-const { cacheExistingReminderReactionMessages, updateReminderReactionMessage, deleteReminderReactionMessage, checkIfReminderReactionMessage } = require('./database/reminder-reaction-message-db.js');
-const { createReminderUserTable, reactToMessage, removeReminderUser } = require('./database/reminder-user-db.js');
+const {
+  cacheExistingReminderReactionMessages,
+  updateReminderReactionMessage,
+  deleteReminderReactionMessage,
+  checkIfReminderReactionMessage,
+} = require('./database/reminder-reaction-message-db.js');
+const {
+  createReminderUserTable,
+  reactToMessage,
+  removeReminderUser,
+} = require('./database/reminder-user-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
@@ -21,7 +52,7 @@ const activitylist = [
   'help | command list',
   'remind | wb reminder notification',
   'setprefix | custom prefix',
-  'v2.7.0 | 11/12/2021'
+  'v2.7.0 | 11/12/2021',
 ];
 let mixpanel;
 //----------
@@ -33,7 +64,7 @@ const initialize = async () => {
   await yagi.login(token);
   mixpanel = Mixpanel.init(checkIfInDevelopment(yagi) ? bisoMixpanel : yagiMixpanel);
   !checkIfInDevelopment(yagi) && AutoPoster(topggToken, yagi);
-}
+};
 initialize();
 
 /**
@@ -56,7 +87,7 @@ yagi.once('ready', async () => {
      * Initialise Database and its tables
      * Will create them if they don't exist
      * See relevant files under database/* for more information
-     */ 
+     */
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
     createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
@@ -80,12 +111,16 @@ yagi.once('ready', async () => {
      * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
      * For more documentation, see the timer-db file
      */
-    setInterval(() => {
-      getCurrentTimerData(yagi);
-    }, 1800000, yagi) //1800000 - 30 minutes
+    setInterval(
+      () => {
+        getCurrentTimerData(yagi);
+      },
+      1800000,
+      yagi
+    ); //1800000 - 30 minutes
     const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
     sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
 });
@@ -99,27 +134,27 @@ yagi.once('ready', async () => {
  */
 yagi.on('channelCreate', (channel) => {
   try {
-    if(channel.type !== 'dm'){
+    if (channel.type !== 'dm') {
       insertNewChannel(channel);
     }
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
-})
+});
 yagi.on('channelDelete', (channel) => {
   try {
     deleteChannel(channel);
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
-})
+});
 yagi.on('channelUpdate', (_, newChannel) => {
   try {
     updateChannel(newChannel);
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
-})
+});
 //------
 /**
  * Event handlers for when yagi is invited to a new server, when he is kicked or when the guild he is in is updated
@@ -134,42 +169,42 @@ yagi.on('channelUpdate', (_, newChannel) => {
 yagi.on('guildCreate', (guild) => {
   try {
     insertNewGuild(guild);
-    guild.channels.cache.forEach(channel => {
+    guild.channels.cache.forEach((channel) => {
       insertNewChannel(channel);
-    })
+    });
     sendGuildUpdateNotification(yagi, guild, 'join');
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildDelete', (guild) => {
   try {
     removeServerDataFromYagi(guild, yagi);
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildUpdate', (_, newGuild) => {
   try {
     updateGuild(newGuild);
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildMemberAdd', (member) => {
   try {
     updateGuildMemberCount(member, 'add');
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
 });
 yagi.on('guildMemberRemove', (member) => {
   try {
     updateGuildMemberCount(member, 'remove');
-  } catch(e){
+  } catch (e) {
     sendErrorLog(yagi, e);
   }
-})
+});
 //------
 /**
  * Event handlers for when a role in a guild where yagi is in gets created, deleted and updated
@@ -182,25 +217,24 @@ yagi.on('guildMemberRemove', (member) => {
 yagi.on('roleCreate', (role) => {
   try {
     insertNewRole(role);
-  } catch(e){
-    sendErrorLog(yagi, e)
+  } catch (e) {
+    sendErrorLog(yagi, e);
   }
-})
+});
 yagi.on('roleDelete', (role) => {
   try {
     deleteRole(role, yagi);
-  } catch(e){
-    sendErrorLog(yagi, e)
+  } catch (e) {
+    sendErrorLog(yagi, e);
   }
-})
+});
 yagi.on('roleUpdate', (_, newRole) => {
   try {
     updateRole(newRole);
+  } catch (e) {
+    sendErrorLog(yagi, e);
   }
-  catch(e){
-    sendErrorLog(yagi, e)
-  }
-})
+});
 //------
 /**
  * Event handlers for when a cached message gets reactions
@@ -211,11 +245,11 @@ yagi.on('roleUpdate', (_, newRole) => {
 yagi.on('messageReactionAdd', async (reaction, user) => {
   updateReminderReactionMessage(reaction);
   reactToMessage(reaction, user);
-})
+});
 yagi.on('messageReactionRemove', (reaction, user) => {
   updateReminderReactionMessage(reaction);
   removeReminderUser(reaction, user);
-})
+});
 //------
 /**
  * Event handlers for when message is updated and deleted
@@ -225,22 +259,22 @@ yagi.on('messageReactionRemove', (reaction, user) => {
  */
 yagi.on('messageUpdate', (oldMessage, newMessage) => {
   checkIfReminderReactionMessage(newMessage, oldMessage);
-})
+});
 yagi.on('messageDelete', (message) => {
   deleteReminderReactionMessage(message, yagi);
-})
+});
 //------
 /**
  * Event handler for when a message is sent in a channel that yagi is in
  */
-yagi.on('message', async (message) => {
+yagi.on('messageCreate', async (message) => {
   if (message.author.bot) return; //Ignore messages made by yagi
   //Let users know that they can only use this in channels; sends sent_from_dm data to mixpanel to see if there's adoption for private messaging
-  if (message.channel.type === 'dm'){
+  if (message.channel.type === 'dm') {
     const guildDM = {
       id: 'sent_from_dm',
-      name: 'Sent From DM'
-    }
+      name: 'Sent From DM',
+    };
     message.channel.send('My bad! I only work in server channels ( ≧Д≦)');
     sendMixpanelEvent(message.author, message.channel, guildDM, '', mixpanel);
     return;
@@ -248,10 +282,10 @@ yagi.on('message', async (message) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
 
   database.get(`SELECT * FROM Guild WHERE uuid = ${message.guild.id}`, async (error, row) => {
-    if(error){
+    if (error) {
       console.log(error);
     }
-     /**
+    /**
      * Opens the yagi database and finds the guild data where the message was used
      * This is primarily to know the current prefix of the guild; important when users are using a custom prefix
      */
@@ -266,7 +300,14 @@ yagi.on('message', async (message) => {
       message.mentions.users.forEach((user) => {
         //shows current prefix when @
         if (user === yagi.user) {
-          return message.channel.send('My current prefix is ' + '`' + `${yagiPrefix}` + '`' + '\nTo set a new custom prefix, type ' + ` ${codeBlock(`${yagiPrefix}setprefix`)}`);
+          return message.channel.send(
+            'My current prefix is ' +
+              '`' +
+              `${yagiPrefix}` +
+              '`' +
+              '\nTo set a new custom prefix, type ' +
+              ` ${codeBlock(`${yagiPrefix}setprefix`)}`
+          );
         }
       });
       //Ignores messages without a prefix
@@ -284,7 +325,14 @@ yagi.on('message', async (message) => {
             await message.channel.send("That command doesn't accept arguments （・□・；）");
           } else {
             await commands[command].execute(message, arguments, yagi, commands, yagiPrefix); //Refactor to accept an object instead of passing in each argument
-            sendMixpanelEvent(message.author, message.channel, message.channel.guild, command, mixpanel, arguments); //Send tracking event to mixpanel
+            sendMixpanelEvent(
+              message.author,
+              message.channel,
+              message.channel.guild,
+              command,
+              mixpanel,
+              arguments
+            ); //Send tracking event to mixpanel
           }
         }
       } else {
@@ -293,7 +341,7 @@ yagi.on('message', async (message) => {
     } catch (e) {
       sendErrorLog(yagi, e);
     }
-  })
+  });
 });
 yagi.on('error', (error) => {
   sendErrorLog(yagi, error);
@@ -303,7 +351,7 @@ yagi.on('error', (error) => {
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
   return db;
-}
+};
 /**
  * Function to delete all the relevant data in our database when yagi is removed from a server
  * Removes:
@@ -317,7 +365,10 @@ const createYagiDatabase = () => {
  * @param guild - guild in which yagi was kicked in
  */
 const removeServerDataFromYagi = (guild) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+  let database = new sqlite.Database(
+    './database/yagi.db',
+    sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE
+  );
   database.serialize(() => {
     database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
     database.run(`DELETE FROM Channel WHERE guild_id = "${guild.id}"`);
@@ -327,7 +378,7 @@ const removeServerDataFromYagi = (guild) => {
     database.each(`SELECT * FROM Reminder WHERE guild_id = "${guild.id}"`, (error, reminder) => {
       clearTimeout(reminder.timer);
       database.run(`DELETE FROM Reminder WHERE uuid = "${reminder.uuid}"`);
-    })
+    });
     sendGuildUpdateNotification(yagi, guild, 'leave');
-  })
-}
+  });
+};

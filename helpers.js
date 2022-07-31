@@ -753,12 +753,12 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
               },
               {
                 name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders) : 0,
+                value: activeReminders ? Object.values(activeReminders).toString() : '0',
                 inline: true,
               },
             ],
           };
-          channel.send({ embed });
+          channel.send({ embeds: [embed] });
         }
       );
       break;
@@ -795,11 +795,11 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
               },
               {
                 name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders) : 0,
+                value: activeReminders ? Object.values(activeReminders).toString() : '0',
               },
             ],
           };
-          channel.send({ embed });
+          channel.send({ embeds: [embed] });
         }
       );
       break;
