@@ -241,7 +241,7 @@ const sendMessage = function sendMessageToUser(message, embedData) {
         embed.description +
         '\n\n*Want to use a custom prefix?\n Try the new `setprefix` command for more information!*';
     }
-    message.channel.send({ embed });
+    message.channel.send({ embeds: [embed] });
   });
 };
 //----------
@@ -251,7 +251,6 @@ module.exports = {
   validateSpawn: validateSpawn,
   async execute(message) {
     //Since it'll take a couple of seconds to finish the request, adding bot type to show in-progress
-    message.channel.startTyping();
     try {
       if (PSA) {
         message.channel.send(PSAmessage);
@@ -262,6 +261,5 @@ module.exports = {
       console.log(e);
       message.channel.send(e.message);
     }
-    message.channel.stopTyping();
   },
 };

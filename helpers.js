@@ -246,7 +246,7 @@ const sendGuildUpdateNotification = async (client, guild, type) => {
 const sendErrorLog = (client, error) => {
   console.log(error);
   const logChannel = client.channels.cache.get('620621811142492172');
-  logChannel.send(error.message);
+  logChannel.send({ content: error.message });
 };
 //----------
 /**
@@ -661,7 +661,10 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
     ],
   };
   const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
-  return channel.send(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  return channel.send({
+    content: `${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`,
+    embeds: [embed],
+  });
 };
 //----------
 /**
@@ -753,12 +756,12 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
               },
               {
                 name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders) : 0,
+                value: activeReminders ? Object.values(activeReminders).toString() : '0',
                 inline: true,
               },
             ],
           };
-          channel.send({ embed });
+          channel.send({ embeds: [embed] });
         }
       );
       break;
@@ -795,11 +798,11 @@ const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
               },
               {
                 name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders) : 0,
+                value: activeReminders ? Object.values(activeReminders).toString() : '0',
               },
             ],
           };
-          channel.send({ embed });
+          channel.send({ embeds: [embed] });
         }
       );
       break;

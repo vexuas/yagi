@@ -9,9 +9,9 @@ const generateEmbed = function generateEmbedForGoatSheets(message) {
         name: 'OG links',
         value:
           '[Catalyst (Chimera)](https://tinyurl.com/catalyst-ak)\n[Angels (Phoenix)](https://docs.google.com/spreadsheets/d/1MrMwNerILxNK0lvKCBklkYZx_OKAb4io8XdaldRyO_g/edit#gid=1305398803)\n[Lazy Goat (Phoenix)](https://tinyurl.com/LazyGoatWB)',
-        inline: true
-      }
-    ]
+        inline: true,
+      },
+    ],
   };
   return embed;
 };
@@ -23,9 +23,9 @@ module.exports = {
   execute(message) {
     try {
       const embed = generateEmbed(message);
-      message.channel.send({ embed });
+      message.channel.send({ embeds: [embed] });
     } catch (e) {
       console.log(e);
     }
-  }
+  },
 };

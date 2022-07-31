@@ -1,5 +1,5 @@
 /**
- * DEPRECATED 
+ * DEPRECATED
  * Was a good idea but user adoption has been minimal
  * Its infancy stemmed from trying to reinvent the wheel when I could have just invited users to a dedicated discord server for interactions
  * Keeping this file to serve as a reminder of past mistakes and inspiration since despite all, it was fun creating this feature
@@ -15,14 +15,14 @@ const generateEmbedUser = function designOfReplyEmbedForUser(message, replyConte
     description: 'Replies are either sent through direct message or the channel it was written in.',
     color: 55296,
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Your Message:',
-        value: replyContent
-      }
-    ]
+        value: replyContent,
+      },
+    ],
   };
   return embed;
 };
@@ -31,16 +31,16 @@ const sendErrorEmbed = function designOfErrorNotificationEmbed(message, error) {
     title: 'Failed to deliver!',
     color: 16711680,
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Reason:',
-        value: error.message
-      }
-    ]
+        value: error.message,
+      },
+    ],
   };
-  return message.channel.send({ embed });
+  return message.channel.send({ embeds: [embed] });
 };
 const sendEmbedDev = async function designOfReplyEmbedForDevAndSendToServer(
   message,
@@ -65,44 +65,44 @@ const sendEmbedDev = async function designOfReplyEmbedForDevAndSendToServer(
     color: 55296,
     footer: { text: `Sent on ${format(new Date(), 'dddd MMM D YYYY, h:mm:ss A')}` },
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Name',
         value: message.author.tag,
-        inline: true
+        inline: true,
       },
       {
         name: 'User ID',
         value: message.author.id,
-        inline: true
+        inline: true,
       },
       {
         name: 'Channel',
         value: channelName,
-        inline: true
+        inline: true,
       },
       {
         name: 'Channel ID',
         value: message.channel.id,
-        inline: true
+        inline: true,
       },
       {
         name: 'Server',
         value: guildName,
-        inline: true
+        inline: true,
       },
       {
         name: 'Server ID',
         value: guildID,
-        inline: true
+        inline: true,
       },
       {
         name: 'Message',
-        value: '```yaml\n' + replyContent + '```'
-      }
-    ]
+        value: '```yaml\n' + replyContent + '```',
+      },
+    ],
   };
   const messageServer = yagi.channels.get('615640139678351557');
 
@@ -119,16 +119,16 @@ module.exports = {
     try {
       if (arguments.length === 0) {
         const emptyMessageError = {
-          message: 'Cannot send an empty message'
+          message: 'Cannot send an empty message',
         };
         return sendErrorEmbed(message, emptyMessageError);
       }
       await sendEmbedDev(message, arguments, yagi);
       const embed = generateEmbedUser(message, arguments);
-      await message.channel.send({ embed });
+      await message.channel.send({ embeds: [embed] });
     } catch (e) {
       console.log(e);
       sendErrorEmbed(message, e);
     }
-  }
+  },
 };

@@ -24,6 +24,6 @@ module.exports = {
   execute(message, arguments, yagi, commands, yagiPrefix) {
     const currentPrefix = yagiPrefix;
     const embed = generateEmbed(currentPrefix);
-    message.channel.send({ embed });
+    message.channel.send({ embeds: [embed] });
   },
 };
