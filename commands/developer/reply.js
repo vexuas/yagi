@@ -1,5 +1,5 @@
 /**
- * DEPRECATED 
+ * DEPRECATED
  * Was a good idea but user adoption has been minimal
  * Its infancy stemmed from trying to reinvent the wheel when I could have just invited users to a dedicated discord server for interactions
  * Keeping this file to serve as a reminder of past mistakes and inspiration since despite all, it was fun creating this feature
@@ -10,32 +10,32 @@ const sendSuccessEmbed = function designOfSuccessNotificationEmbed(message, repl
     title: 'Successfully delivered!',
     color: 55296,
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Your Message:',
-        value: replyContent
-      }
-    ]
+        value: replyContent,
+      },
+    ],
   };
-  return message.channel.send({ embed });
+  return message.channel.send({ embeds: [embed] });
 };
 const sendErrorEmbed = function designOfErrorNotificationEmbed(message, error) {
   const embed = {
     title: 'Failed to deliver!',
     color: 16711680,
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Reason:',
-        value: error.message
-      }
-    ]
+        value: error.message,
+      },
+    ],
   };
-  return message.channel.send({ embed });
+  return message.channel.send({ embeds: [embed] });
 };
 /**
  * Probably should add a better description on errors next time
@@ -51,14 +51,14 @@ const sendReplyEmbedUser = function designOfReplyEmbedAndSendToUser(
     footer: { text: `Sent on ${format(new Date(), 'dddd MMM D YYYY, h:mm:ss A')}` },
     color: 16776960,
     thumbnail: {
-      url: message.author.displayAvatarURL
+      url: message.author.displayAvatarURL,
     },
     fields: [
       {
         name: 'Message',
-        value: '```yaml\n' + replyContent + '```'
-      }
-    ]
+        value: '```yaml\n' + replyContent + '```',
+      },
+    ],
   };
   return platform.send({ embed });
 };
@@ -106,5 +106,5 @@ module.exports = {
     } else {
       return;
     }
-  }
+  },
 };

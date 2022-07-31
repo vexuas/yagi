@@ -83,6 +83,9 @@ yagi.once('ready', async () => {
     const worldBossData = await getWorldBossData();
     const serverTime = getServerTime();
     const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
+    console.log(worldBossData);
+    console.log(serverTime);
+    console.log(validatedWorldBossData);
     /**
      * Initialise Database and its tables
      * Will create them if they don't exist

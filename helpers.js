@@ -246,7 +246,7 @@ const sendGuildUpdateNotification = async (client, guild, type) => {
 const sendErrorLog = (client, error) => {
   console.log(error);
   const logChannel = client.channels.cache.get('620621811142492172');
-  logChannel.send(error.message);
+  logChannel.send({ content: error.message });
 };
 //----------
 /**
@@ -522,7 +522,7 @@ const validateWorldBossData = (worldBoss, serverTime) => {
    * Negative means that next spawn date happens before the server time
    **/
   const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
-
+  console.log(countdownValidity);
   //Checks if nextSpawnDate is later than the current server time
   if (countdownValidity >= 0) {
     //If it is later, checks if it's spawning within 4 hours as time between world boss spawns should only be 4 hours
@@ -661,7 +661,10 @@ const sendReminderTimerEmbed = (channel, role, worldBoss) => {
     ],
   };
   const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
-  return channel.send(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
+  return channel.send({
+    content: `${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`,
+    embeds: [embed],
+  });
 };
 //----------
 /**

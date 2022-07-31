@@ -1,15 +1,16 @@
 const { PSA, PSAmessage } = require('../../config/psa.json');
 const fs = require('fs');
 
-const defaultMessage = "There looks to be a problem with the timer at the moment, sorry! （・□・；)"
+const defaultMessage =
+  'There looks to be a problem with the timer at the moment, sorry! （・□・；)';
 
 /**
  * Shows if PSA is activated
  */
 const showPSA = (message) => {
   const embed = generateEmbed('show');
-  return message.channel.send({ embed });
-}
+  return message.channel.send({ embeds: [embed] });
+};
 //-----
 /**
  * Turns on the PSA
@@ -17,46 +18,46 @@ const showPSA = (message) => {
  * @param {string} customPSA - optional message if you want to change the message of the PSA
  */
 const startPSA = (message, customPSA) => {
-  if(PSA){
+  if (PSA) {
     const embed = generateEmbed('start', 'PSA is already turned on!');
-    return message.channel.send({ embed });
+    return message.channel.send({ embeds: [embed] });
   }
   const updatedPSAInfo = {
     PSA: true,
-    PSAmessage: customPSA ? customPSA : defaultMessage
-  }
+    PSAmessage: customPSA ? customPSA : defaultMessage,
+  };
 
   fs.writeFile('./config/psa.json', JSON.stringify(updatedPSAInfo, null, 2), function (err) {
     if (err) {
       return console.log(err);
     }
     const embed = generateEmbed('start', null, updatedPSAInfo);
-    message.channel.send({ embed });
+    message.channel.send({ embeds: [embed] });
   });
-}
+};
 //-----
 /**
  * Turns off PSA
  * Also switches the message back to the default one
  */
 const stopPSA = (message) => {
-  if(!PSA){
+  if (!PSA) {
     const embed = generateEmbed('stop', 'PSA is already turned off!');
-    return message.channel.send({ embed });
+    return message.channel.send({ embeds: [embed] });
   }
   const updatedPSAInfo = {
     PSA: false,
-    PSAmessage: defaultMessage
-  }
+    PSAmessage: defaultMessage,
+  };
 
   fs.writeFile('./config/psa.json', JSON.stringify(updatedPSAInfo, null, 2), function (err) {
     if (err) {
       return console.log(err);
     }
     const embed = generateEmbed('stop', null, updatedPSAInfo);
-    message.channel.send({ embed });
+    message.channel.send({ embeds: [embed] });
   });
-}
+};
 //-----
 /**
  * Reusable embed to use for this command
@@ -69,7 +70,7 @@ const generateEmbed = (type, descriptionInfo, updatedInfo) => {
   const PSAtext = PSA ? 'On' : 'Off';
   const updatedPSAtext = updatedInfo && updatedInfo.PSA ? 'On' : 'Off';
 
-  switch(type){
+  switch (type) {
     case 'show':
       description = PSA ? 'PSA is turned on' : 'PSA is turned off';
       break;
@@ -86,25 +87,26 @@ const generateEmbed = (type, descriptionInfo, updatedInfo) => {
     fields: [
       {
         name: 'PSA',
-        value: updatedInfo ? updatedPSAtext : PSAtext
+        value: updatedInfo ? updatedPSAtext : PSAtext,
       },
       {
         name: 'PSA Message',
-        value: updatedInfo && updatedInfo.PSAmessage ? updatedInfo.PSAmessage : PSAmessage
-      }
-    ]
-  }
+        value: updatedInfo && updatedInfo.PSAmessage ? updatedInfo.PSAmessage : PSAmessage,
+      },
+    ],
+  };
   return embed;
-}
+};
 module.exports = {
-  name: "psa",
-  description: "Toggles a trigger that sends a public service announcement when using the timer. Only to be used in extreme cases where timer data is experiencing problems",
+  name: 'psa',
+  description:
+    'Toggles a trigger that sends a public service announcement when using the timer. Only to be used in extreme cases where timer data is experiencing problems',
   hasArguments: true,
   devOnly: true,
   async execute(message, arguments) {
     if (message.author.id === '183444648360935424') {
       const type = arguments.split(' ', 1).toString();
-      switch(type){
+      switch (type) {
         case 'show':
           return showPSA(message);
         case 'start':
@@ -115,5 +117,5 @@ module.exports = {
       }
     }
     return;
-  }
+  },
 };

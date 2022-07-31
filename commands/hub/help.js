@@ -16,22 +16,22 @@ module.exports = {
         fields: [
           {
             name: 'Timer',
-            value: '`goats`, `remind`'
+            value: '`goats`, `remind`',
           },
           {
             name: 'Information',
-            value: '`info`, `help`, `prefix`, `invite`, `sheets`, `release`'
+            value: '`info`, `help`, `prefix`, `invite`, `sheets`, `release`',
           },
           {
             name: 'Miscellaneous',
             value:
               '`loot`, `contacts`, `website`, `feedback`\n\nFor more detailed information about a command, use `' +
               yagiPrefix +
-              'help <Command>`'
-          }
-        ]
+              'help <Command>`',
+          },
+        ],
       };
-      return message.channel.send({ embed });
+      return message.channel.send({ embeds: [embed] });
     }
     try {
       if (!commands[arguments].devOnly) {
@@ -39,9 +39,9 @@ module.exports = {
           arguments,
           commands[arguments].description,
           yagiPrefix,
-          commands[arguments].hasArguments,
+          commands[arguments].hasArguments
         );
-        return message.channel.send({ embed });
+        return message.channel.send({ embeds: [embed] });
       } else {
         return message.channel.send('That command is only for devs to use! （・□・；）');
       }
@@ -54,5 +54,5 @@ module.exports = {
         return message.channel.send('This command only accepts one argument! （・□・；）');
       }
     }
-  }
+  },
 };
