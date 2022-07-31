@@ -522,7 +522,7 @@ const validateWorldBossData = (worldBoss, serverTime) => {
    * Negative means that next spawn date happens before the server time
    **/
   const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
-  console.log(countdownValidity);
+
   //Checks if nextSpawnDate is later than the current server time
   if (countdownValidity >= 0) {
     //If it is later, checks if it's spawning within 4 hours as time between world boss spawns should only be 4 hours
