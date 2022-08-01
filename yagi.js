@@ -57,7 +57,7 @@ const activitylist = [
 let mixpanel;
 
 const commands = getPrefixCommands();
-const applicationCommands = getApplicationCommands();
+const appCommands = getApplicationCommands();
 //----------
 /**
  * Initialize yagi to log in and establish a connection to Discord
@@ -76,7 +76,7 @@ initialize();
  */
 yagi.once('ready', async () => {
   try {
-    await registerApplicationCommands();
+    await registerApplicationCommands(yagi);
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     /**
@@ -350,7 +350,14 @@ yagi.on('messageCreate', async (message) => {
 yagi.on('error', (error) => {
   sendErrorLog(yagi, error);
 });
+yagi.on('interactionCreate', async (interaction) => {
+  if (!interaction.inGuild()) return; //Only respond in server channels or if it's an actual command
 
+  if (interaction.isCommand()) {
+    const { commandName } = interaction;
+    await appCommands[commandName].execute({ interaction });
+  }
+});
 //Creates Yagi Database under database folder
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
@@ -393,7 +400,7 @@ const registerApplicationCommands = async (yagi) => {
     .map((key) => appCommands[key].data)
     .filter((command) => command)
     .map((command) => command.toJSON());
-
+  console.log(appCommands);
   if (isInDevelopment) {
     console.log('hello');
     console.log(commandList);

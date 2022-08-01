@@ -37,5 +37,7 @@ exports.getPrefixCommands = () => {
   };
 };
 exports.getApplicationCommands = () => {
-  return {};
+  return {
+    goats: require('./commands/timer/goats/index.js'),
+  };
 };
