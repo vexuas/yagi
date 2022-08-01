@@ -214,9 +214,10 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
  * To avoid dirtying the data and cluttering production channels, this function determines if the client is Bisolen and is being used for development
  * Bisolen ID - 582202266828668998
  * Yagi ID - 518196430104428579
+ * Shizuka Test ID - 929421200797626388
  */
 const checkIfInDevelopment = (client) => {
-  return client.user.id === '582202266828668998'; //Bisolen's id (Development Bot)
+  return client.user.id === '929421200797626388'; //Yagi's id (Production Bot)
 };
 //----------
 /**

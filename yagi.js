@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
-const commands = require('./commands');
+const { token, bisoMixpanel, yagiMixpanel, topggToken, guildIDs } = require('./config/yagi.json');
+const { getPrefixCommands, getApplicationCommands } = require('./commands');
 const yagi = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
@@ -45,6 +45,11 @@ const {
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+
+const rest = new REST({ version: '9' }).setToken(token);
+
 const activitylist = [
   'info | bot information',
   'ping me for prefix!',
@@ -55,6 +60,9 @@ const activitylist = [
   'v2.7.0 | 11/12/2021',
 ];
 let mixpanel;
+
+const commands = getPrefixCommands();
+const appCommands = getApplicationCommands();
 //----------
 /**
  * Initialize yagi to log in and establish a connection to Discord
@@ -73,6 +81,7 @@ initialize();
  */
 yagi.once('ready', async () => {
   try {
+    await registerApplicationCommands(yagi);
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     /**
@@ -346,7 +355,14 @@ yagi.on('messageCreate', async (message) => {
 yagi.on('error', (error) => {
   sendErrorLog(yagi, error);
 });
+yagi.on('interactionCreate', async (interaction) => {
+  if (!interaction.inGuild()) return; //Only respond in server channels or if it's an actual command
 
+  if (interaction.isCommand()) {
+    const { commandName } = interaction;
+    await appCommands[commandName].execute({ interaction });
+  }
+});
 //Creates Yagi Database under database folder
 const createYagiDatabase = () => {
   let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
@@ -381,4 +397,35 @@ const removeServerDataFromYagi = (guild) => {
     });
     sendGuildUpdateNotification(yagi, guild, 'leave');
   });
+};
+/**
+ * Function to register application commands
+ * Application commands are different from regular prefix commands as instead of the bot directly responding to messages, discord would be the one doing it
+ * In order to do that, we have to register the bot's application commands to discord first before it can be used
+ * Two types of application commands:
+ * - Guild Commands
+ * - Global Commands
+ * Basicailly guild commands can only be used in that server it was registered in
+ * While global commands can be used to every server that bot is in
+ * Main difference between the two apart from server constraints are that app commands are instantly registered in guilds while global would take up to an hour for changes to appear
+ */
+const registerApplicationCommands = async (yagi) => {
+  const isInDevelopment = checkIfInDevelopment(yagi);
+  const commandList = Object.keys(appCommands)
+    .map((key) => appCommands[key].data)
+    .filter((command) => command)
+    .map((command) => command.toJSON());
+
+  try {
+    if (isInDevelopment) {
+      await rest.put(Routes.applicationGuildCommands('929421200797626388', guildIDs), {
+        body: commandList,
+      });
+      console.log('Successfully registered guild application commands');
+    } else {
+      //TODO: Add global register here
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
