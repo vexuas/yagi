@@ -415,7 +415,7 @@ const registerApplicationCommands = async (yagi) => {
     .map((key) => appCommands[key].data)
     .filter((command) => command)
     .map((command) => command.toJSON());
-  console.log(commandList);
+
   try {
     if (isInDevelopment) {
       await rest.put(Routes.applicationGuildCommands('929421200797626388', guildIDs), {
