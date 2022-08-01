@@ -216,7 +216,7 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
  * Yagi ID - 518196430104428579
  */
 const checkIfInDevelopment = (client) => {
-  return client.user.id === '582202266828668998'; //Bisolen's id (Development Bot)
+  return client.user.id !== '518196430104428579'; //Yagi's id (Production Bot)
 };
 //----------
 /**

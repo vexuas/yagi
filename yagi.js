@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
-const commands = require('./commands');
+const { getPrefixCommands, getApplicationCommands } = require('./commands');
 const yagi = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
@@ -55,6 +55,9 @@ const activitylist = [
   'v2.7.0 | 11/12/2021',
 ];
 let mixpanel;
+
+const commands = getPrefixCommands();
+const applicationCommands = getApplicationCommands();
 //----------
 /**
  * Initialize yagi to log in and establish a connection to Discord
@@ -73,6 +76,7 @@ initialize();
  */
 yagi.once('ready', async () => {
   try {
+    await registerApplicationCommands();
     const testChannel = yagi.channels.cache.get('582213795942891521');
     testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
     /**
@@ -381,4 +385,17 @@ const removeServerDataFromYagi = (guild) => {
     });
     sendGuildUpdateNotification(yagi, guild, 'leave');
   });
+};
+
+const registerApplicationCommands = async (yagi) => {
+  const isInDevelopment = checkIfInDevelopment(yagi);
+  const commandList = Object.keys(appCommands)
+    .map((key) => appCommands[key].data)
+    .filter((command) => command)
+    .map((command) => command.toJSON());
+
+  if (isInDevelopment) {
+    console.log('hello');
+    console.log(commandList);
+  }
 };
