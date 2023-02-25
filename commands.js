@@ -20,7 +20,6 @@ exports.getPrefixCommands = () => {
     // Miscellaneous
     invite: require('./commands/misc/invite'),
     loot: require('./commands/misc/loot'),
-    setprefix: require('./commands/misc/setprefix'),
     // ----------
   };
 };
