@@ -162,11 +162,6 @@ const serverEmbed = async function designOfEmbedForShowingYagiJoiningAndLeavingS
         value: guild.memberCount,
         inline: true,
       },
-      {
-        name: 'Region',
-        value: capitalize(guild.region),
-        inline: true,
-      },
     ],
   };
   return embed;

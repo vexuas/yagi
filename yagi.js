@@ -261,8 +261,6 @@ const removeServerDataFromYagi = (guild) => {
   );
   database.serialize(() => {
     database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
-    database.run(`DELETE FROM Channel WHERE guild_id = "${guild.id}"`);
-    database.run(`DELETE FROM Role WHERE guild_id = "${guild.id}"`);
     database.run(`DELETE FROM ReminderUser WHERE guild_id = "${guild.id}"`);
     database.run(`DELETE FROM ReminderReactionMessage WHERE guild_id = "${guild.id}"`);
     database.each(`SELECT * FROM Reminder WHERE guild_id = "${guild.id}"`, (error, reminder) => {
