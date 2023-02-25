@@ -5,7 +5,8 @@
   "main": "yagi.js",
   "author": "Vexuas",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "yarn nodemon yagi.js"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
