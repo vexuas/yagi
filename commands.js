@@ -14,7 +14,6 @@ exports.getPrefixCommands = () => {
     // Hub
     info: require('./commands/hub/info'),
     help: require('./commands/hub/help'),
-    release: require('./commands/hub/release'),
     sheets: require('./commands/hub/sheets'),
     // ----------
     // Miscellaneous
