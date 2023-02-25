@@ -20,12 +20,8 @@ module.exports = {
           },
           {
             name: 'Information',
-            value: '`info`, `help`, `prefix`, `invite`, `sheets`, `release`',
-          },
-          {
-            name: 'Miscellaneous',
             value:
-              '`loot`, `contacts`, `website`, `feedback`\n\nFor more detailed information about a command, use `' +
+              '`info`, `help`,`invite`, `sheets`\n\nFor more detailed information about a command, use `' +
               yagiPrefix +
               'help <Command>`',
           },
