@@ -30,7 +30,7 @@ const createGuildTable = (database, guilds, client) => {
               $uuid: guild.id,
               $name: guild.name,
               $member_count: guild.memberCount,
-              $owner_id: guild.ownerID,
+              $owner_id: guild.ownerId,
               $prefix: defaultPrefix,
             },
             (err) => {
@@ -57,7 +57,7 @@ const insertNewGuild = (guild) => {
       $uuid: guild.id,
       $name: guild.name,
       $member_count: guild.memberCount,
-      $owner_id: guild.ownerID,
+      $owner_id: guild.ownerId,
       $prefix: defaultPrefix,
     },
     (err) => {
