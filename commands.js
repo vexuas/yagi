@@ -24,7 +24,6 @@ exports.getPrefixCommands = () => {
     // Miscellaneous
     invite: require('./commands/misc/invite'),
     loot: require('./commands/misc/loot'),
-    feedback: require('./commands/misc/feedback'),
     prefix: require('./commands/misc/prefix'),
     setprefix: require('./commands/misc/setprefix'),
     // ----------
