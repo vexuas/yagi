@@ -23,13 +23,6 @@ const {
   updateGuild,
   updateGuildMemberCount,
 } = require('./database/guild-db.js');
-const {
-  createChannelTable,
-  insertNewChannel,
-  deleteChannel,
-  updateChannel,
-} = require('./database/channel-db.js');
-const { createRoleTable, insertNewRole, deleteRole, updateRole } = require('./database/role-db.js');
 const { createReminderTable } = require('./database/reminder-db.js');
 const {
   cacheExistingReminderReactionMessages,
@@ -99,8 +92,6 @@ yagi.once('ready', async () => {
      */
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
-    createChannelTable(yagiDatabase, yagi.channels.cache, yagi);
-    createRoleTable(yagiDatabase, yagi.guilds.cache);
     createReminderTable(yagiDatabase);
     cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
     createReminderUserTable(yagiDatabase);
@@ -144,9 +135,6 @@ yagi.once('ready', async () => {
 yagi.on('guildCreate', (guild) => {
   try {
     insertNewGuild(guild);
-    guild.channels.cache.forEach((channel) => {
-      insertNewChannel(channel);
-    });
     sendGuildUpdateNotification(yagi, guild, 'join');
   } catch (e) {
     sendErrorLog(yagi, e);
