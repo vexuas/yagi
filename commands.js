@@ -15,7 +15,6 @@ exports.getPrefixCommands = () => {
     remind: require('./commands/reminder/remind'),
     // ----------
     // Dev Tools
-    daylights: require('./commands/developer/daylights'),
     offset: require('./commands/developer/offset'),
     psa: require('./commands/developer/psa'),
     // Hub
