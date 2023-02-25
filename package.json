@@ -5,7 +5,12 @@
   "main": "yagi.js",
   "author": "Vexuas",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "yarn nodemon yagi.js",
+    "auto:changelog": "yarn auto changelog",
+    "auto:version": "yarn version --`auto version`",
+    "auto:release": "yarn auto:changelog && yarn auto:version",
+    "release": "git fetch --tags && git checkout -b release/$(date +'%Y-%m-%d') && yarn auto:release && git push -u origin head"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.1",
