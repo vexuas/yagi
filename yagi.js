@@ -133,46 +133,12 @@ yagi.once('ready', async () => {
     sendErrorLog(yagi, e);
   }
 });
-/**
- * Event handlers for when a channel is created, deleted and updated in servers where yagi is in
- * Used mainly for database updates to keep track of
- * channelCreate - called when new channel is created in a server yagi is in
- * channelDelete - called when channel is deleted in a server yagi is in
- * channelUpdate - called when updating details of a channel
- * More information about each function in their relevant database files
- */
-yagi.on('channelCreate', (channel) => {
-  try {
-    if (channel.type !== 'dm') {
-      insertNewChannel(channel);
-    }
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('channelDelete', (channel) => {
-  try {
-    deleteChannel(channel);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('channelUpdate', (_, newChannel) => {
-  try {
-    updateChannel(newChannel);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
 //------
 /**
  * Event handlers for when yagi is invited to a new server, when he is kicked or when the guild he is in is updated
  * Sends notification to channel in Yagi's Den
  * guildCreate - called when yagi is invited to a server
  * guildDelete - called when yagi is kicked from server
- * guildUpdate - called when updating details (e.g name change) in server yagi is in
- * guildMemberAdd - called when a user gets invited to a server
- * guildMemberRemove - called when a user leaves a server
  * More information about each function in their relevant database files
  */
 yagi.on('guildCreate', (guild) => {
@@ -192,85 +158,6 @@ yagi.on('guildDelete', (guild) => {
   } catch (e) {
     sendErrorLog(yagi, e);
   }
-});
-yagi.on('guildUpdate', (_, newGuild) => {
-  try {
-    updateGuild(newGuild);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('guildMemberAdd', (member) => {
-  try {
-    updateGuildMemberCount(member, 'add');
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('guildMemberRemove', (member) => {
-  try {
-    updateGuildMemberCount(member, 'remove');
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-//------
-/**
- * Event handlers for when a role in a guild where yagi is in gets created, deleted and updated
- * A bit overkill to store these since all that's needed is the roles that are used for reminders but might as well just store everything
- * roleCreate - called when a role is created in a server
- * roleDelete - called when a role is deleted in a server
- * roleUpdate - called when updating details (e.g. name change, color change) in a server
- * More information about each function in their relevant database files
- */
-yagi.on('roleCreate', (role) => {
-  try {
-    insertNewRole(role);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('roleDelete', (role) => {
-  try {
-    deleteRole(role, yagi);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-yagi.on('roleUpdate', (_, newRole) => {
-  try {
-    updateRole(newRole);
-  } catch (e) {
-    sendErrorLog(yagi, e);
-  }
-});
-//------
-/**
- * Event handlers for when a cached message gets reactions
- * messageReactionAdd - called when a user reacts to a message
- * messageReactionRemove - called when a user unreacts to a message
- * More information about each function in their relevant database files
- */
-yagi.on('messageReactionAdd', async (reaction, user) => {
-  updateReminderReactionMessage(reaction);
-  reactToMessage(reaction, user);
-});
-yagi.on('messageReactionRemove', (reaction, user) => {
-  updateReminderReactionMessage(reaction);
-  removeReminderUser(reaction, user);
-});
-//------
-/**
- * Event handlers for when message is updated and deleted
- * messageUpdate - called when a user edits a cached message
- * messageDelete - called when a user deletes a cached message
- * More information about each function in their relevant database files
- */
-yagi.on('messageUpdate', (oldMessage, newMessage) => {
-  checkIfReminderReactionMessage(newMessage, oldMessage);
-});
-yagi.on('messageDelete', (message) => {
-  deleteReminderReactionMessage(message, yagi);
 });
 //------
 /**
@@ -299,7 +186,6 @@ yagi.on('messageCreate', async (message) => {
      * This is primarily to know the current prefix of the guild; important when users are using a custom prefix
      */
     const yagiPrefix = row.prefix; //Wonder if we need to add a null check here and return the default prefix? Tho only ever applicable if somehow we mess up with the database interactions
-
     //Refactor this into its own function and pass as a callback for better readability in the future
     try {
       /**
