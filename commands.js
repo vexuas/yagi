@@ -9,13 +9,9 @@ exports.getPrefixCommands = () => {
   return {
     // Timer
     goats: require('./commands/timer/goats'),
-    // ----------
-
     // Reminder
     remind: require('./commands/reminder/remind'),
-    // ----------
     // Hub
-    // ----------
     info: require('./commands/hub/info'),
     help: require('./commands/hub/help'),
     release: require('./commands/hub/release'),
@@ -24,7 +20,6 @@ exports.getPrefixCommands = () => {
     // Miscellaneous
     invite: require('./commands/misc/invite'),
     loot: require('./commands/misc/loot'),
-    prefix: require('./commands/misc/prefix'),
     setprefix: require('./commands/misc/setprefix'),
     // ----------
   };
