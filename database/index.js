@@ -27,8 +27,30 @@ exports.getGuilds = async () => {
       await client.query('BEGIN');
       const getAllGuildsQuery = 'SELECT * FROM Guild';
       const allGuilds = await client.query(getAllGuildsQuery);
-      console.log(allGuilds);
       return allGuilds;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.log(error);
+      //TODO: Add error handling
+    } finally {
+      client.release();
+    }
+  }
+};
+exports.insertNewGuild = async (newGuild) => {
+  const client = await pool.connect();
+  if (client) {
+    try {
+      await client.query('BEGIN');
+      const insertNewGuildQuery =
+        'INSERT INTO Guild (uuid, name, member_count, owner_id) VALUES ($uuid, $name, $member_count, $owner_id)';
+      await client.query(insertNewGuildQuery, [
+        newGuild.id,
+        newGuild.name,
+        newGuild.memberCount,
+        newGuild.ownerId,
+      ]);
+      await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
