@@ -1,6 +1,11 @@
 const sqlite = require('sqlite3').verbose();
-const { generateUUID, getWorldBossData, getServerTime, validateWorldBossData, sendHealthLog } = require('../helpers');
-const { startReminders } = require('./reminder-db');
+const {
+  generateUUID,
+  getWorldBossData,
+  getServerTime,
+  validateWorldBossData,
+  sendHealthLog,
+} = require('../helpers');
 const { isBefore } = require('date-fns');
 
 /**
@@ -16,14 +21,16 @@ const createTimerTable = (database, worldBoss, client) => {
   //Wrapped in a serlialize to ensure that each method is called in order in which it is initialised
   database.serialize(() => {
     //Creates Timer table with relevant columns if it does not exist
-    database.run('CREATE TABLE IF NOT EXISTS Timer(uuid TEXT NOT NULL, last_retrieved_at DATE NOT NULL, location TEXT NOT NULL, next_spawn TEXT NOT NULL, projected_next_spawn TEXT NOT NULL, accurate BOOLEAN NOT NULL)');
+    database.run(
+      'CREATE TABLE IF NOT EXISTS Timer(uuid TEXT NOT NULL, last_retrieved_at DATE NOT NULL, location TEXT NOT NULL, next_spawn TEXT NOT NULL, projected_next_spawn TEXT NOT NULL, accurate BOOLEAN NOT NULL)'
+    );
 
     database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, (error, timer) => {
-      if(error){
+      if (error) {
         console.log(error);
       }
       //Check if there's an existing timer in our database
-      if(timer){
+      if (timer) {
         //Update the timer if it does
         updateTimerData(database, worldBoss, timer);
       } else {
@@ -31,28 +38,31 @@ const createTimerTable = (database, worldBoss, client) => {
         insertNewTimer(database, worldBoss);
       }
     });
-    startReminders(database, client); //Start existing enabled reminders on their timer countdowns on initialisation
-  })
-}
+  });
+};
 /**
  * Adds new timer Timer table
  * @param database - yagi database
  * @param worldBoss - validated world boss data
  */
 const insertNewTimer = (database, worldBoss) => {
-  database.run('INSERT INTO Timer(uuid, last_retrieved_at, location, next_spawn, projected_next_spawn, accurate) VALUES ($uuid, $last_retrieved_at, $location, $next_spawn, $projected_next_spawn, $accurate)', {
-    $uuid: generateUUID(),
-    $last_retrieved_at: new Date(),
-    $location: worldBoss.location,
-    $next_spawn: worldBoss.nextSpawn,
-    $projected_next_spawn: worldBoss.projectedNextSpawn,
-    $accurate: worldBoss.accurate
-  }, error => {
-    if(error){
-      console.log(error);
+  database.run(
+    'INSERT INTO Timer(uuid, last_retrieved_at, location, next_spawn, projected_next_spawn, accurate) VALUES ($uuid, $last_retrieved_at, $location, $next_spawn, $projected_next_spawn, $accurate)',
+    {
+      $uuid: generateUUID(),
+      $last_retrieved_at: new Date(),
+      $location: worldBoss.location,
+      $next_spawn: worldBoss.nextSpawn,
+      $projected_next_spawn: worldBoss.projectedNextSpawn,
+      $accurate: worldBoss.accurate,
+    },
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
     }
-  })
-}
+  );
+};
 /**
  * Updates data of existing timer with new details in database
  * To be accurate as possible, we're updating every column on every function call
@@ -60,12 +70,19 @@ const insertNewTimer = (database, worldBoss) => {
  * @param {*} timer - existing timer in table
  */
 const updateTimerData = (database, worldBoss, timer) => {
-  database.run(`UPDATE Timer SET last_retrieved_at = ${Date.now()}, location = "${worldBoss.location}", next_spawn = "${worldBoss.nextSpawn}", projected_next_spawn = "${worldBoss.projectedNextSpawn}", accurate = ${worldBoss.accurate} WHERE uuid = "${timer.uuid}"`, error => {
-    if(error){
-      console.log(error);
+  database.run(
+    `UPDATE Timer SET last_retrieved_at = ${Date.now()}, location = "${
+      worldBoss.location
+    }", next_spawn = "${worldBoss.nextSpawn}", projected_next_spawn = "${
+      worldBoss.projectedNextSpawn
+    }", accurate = ${worldBoss.accurate} WHERE uuid = "${timer.uuid}"`,
+    (error) => {
+      if (error) {
+        console.log(error);
+      }
     }
-  })
-}
+  );
+};
 /**
  * Function to stay up to date with world boss data and be accurate as possible
  * Gets called in the client.once('ready') hook and inside a setInterval to constantly update our timer data
@@ -77,27 +94,26 @@ const getCurrentTimerData = (client) => {
   let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
   database.serialize(() => {
     database.get(`SELECT * FROM Timer WHERE rowid = ${1}`, async (error, timer) => {
-      if(error){
-        console.log(error)
+      if (error) {
+        console.log(error);
       }
       const serverTime = getServerTime();
       const healthChannel = client.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
-  
-      if(timer.accurate === 0 || isBefore(timer.next_spawn, serverTime) ){
+
+      if (timer.accurate === 0 || isBefore(timer.next_spawn, serverTime)) {
         const worldBossData = await getWorldBossData();
-        
+
         const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
         updateTimerData(database, validatedWorldBossData, timer);
-        
+
         sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
       }
-    })
-    startReminders(database, client);
-  })
-}
+    });
+  });
+};
 
 module.exports = {
   createTimerTable,
   insertNewTimer,
-  getCurrentTimerData
-}
+  getCurrentTimerData,
+};
