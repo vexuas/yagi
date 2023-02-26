@@ -1,3 +1,36 @@
+# v3.0.0 (Sun Feb 26 2023)
+
+#### 💥 Breaking Change
+
+- Upgrade discord js to v13 [#94](https://github.com/vexuas/yagi/pull/94) ([@vexuas](https://github.com/vexuas))
+
+#### 🚀 Enhancement
+
+- Switch to postgres [#104](https://github.com/vexuas/yagi/pull/104) ([@vexuas](https://github.com/vexuas))
+- Remove remind functionality [#103](https://github.com/vexuas/yagi/pull/103) ([@vexuas](https://github.com/vexuas))
+- Remove unnecessary database handlers [#102](https://github.com/vexuas/yagi/pull/102) ([@vexuas](https://github.com/vexuas))
+- Remove unused commands [#101](https://github.com/vexuas/yagi/pull/101) ([@vexuas](https://github.com/vexuas))
+- Add useful scripts [#100](https://github.com/vexuas/yagi/pull/100) ([@vexuas](https://github.com/vexuas))
+- Cleanup unnecessary listeners [#99](https://github.com/vexuas/yagi/pull/99) ([@vexuas](https://github.com/vexuas))
+- Register guild application commands [#97](https://github.com/vexuas/yagi/pull/97) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2021 12 11 [#92](https://github.com/vexuas/yagi/pull/92) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump ansi-regex from 3.0.0 to 3.0.1 [#98](https://github.com/vexuas/yagi/pull/98) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump sqlite3 from 5.0.2 to 5.0.3 [#95](https://github.com/vexuas/yagi/pull/95) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump minimist from 1.2.5 to 1.2.6 [#96](https://github.com/vexuas/yagi/pull/96) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v2.7.0 (Sat Dec 11 2021)
 
 ### Release Notes
