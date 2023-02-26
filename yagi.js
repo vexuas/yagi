@@ -85,14 +85,6 @@ yagi.once('ready', async () => {
      * See relevant files under database/* for more information
      */
     await createGuildTable(yagi.guilds.cache, yagi);
-    await createTimerTable();
-
-    const currentTimer = await getCurrentTimer();
-    if (currentTimer) {
-      await updateTimer(currentTimer, validatedWorldBossData);
-    } else {
-      await insertNewTimer(validatedWorldBossData);
-    }
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -102,27 +94,6 @@ yagi.once('ready', async () => {
       const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
       yagi.user.setActivity(activitylist[index]);
     }, 120000);
-    /**
-     * Get current timer data from sheet every 30 minutes
-     * We want to do this as goats spawn are not fixed hence we can't hardcode reminders with a set date
-     * However, we don't want to spam requests on the sheet so we'll only ping if our current timer data on our end is either innacurate or the next spawn date has already passed
-     * For more documentation, see the timer-db file
-     */
-    setInterval(
-      async () => {
-        const _timer = await getCurrentTimer();
-        const _serverTime = getServerTime();
-        const _healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
-        if (!_timer.accurate || isBefore(_timer.next_spawn, serverTime)) {
-          const _worldBossData = await getWorldBossData();
-          const _validatedWorldBossData = validateWorldBossData(_worldBossData, _serverTime);
-          updateTimer(_timer, _validatedWorldBossData);
-          sendHealthLog(_healthChannel, worldBossData, validatedWorldBossData, 'timer');
-        }
-      },
-      1800000,
-      yagi
-    ); //1800000 - 30 minutes
     const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
     sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
   } catch (e) {
