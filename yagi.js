@@ -23,7 +23,7 @@ const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { createGuildTable } = require('./database');
+const { createGuildTable, insertNewGuild } = require('./database');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -73,7 +73,7 @@ yagi.once('ready', async () => {
      * Will create them if they don't exist
      * See relevant files under database/* for more information
      */
-    createGuildTable(yagi.guilds.cache, yagi);
+    await createGuildTable(yagi.guilds.cache, yagi);
     createTimerTable(yagiDatabase, validatedWorldBossData, yagi); //timer table to store up-to-date world boss data; also used for reminders to work
     /**
      * Changes Yagi's activity every 2 minutes on random
@@ -111,10 +111,9 @@ yagi.once('ready', async () => {
  * guildDelete - called when yagi is kicked from server
  * More information about each function in their relevant database files
  */
-yagi.on('guildCreate', (guild) => {
+yagi.on('guildCreate', async (guild) => {
   try {
-    insertNewGuild(guild);
-    sendGuildUpdateNotification(yagi, guild, 'join');
+    await insertNewGuild(guild, yagi);
   } catch (e) {
     sendErrorLog(yagi, e);
   }
