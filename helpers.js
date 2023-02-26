@@ -159,7 +159,7 @@ const serverEmbed = async function designOfEmbedForShowingYagiJoiningAndLeavingS
       },
       {
         name: 'Members',
-        value: guild.memberCount,
+        value: guild.memberCount.toString(),
         inline: true,
       },
     ],
@@ -173,26 +173,20 @@ const serverEmbed = async function designOfEmbedForShowingYagiJoiningAndLeavingS
 const descriptionEmbed = function generatesDescriptionEmbedForCommands(
   command,
   description,
-  currentPrefix,
-  hasArguments
+  currentPrefix
 ) {
   const commandName = `${grvAcnt}${currentPrefix}${command}${grvAcnt}`;
-  let embed;
 
-  if (command !== 'remind') {
-    embed = {
-      description: description,
-      color: 32896,
-      fields: [
-        {
-          name: 'Usage',
-          value: `${commandName}`,
-        },
-      ],
-    };
-  } else {
-    embed = reminderInstructions();
-  }
+  const embed = {
+    description: description,
+    color: 32896,
+    fields: [
+      {
+        name: 'Usage',
+        value: `${commandName}`,
+      },
+    ],
+  };
   return embed;
 };
 //----------
@@ -227,7 +221,7 @@ const sendGuildUpdateNotification = async (client, guild, type) => {
   const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
   const channelToSend = client.channels.cache.get(channelId);
   console.log(embed);
-  channelToSend.send({ embed });
+  channelToSend.send({ embeds: [embed] });
   if (!checkIfInDevelopment(client)) {
     channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);
   }
@@ -250,191 +244,6 @@ const sendErrorLog = (client, error) => {
  */
 const generateUUID = () => {
   return uuidv4();
-};
-//----------
-/**
- * Embed design used when disabling reminders
- * First checks if message was sent in the reminder-enabled channel and if reminder even exists
- * If it does, we check if it the reminder is enabled and send an embed notifying the reminder has been disabled
- * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
- * @param message - message data object
- * @param reminder - reminder to be disabled
- */
-const disableReminderEmbed = (message, reminder) => {
-  let embed;
-  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
-  if (sentInEnabledChannel && reminder.enabled === 1) {
-    embed = {
-      title: 'Reminder disabled!',
-      description: 'I will no longer notify you in this channel',
-      color: 16711680,
-    };
-  } else {
-    embed = {
-      title: 'Whoops!',
-      description: 'There are no active reminders in this channel',
-      color: 32896,
-    };
-  }
-  return embed;
-};
-/**
- * Embed design used when disabling reminders after the reminder role is deleted
- */
-const disableReminderEmbedWhenRoleIsDeleted = () => {
-  const embed = {
-    title: 'Reminder disabled!',
-    description:
-      'The reminder role has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the role, simply re-enable a reminder by typing `$yagi-remind enable`.',
-    color: 16711680,
-  };
-  return embed;
-};
-/**
- * Embed design used when disabling reminders after the reminder reaction message is deleted
- */
-const disableReminderEmbedWhenReactionIsDeleted = () => {
-  const embed = {
-    title: 'Reminder disabled!',
-    description:
-      'The reaction message has been deleted; reminder is temporarily disabled and existing reactions are cleared. To recreate the reaction message, simply re-enable a reminder by typing `$yagi-remind enable`.',
-    color: 16711680,
-  };
-  return embed;
-};
-/**
- * Embed design used when enabling reminders
- * First checks if message was sent in the reminder-enabled channel and if reminder even exists
- * If it does, we check if it the reminder is disabled and send an embed notifying the reminder has been enabled
- * If it's not sent in the enabled channel or if reminder doesn't exist, we send an embed notifying user that there are no active reminders in the channel
- * @param message - message data object
- * @param reminder - reminder to be disabled
- */
-const enableReminderEmbed = (message, reminder) => {
-  let embed;
-  const sentInEnabledChannel = reminder ? message.channel.id === reminder.channel_id : null;
-  if (sentInEnabledChannel && reminder.enabled === 0) {
-    embed = {
-      title: 'Reminder Enabled!',
-      description: 'I will notify you in this channel before world boss spawns!',
-      color: 55296,
-    };
-  } else {
-    embed = {
-      title: 'Whoops!',
-      description:
-        'There is already an active reminder in this server! To see the reminder details, type `$yagi-remind`',
-      color: 32896,
-    };
-  }
-  return embed;
-};
-//----------
-/**
- * Embed design used for onboarding users on how to use reminders
- * Tried to be as detailed as possible but still not sure if it would be complicated for users to get it
- * Debating if I have to do a support doc or make a video about it
- */
-const reminderInstructions = () => {
-  const embed = {
-    description:
-      'Personal reminder to notify you when world boss is spawning soon.\nCan only be activated in one channel per server by an admin.\n\nVisual guides: [Github](https://github.com/vexuas/yagi#setting-up-reminders) | Youtube',
-    color: 32896,
-    thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
-    },
-    fields: [
-      {
-        name: 'How to enable:',
-        value:
-          '1. In the channel you want to get notifications from, type `$yagi-remind enable`. This will activate reminders on the current channel.\n2. When a channel is successfully activated, a special message is sent to the channel with details about the reminder.',
-      },
-      {
-        name: 'How to use',
-        value:
-          '1. When a channel is activated, Yagi creates a new role in the server `@Goat Hunters`\n2. To get reminders, simply react on the special message with :goat: and you will automatically get the role. *Note that by removing the reaction you will lose the role*\n3. When world boss is spawning soon, Yagi will ping the role\n\n*To see the reminder details, type `$yagi-remind`. You can also edit the role to customise its name/color*',
-      },
-      {
-        name: 'How to disable',
-        value:
-          '1. Type `$yagi-remind disable` in the channel where reminders was enabled. This will deactivate reminders on the current channel.',
-      },
-      {
-        name: 'Deleting Reminder Role/Reaction Message',
-        value:
-          '1. If the reminder role or the reaction message gets deleted, any active reminders will be temporarily disabled\n2. Reactions will also be cleared and existing users would lose the role\n3. Re-enabling a reminder would recreate the deleted role/reaction message and users can react again to get the role',
-      },
-    ],
-  };
-  return embed;
-};
-//----------
-/**
- * Embed design used to display the details of the active reminder in the server
- * Active Channel - channel where the reminder is enabled
- * Reminder Role - role that yagi uses to ping users
- * Reaction Message - a link to the message where users can react to get reminder role
- * @param channel - channelId
- * @param role - roleId
- * @param message - messageId
- */
-const reminderDetails = (channel, role, message) => {
-  const embed = {
-    title: 'Reminder Details',
-    color: 32896,
-    description: 'To get notified, react to the linked message below!',
-    thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png',
-    },
-    fields: [
-      {
-        name: 'Active Channel',
-        value: `<#${channel}>`,
-        inline: true,
-      },
-      {
-        name: 'Reminder Role',
-        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
-        inline: true,
-      },
-      {
-        name: 'Reaction Message',
-        value: message ? `[Click me! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧](${message})` : '-', //Add empty state if message does not exist
-      },
-    ],
-  };
-  return embed;
-};
-//----------
-/**
- * Embed design used to inform users how to get pinged by Yagi and acts as a collector for reactions
- * Active Channel - channel where the reminder is enabled
- * Reminder Role - role that yagi uses to ping users
- * @param channel - channelId
- * @param role - roleId
- */
-const reminderReactionMessage = (channel, role) => {
-  const embed = {
-    color: 16761651,
-    description:
-      'To get notified, react to this message with :goat: and you will get the role!\n\n*Note that by removing the reaction you will lose the role*',
-    thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png',
-    },
-    fields: [
-      {
-        name: 'Active Channel',
-        value: channel ? `<#${channel}>` : '-', //Add empty state if channel does not exist
-        inline: true,
-      },
-      {
-        name: 'Reminder Role',
-        value: role ? `<@&${role}>` : '@deleted-role', //Add empty state if role does not exist
-        inline: true,
-      },
-    ],
-  };
-  return embed;
 };
 //----------
 /**
@@ -610,103 +419,6 @@ const codeBlock = (text) => {
 };
 //----------
 /**
- * Function to send the timer embed for reminders
- * Similar to the message in the goats command but added a paragraph about the feature being in beta
- * @param channel - channel to send the message in
- * @param role - role to ping
- * @param worldBoss - validated world boss data\
- */
-const sendReminderTimerEmbed = (channel, role, worldBoss) => {
-  const serverTime = getServerTime();
-  const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
-  const spawnText = `${worldBoss.location.toLowerCase()}, ${format(
-    worldBoss.next_spawn,
-    'h:mm:ss A'
-  )}`;
-  const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
-  const inaccurateText = `**Note that sheet data isn't up to date, timer accuracy might be off`;
-
-  //Don't forget to add typeform and yagi's discord server invite
-  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://www.google.com/)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`;
-
-  const embed = {
-    title: 'Olympus | World Boss',
-    description: `${serverTimeDescription}\n${spawnDescription}`,
-    thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png',
-    },
-    color: 32896,
-    footer: {
-      text: worldBoss.accurate ? '' : inaccurateText,
-    },
-    fields: [
-      {
-        name: 'Location',
-        value: '```fix\n\n' + formatLocation(worldBoss.location) + '```',
-      },
-      {
-        name: 'Countdown',
-        value: '```xl\n\n' + formatCountdown(worldBoss.next_spawn, serverTime) + '```',
-        inline: true,
-      },
-      {
-        name: 'Time of Spawn',
-        value: '```xl\n\n' + format(worldBoss.next_spawn, 'h:mm:ss A') + '```',
-        inline: true,
-      },
-    ],
-  };
-  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
-  return channel.send({
-    content: `${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`,
-    embeds: [embed],
-  });
-};
-//----------
-/**
- * Function to edit the message of above when world boss has started
- * This is just to be aethestically pleasing and to be informative for players that are late that's wb has begun
- * Also lays a foundation for the future if we want to be editing where the current spawn is located with v3
- * @param message - message to edit
- * @param role - role to ping
- * @param worldBoss - validated world boss data
- */
-const editReminderTimerStatus = (message, role, worldBoss) => {
-  const serverTime = getServerTime();
-  const serverTimeDescription = `Server Time: ${codeBlock(format(serverTime, 'dddd, h:mm:ss A'))}`;
-  const spawnText = `${worldBoss.location.toLowerCase()}, ${format(
-    worldBoss.next_spawn,
-    'h:mm:ss A'
-  )}`;
-  const spawnDescription = `Spawn: ${codeBlock(spawnText)}`;
-
-  //Don't forget to add typeform and yagi's discord server invite
-  const spawnFooter = `*This feature is currently in beta. If you have any feedback, feel free to leave it [here](https://cyhmwysg8uq.typeform.com/to/szg4bUPU)! Or join the [support server](https://discord.gg/7nAYYDm) if you have any questions and want to keep up-to-date with yagi's development!*`;
-
-  const embed = {
-    title: 'Olympus | World Boss',
-    description: `${serverTimeDescription}\n${spawnDescription}\n\n${spawnFooter}`,
-    thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/248430185463021569/864309441821802557/goat-timer_logo_dark2_reminder.png',
-    },
-    color: 32896,
-    fields: [
-      {
-        name: 'Status',
-        value:
-          '```fix\n\n' +
-          `World Boss has started in ${formatLocation(
-            worldBoss.location
-          )}. If you are late, ask in-game for current spawn channel.` +
-          '```',
-      },
-    ],
-  };
-  const roleId = role ? `<@&${role}>` : '@deleted-role'; //Add empty state if role does not exist
-  return message.edit(`${roleId} Wake up Envoys, we have goats to hunt (ง •̀_•́)ง`, { embed });
-};
-//----------
-/**
  * Function to send health status so that I can monitor how the timer and reminders are doing
  * Currently in it's state it just returns the raw sheet data, the validated data and the current server time
  * In the future, I'll probably add more stuff in here like server status, individual channel status, number of active reminders and so forth
@@ -714,93 +426,41 @@ const editReminderTimerStatus = (message, role, worldBoss) => {
  * @param {*} rawData - data from olympus spreadsheet
  * @param {*} trueData - validated world boss data
  */
-const sendHealthLog = (channel, rawData, trueData, type, reminder, client) => {
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
+const sendHealthLog = (channel, rawData, trueData, type) => {
   switch (type) {
     case 'timer':
-      database.get(
-        `SELECT COUNT(uuid) FROM Reminder WHERE enabled = ${true}`,
-        (error, activeReminders) => {
-          const embed = {
-            title: 'Yagi | Health Log',
-            description: 'Requested data from sheet',
-            color: trueData.accurate ? 3066993 : 16776960,
-            thumbnail: {
-              url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
-            },
-            fields: [
-              {
-                name: 'Server Time',
-                value: codeBlock(trueData.serverTime),
-              },
-              {
-                name: 'Sheet Data',
-                value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(
-                  rawData.countdown
-                )}`,
-              },
-              {
-                name: 'True Data',
-                value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(
-                  trueData.countdown
-                )}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`,
-              },
-              {
-                name: 'Accurate',
-                value: trueData.accurate ? 'Yes' : 'No',
-                inline: true,
-              },
-              {
-                name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders).toString() : '0',
-                inline: true,
-              },
-            ],
-          };
-          channel.send({ embeds: [embed] });
-        }
-      );
-      break;
-    case 'reminder':
-      database.get(
-        `SELECT COUNT(uuid) FROM Reminder WHERE enabled = ${true}`,
-        async (error, activeReminders) => {
-          const reminderGuild = await client.guilds.fetch(reminder.guild_id);
-          const reminderChannel = await client.channels.fetch(reminder.channel_id);
-          const reminderUser = await reminderGuild.members.fetch(reminder.enabled_by);
-          const embed = {
-            title: 'Yagi | Health Log',
-            description: 'New Reminder enabled!',
-            color: 15844367,
-            thumbnail: {
-              url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
-            },
-            fields: [
-              {
-                name: 'Server',
-                value: codeBlock(reminderGuild.name),
-              },
-              {
-                name: 'Channel',
-                value: codeBlock(reminderChannel.name),
-              },
-              {
-                name: 'Enabled By',
-                value: codeBlock(reminderUser.user.tag),
-              },
-              {
-                name: 'Enabled At',
-                value: codeBlock(format(new Date(), 'MMMM D YYYY h:mm:ss A')),
-              },
-              {
-                name: 'Active Reminders',
-                value: activeReminders ? Object.values(activeReminders).toString() : '0',
-              },
-            ],
-          };
-          channel.send({ embeds: [embed] });
-        }
-      );
+      const embed = {
+        title: 'Yagi | Health Log',
+        description: 'Requested data from sheet',
+        color: trueData.accurate ? 3066993 : 16776960,
+        thumbnail: {
+          url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
+        },
+        fields: [
+          {
+            name: 'Server Time',
+            value: codeBlock(trueData.serverTime),
+          },
+          {
+            name: 'Sheet Data',
+            value: `• Next Spawn: ${codeBlock(rawData.nextSpawn)}\n• Countdown: ${codeBlock(
+              rawData.countdown
+            )}`,
+          },
+          {
+            name: 'True Data',
+            value: `• Next Spawn: ${codeBlock(trueData.nextSpawn)}\n• Countdown: ${codeBlock(
+              trueData.countdown
+            )}\n• Projected: ${codeBlock(trueData.projectedNextSpawn)}`,
+          },
+          {
+            name: 'Accurate',
+            value: trueData.accurate ? 'Yes' : 'No',
+            inline: true,
+          },
+        ],
+      };
+      channel.send({ embeds: [embed] });
       break;
   }
 };
@@ -833,18 +493,9 @@ module.exports = {
   sendGuildUpdateNotification,
   sendErrorLog,
   generateUUID,
-  disableReminderEmbed,
-  disableReminderEmbedWhenRoleIsDeleted,
-  disableReminderEmbedWhenReactionIsDeleted,
-  enableReminderEmbed,
-  reminderInstructions,
-  reminderDetails,
-  reminderReactionMessage,
   getWorldBossData,
   validateWorldBossData,
   codeBlock,
-  sendReminderTimerEmbed,
-  editReminderTimerStatus,
   sendHealthLog,
   isInWeeklyMaintenance,
 };
