@@ -10,6 +10,14 @@ exports.createGuildTable = async (guildsOfYagi) => {
       const createGuildTableQuery =
         'CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, owner_id TEXT NOT NULL)';
       await client.query(createGuildTableQuery);
+
+      const guildsInDatabase = await this.getGuilds();
+      guildsOfYagi.forEach(async (guild) => {
+        const isInDatabase = guildsInDatabase.find((guildDb) => guildDb.uuid === guild.id);
+        if (!isInDatabase) {
+          await this.insertNewGuild(guild);
+        }
+      });
       await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
