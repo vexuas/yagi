@@ -17,24 +17,7 @@ const {
   isInWeeklyMaintenance,
   codeBlock,
 } = require('./helpers');
-const {
-  createGuildTable,
-  insertNewGuild,
-  updateGuild,
-  updateGuildMemberCount,
-} = require('./database/guild-db.js');
-const { createReminderTable } = require('./database/reminder-db.js');
-const {
-  cacheExistingReminderReactionMessages,
-  updateReminderReactionMessage,
-  deleteReminderReactionMessage,
-  checkIfReminderReactionMessage,
-} = require('./database/reminder-reaction-message-db.js');
-const {
-  createReminderUserTable,
-  reactToMessage,
-  removeReminderUser,
-} = require('./database/reminder-user-db.js');
+const { createGuildTable, insertNewGuild } = require('./database/guild-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
@@ -48,7 +31,6 @@ const activitylist = [
   'ping me for prefix!',
   'goats | Olympus wb',
   'help | command list',
-  'remind | wb reminder notification',
   'setprefix | custom prefix',
   'v2.7.0 | 11/12/2021',
 ];
@@ -92,9 +74,6 @@ yagi.once('ready', async () => {
      */
     const yagiDatabase = createYagiDatabase();
     createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
-    createReminderTable(yagiDatabase);
-    cacheExistingReminderReactionMessages(yagi.guilds.cache); //creates reminder reaction table first -> cache messages after
-    createReminderUserTable(yagiDatabase);
     createTimerTable(yagiDatabase, validatedWorldBossData, yagi); //timer table to store up-to-date world boss data; also used for reminders to work
     /**
      * Changes Yagi's activity every 2 minutes on random
@@ -246,11 +225,6 @@ const createYagiDatabase = () => {
  * Function to delete all the relevant data in our database when yagi is removed from a server
  * Removes:
  * Guild
- * Channel
- * Role
- * ReminderUser
- * ReminderReactionMessage
- * Reminder
  * We clear any active reminders associated to the guild and then send the guild update notification to goat-servers in Yagi's Den
  * @param guild - guild in which yagi was kicked in
  */
@@ -261,12 +235,6 @@ const removeServerDataFromYagi = (guild) => {
   );
   database.serialize(() => {
     database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
-    database.run(`DELETE FROM ReminderUser WHERE guild_id = "${guild.id}"`);
-    database.run(`DELETE FROM ReminderReactionMessage WHERE guild_id = "${guild.id}"`);
-    database.each(`SELECT * FROM Reminder WHERE guild_id = "${guild.id}"`, (error, reminder) => {
-      clearTimeout(reminder.timer);
-      database.run(`DELETE FROM Reminder WHERE uuid = "${reminder.uuid}"`);
-    });
     sendGuildUpdateNotification(yagi, guild, 'leave');
   });
 };
