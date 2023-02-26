@@ -25,7 +25,6 @@ const { api } = require('./config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const grvAcnt = '`';
-const sqlite = require('sqlite3').verbose();
 
 //----------
 const getServerTime = function formatsLocalTimeToServerTimeUnformatted() {

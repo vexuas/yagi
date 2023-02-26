@@ -70,6 +70,10 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
     }
   }
 };
+/**
+ * Handlers for timers database below
+ * Porting over the current handlers but I might have to refactor how this is done
+ */
 exports.createTimerTable = async () => {
   const client = await pool.connect();
   if (client) {
