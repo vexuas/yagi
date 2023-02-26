@@ -70,7 +70,7 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
     }
   }
 };
-exports.createTimerTable = async (worldBossData, yagi) => {
+exports.createTimerTable = async () => {
   const client = await pool.connect();
   if (client) {
     try {
@@ -94,10 +94,9 @@ exports.getCurrentTimer = async () => {
   if (client) {
     try {
       await client.query('BEGIN');
-      const getTimerQuery = `SELECT * FROM Timer WHERE rowid = ${1}`;
+      const getTimerQuery = `SELECT * FROM Timer`;
       const timer = await client.query(getTimerQuery);
-      console.log(timer);
-      return timer;
+      return timer.rowCount > 0 ? timer.rows[0] : null;
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
@@ -123,7 +122,7 @@ exports.insertNewTimer = async (worldBoss) => {
         worldBoss.accurate,
       ]);
 
-      return timer;
+      await client.query('COMMIT');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
@@ -133,7 +132,7 @@ exports.insertNewTimer = async (worldBoss) => {
     }
   }
 };
-exports.updateTimerData = async (timer, worldBoss) => {
+exports.updateTimer = async (timer, worldBoss) => {
   const client = await pool.connect();
   if (client) {
     try {

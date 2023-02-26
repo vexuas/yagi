@@ -17,13 +17,20 @@ const {
   isInWeeklyMaintenance,
   codeBlock,
 } = require('./helpers');
-// const { insertNewGuild } = require('./database/guild-db.js');
-const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { createGuildTable, insertNewGuild } = require('./database');
+const {
+  createGuildTable,
+  insertNewGuild,
+  createTimerTable,
+  getCurrentTimer,
+  updateTimerData,
+  updateTimer,
+  insertNewTimer,
+} = require('./database');
+const { isBefore } = require('date-fns');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -74,7 +81,14 @@ yagi.once('ready', async () => {
      * See relevant files under database/* for more information
      */
     await createGuildTable(yagi.guilds.cache, yagi);
-    createTimerTable(yagiDatabase, validatedWorldBossData, yagi); //timer table to store up-to-date world boss data; also used for reminders to work
+    await createTimerTable();
+
+    const currentTimer = await getCurrentTimer();
+    if (currentTimer) {
+      await updateTimer(currentTimer, validatedWorldBossData);
+    } else {
+      await insertNewTimer(validatedWorldBossData);
+    }
     /**
      * Changes Yagi's activity every 2 minutes on random
      * Starts on the first index of the activityList array and then sets to a different one after
@@ -91,8 +105,16 @@ yagi.once('ready', async () => {
      * For more documentation, see the timer-db file
      */
     setInterval(
-      () => {
-        getCurrentTimerData(yagi);
+      async () => {
+        const _timer = await getCurrentTimer();
+        const _serverTime = getServerTime();
+        const _healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
+        if (!_timer.accurate || isBefore(_timer.next_spawn, serverTime)) {
+          const _worldBossData = await getWorldBossData();
+          const _validatedWorldBossData = validateWorldBossData(_worldBossData, _serverTime);
+          updateTimer(_timer, _validatedWorldBossData);
+          sendHealthLog(_healthChannel, worldBossData, validatedWorldBossData, 'timer');
+        }
       },
       1800000,
       yagi
