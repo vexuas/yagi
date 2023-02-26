@@ -4,9 +4,10 @@
 node_modules
 
 # config
-/config/guild.json
 /config/yagi.json
 /config/psa.json
+/config/database.js
+/config/ca-certificate.cer
 
 #database
 /database/yagi.db

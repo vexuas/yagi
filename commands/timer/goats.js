@@ -19,7 +19,6 @@ const {
   startOfDay,
   endOfDay,
 } = require('date-fns');
-const sqlite = require('sqlite3').verbose();
 //----------
 /**
  * GET request to spreadsheet for values
@@ -232,17 +231,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
  * Passed in another function as a parameter so it gets called after everything else is done
  * */
 const sendMessage = function sendMessageToUser(message, embedData) {
-  let embed = embedData;
-  let database = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE);
-
-  database.get(`SELECT * FROM GUILD WHERE uuid = "${message.guild.id}"`, (error, guild) => {
-    if (guild.prefix === defaultPrefix) {
-      embed.description =
-        embed.description +
-        '\n\n*Want to use a custom prefix?\n Try the new `setprefix` command for more information!*';
-    }
-    message.channel.send({ embeds: [embed] });
-  });
+  message.channel.send({ embeds: [embedData] });
 };
 //----------
 module.exports = {
