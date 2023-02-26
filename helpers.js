@@ -220,7 +220,7 @@ const sendGuildUpdateNotification = async (client, guild, type) => {
   const embed = await serverEmbed(client, guild, type);
   const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
   const channelToSend = client.channels.cache.get(channelId);
-  console.log(embed);
+
   channelToSend.send({ embeds: [embed] });
   if (!checkIfInDevelopment(client)) {
     channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);

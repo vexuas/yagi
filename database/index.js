@@ -1,8 +1,9 @@
 const { Pool } = require('pg');
 const { databaseConfig } = require('../config/database');
+const { sendGuildUpdateNotification } = require('../helpers');
 const pool = new Pool(databaseConfig);
 
-exports.createGuildTable = async (guildsOfYagi) => {
+exports.createGuildTable = async (guildsOfYagi, yagi) => {
   const client = await pool.connect();
   if (client) {
     try {
@@ -13,9 +14,9 @@ exports.createGuildTable = async (guildsOfYagi) => {
 
       const guildsInDatabase = await this.getGuilds();
       guildsOfYagi.forEach(async (guild) => {
-        const isInDatabase = guildsInDatabase.find((guildDb) => guildDb.uuid === guild.id);
+        const isInDatabase = guildsInDatabase.rows.find((guildDb) => guildDb.uuid === guild.id);
         if (!isInDatabase) {
-          await this.insertNewGuild(guild);
+          await this.insertNewGuild(guild, yagi);
         }
       });
       await client.query('COMMIT');
@@ -45,13 +46,13 @@ exports.getGuilds = async () => {
     }
   }
 };
-exports.insertNewGuild = async (newGuild) => {
+exports.insertNewGuild = async (newGuild, yagi) => {
   const client = await pool.connect();
   if (client) {
     try {
       await client.query('BEGIN');
       const insertNewGuildQuery =
-        'INSERT INTO Guild (uuid, name, member_count, owner_id) VALUES ($uuid, $name, $member_count, $owner_id)';
+        'INSERT INTO Guild (uuid, name, member_count, owner_id) VALUES ($1, $2, $3, $4)';
       await client.query(insertNewGuildQuery, [
         newGuild.id,
         newGuild.name,
@@ -59,6 +60,7 @@ exports.insertNewGuild = async (newGuild) => {
         newGuild.ownerId,
       ]);
       await client.query('COMMIT');
+      await sendGuildUpdateNotification(yagi, newGuild, 'join');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);

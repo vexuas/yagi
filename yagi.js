@@ -17,12 +17,13 @@ const {
   isInWeeklyMaintenance,
   codeBlock,
 } = require('./helpers');
-const { createGuildTable, insertNewGuild } = require('./database/guild-db.js');
+// const { insertNewGuild } = require('./database/guild-db.js');
 const { createTimerTable, getCurrentTimerData } = require('./database/timer-db.js');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
+const { createGuildTable } = require('./database');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -72,8 +73,7 @@ yagi.once('ready', async () => {
      * Will create them if they don't exist
      * See relevant files under database/* for more information
      */
-    const yagiDatabase = createYagiDatabase();
-    createGuildTable(yagiDatabase, yagi.guilds.cache, yagi);
+    createGuildTable(yagi.guilds.cache, yagi);
     createTimerTable(yagiDatabase, validatedWorldBossData, yagi); //timer table to store up-to-date world boss data; also used for reminders to work
     /**
      * Changes Yagi's activity every 2 minutes on random
@@ -216,28 +216,6 @@ yagi.on('interactionCreate', async (interaction) => {
     await appCommands[commandName].execute({ interaction });
   }
 });
-//Creates Yagi Database under database folder
-const createYagiDatabase = () => {
-  let db = new sqlite.Database('./database/yagi.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-  return db;
-};
-/**
- * Function to delete all the relevant data in our database when yagi is removed from a server
- * Removes:
- * Guild
- * We clear any active reminders associated to the guild and then send the guild update notification to goat-servers in Yagi's Den
- * @param guild - guild in which yagi was kicked in
- */
-const removeServerDataFromYagi = (guild) => {
-  let database = new sqlite.Database(
-    './database/yagi.db',
-    sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE
-  );
-  database.serialize(() => {
-    database.run(`DELETE FROM Guild WHERE uuid = "${guild.id}"`);
-    sendGuildUpdateNotification(yagi, guild, 'leave');
-  });
-};
 /**
  * Function to register application commands
  * Application commands are different from regular prefix commands as instead of the bot directly responding to messages, discord would be the one doing it
