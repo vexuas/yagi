@@ -32,5 +32,6 @@ exports.getApplicationCommands = () => {
     info: require('./commands/hub/info/index.js'),
     sheets: require('./commands/hub/sheets/index.js'),
     loot: require('./commands/hub/loot'),
+    invite: require('./commands/hub/invite'),
   };
 };

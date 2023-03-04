@@ -117,7 +117,7 @@ yagi.on('guildCreate', async (guild) => {
 });
 yagi.on('guildDelete', (guild) => {
   try {
-    removeServerDataFromYagi(guild, yagi);
+    //TODO: Add remove guild handler here
   } catch (e) {
     sendErrorLog(yagi, e);
   }
