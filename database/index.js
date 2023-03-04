@@ -14,7 +14,8 @@ exports.createGuildTable = async (guildsOfYagi, yagi) => {
 
       const guildsInDatabase = await this.getGuilds();
       guildsOfYagi.forEach(async (guild) => {
-        const isInDatabase = guildsInDatabase.rows.find((guildDb) => guildDb.uuid === guild.id);
+        const isInDatabase =
+          guildsInDatabase && guildsInDatabase.rows.find((guildDb) => guildDb.uuid === guild.id);
         if (!isInDatabase) {
           await this.insertNewGuild(guild, yagi, client);
         }
@@ -66,7 +67,7 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
       console.log(error);
       //TODO: Add error handling
     } finally {
-      client.release();
+      !existingClient && client.release();
     }
   }
 };

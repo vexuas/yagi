@@ -117,7 +117,7 @@ yagi.on('guildCreate', async (guild) => {
 });
 yagi.on('guildDelete', (guild) => {
   try {
-    removeServerDataFromYagi(guild, yagi);
+    //TODO: Add remove guild handler here
   } catch (e) {
     sendErrorLog(yagi, e);
   }
@@ -197,7 +197,7 @@ yagi.on('interactionCreate', async (interaction) => {
 
   if (interaction.isCommand()) {
     const { commandName } = interaction;
-    await appCommands[commandName].execute({ interaction });
+    await appCommands[commandName].execute({ interaction, yagi });
   }
 });
 /**
