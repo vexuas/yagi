@@ -10,7 +10,7 @@ module.exports = {
         fields: [
           {
             name: 'Timer',
-            value: '`goats`',
+            value: '`goats`, `remind`',
           },
           {
             name: 'Information',

@@ -115,31 +115,26 @@ yagi.on('guildDelete', (guild) => {
 //------
 /**
  * Event handler for when a message is sent in a channel that yagi is in
+ * Keeping this in for now for legacy sake and letting users know we've switched over to application commands
+ * TODO: Remove this after a couple of months
  */
 yagi.on('messageCreate', async (message) => {
   const yagiPrefix = defaultPrefix;
   if (message.author.bot) return; //Ignore messages made by yagi
 
+  const embed = {
+    description: `Yagi no longer supports prefix commands and instead uses Slash Commands now.\nFor example: \`${defaultPrefix}goats\` -> \`/goats\`.\n\nTo see the full list of commands, use \`/help\``,
+    color: 32896,
+  };
   try {
-    /**
-     * Yagi checks if messages contains any mentions
-     * If it does and if one of the mentions contains yagi's user, returns a message with the current prefix
-     */
     message.mentions.users.forEach((user) => {
-      //shows current prefix when @
       if (user === yagi.user) {
-        return message.channel.send(
-          'My current prefix is ' +
-            '`' +
-            `${yagiPrefix}` +
-            '`' +
-            '\nTo set a new custom prefix, type ' +
-            ` ${codeBlock(`${yagiPrefix}setprefix`)}`
-        );
+        return message.channel.send({ embeds: [embed] });
       }
     });
     //Ignores messages without a prefix
     if (message.content.startsWith(yagiPrefix)) {
+      return message.channel.send({ embeds: [embed] });
     } else {
       return;
     }
