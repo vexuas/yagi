@@ -7,7 +7,7 @@ const {
   guildIDs,
   defaultPrefix,
 } = require('./config/yagi.json');
-const { getPrefixCommands, getApplicationCommands } = require('./commands');
+const { getApplicationCommands } = require('./commands');
 const yagi = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
@@ -19,22 +19,13 @@ const {
   getServerTime,
   validateWorldBossData,
   sendHealthLog,
-  isInWeeklyMaintenance,
   codeBlock,
 } = require('./helpers');
 const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const {
-  createGuildTable,
-  insertNewGuild,
-  createTimerTable,
-  getCurrentTimer,
-  updateTimer,
-  insertNewTimer,
-} = require('./database');
-const { isBefore } = require('date-fns');
+const { createGuildTable, insertNewGuild } = require('./database');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -48,7 +39,6 @@ const activitylist = [
 ];
 let mixpanel;
 
-const commands = getPrefixCommands();
 const appCommands = getApplicationCommands();
 //----------
 /**
@@ -129,16 +119,7 @@ yagi.on('guildDelete', (guild) => {
 yagi.on('messageCreate', async (message) => {
   const yagiPrefix = defaultPrefix;
   if (message.author.bot) return; //Ignore messages made by yagi
-  //Let users know that they can only use this in channels; sends sent_from_dm data to mixpanel to see if there's adoption for private messaging
-  if (message.channel.type === 'dm') {
-    const guildDM = {
-      id: 'sent_from_dm',
-      name: 'Sent From DM',
-    };
-    message.channel.send('My bad! I only work in server channels ( ≧Д≦)');
-    sendMixpanelEvent(message.author, message.channel, guildDM, '', mixpanel);
-    return;
-  }
+
   try {
     /**
      * Yagi checks if messages contains any mentions
@@ -159,29 +140,6 @@ yagi.on('messageCreate', async (message) => {
     });
     //Ignores messages without a prefix
     if (message.content.startsWith(yagiPrefix)) {
-      const args = message.content.slice(yagiPrefix.length).split(' ', 1); //takes off prefix and returns first word as an array
-      const command = args.shift().toLowerCase(); //gets command as a string from array
-      const arguments = message.content.slice(yagiPrefix.length + command.length + 1); //gets arguments if there are any
-      /**
-       * If command exists in command file, send command reply
-       * Also checks if command has arguments
-       * Else send error message
-       */
-      if (commands[command]) {
-        if (arguments.length > 0 && !commands[command].hasArguments) {
-          await message.channel.send("That command doesn't accept arguments （・□・；）");
-        } else {
-          await commands[command].execute(message, arguments, yagi, commands, yagiPrefix); //Refactor to accept an object instead of passing in each argument
-          sendMixpanelEvent(
-            message.author,
-            message.channel,
-            message.channel.guild,
-            command,
-            mixpanel,
-            arguments
-          ); //Send tracking event to mixpanel
-        }
-      }
     } else {
       return;
     }
@@ -198,6 +156,13 @@ yagi.on('interactionCreate', async (interaction) => {
   if (interaction.isCommand()) {
     const { commandName } = interaction;
     await appCommands[commandName].execute({ interaction, yagi });
+    sendMixpanelEvent({
+      user: interaction.user,
+      channel: interaction.channel,
+      guild: interaction.guild,
+      command: commandName,
+      client: mixpanel,
+    }); //Send tracking event to mixpanel
   }
 });
 /**
