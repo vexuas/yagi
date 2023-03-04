@@ -150,10 +150,14 @@ const serverEmbed = async function designOfEmbedForShowingYagiJoiningAndLeavingS
       {
         name: 'Name',
         value: guild.name,
+        inline: true,
       },
       {
         name: 'Owner',
-        value: await guild.members.fetch(guild.ownerId).then((guildMember) => guildMember.user.tag),
+        value:
+          status === 'join'
+            ? await guild.members.fetch(guild.ownerId).then((guildMember) => guildMember.user.tag)
+            : '-',
         inline: true,
       },
       {
