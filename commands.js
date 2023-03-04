@@ -1,27 +1,3 @@
-/**
- * Command list of yagi
- * Yes I could just use fs and put them in a discord collection
- * But I rather have them written somewhere I can see and refer to easily
- * Putting them in a object inside the bot honestly just makes it confusing
- */
-
-exports.getPrefixCommands = () => {
-  return {
-    // Timer
-    goats: require('./commands/timer/goats'),
-    // Reminder
-    remind: require('./commands/reminder/remind'),
-    // Hub
-    info: require('./commands/hub/info'),
-    help: require('./commands/hub/help'),
-    sheets: require('./commands/hub/sheets'),
-    // ----------
-    // Miscellaneous
-    invite: require('./commands/misc/invite'),
-    loot: require('./commands/misc/loot'),
-    // ----------
-  };
-};
 exports.getApplicationCommands = () => {
   return {
     //Timer
