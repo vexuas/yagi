@@ -29,7 +29,7 @@ exports.getApplicationCommands = () => {
     remind: require('./commands/timer/remind'),
     //Hub
     help: require('./commands/hub/help/index.js'),
-    info: require('./commands/hub/info/index.js'),
+    about: require('./commands/hub/about/index.js'),
     sheets: require('./commands/hub/sheets/index.js'),
     loot: require('./commands/hub/loot'),
     invite: require('./commands/hub/invite'),
