@@ -71,3 +71,20 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
     }
   }
 };
+exports.deleteGuild = async (existingGuild, yagi) => {
+  const client = await pool.connect();
+  if (client) {
+    try {
+      await client.query('BEGIN');
+      const deleteGuildQuery = 'DELETE from Guild WHERE uuid = ($1)';
+      await client.query(deleteGuildQuery, [existingGuild.id]);
+      await client.query('COMMIT');
+      await sendGuildUpdateNotification(yagi, existingGuild, 'leave');
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.log(error);
+    } finally {
+      client.release();
+    }
+  }
+};

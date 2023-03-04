@@ -25,7 +25,7 @@ const { sendMixpanelEvent } = require('./analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { createGuildTable, insertNewGuild } = require('./database');
+const { createGuildTable, insertNewGuild, deleteGuild } = require('./database');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
@@ -105,9 +105,9 @@ yagi.on('guildCreate', async (guild) => {
     sendErrorLog(yagi, e);
   }
 });
-yagi.on('guildDelete', (guild) => {
+yagi.on('guildDelete', async (guild) => {
   try {
-    //TODO: Add remove guild handler here
+    await deleteGuild(guild, yagi);
   } catch (e) {
     sendErrorLog(yagi, e);
   }
