@@ -7,7 +7,7 @@ module.exports = {
   async execute({ interaction }) {
     try {
       const embed = {
-        description: `<@${interaction.user.id}> | [Add me to your servers! (◕ᴗ◕✿)](https://tinyurl.com/yagi-invite)`,
+        description: `<@${interaction.user.id}> | [Add me to your servers! (◕ᴗ◕✿)](https://discord.com/api/oauth2/authorize?client_id=518196430104428579&permissions=805309456&scope=bot)`,
         color: 32896,
       };
       await interaction.reply({ embeds: [embed] });
