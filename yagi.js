@@ -19,7 +19,6 @@ const {
   getServerTime,
   validateWorldBossData,
   sendHealthLog,
-  codeBlock,
 } = require('./utils/helpers');
 const { sendMixpanelEvent } = require('./services/analytics');
 const { AutoPoster } = require('topgg-autoposter');
