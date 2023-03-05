@@ -209,7 +209,7 @@ const capitalize = function formatsFirstCharacterOfStringToUpperCase(string) {
  * Shizuka Test ID - 929421200797626388
  */
 const checkIfInDevelopment = (client) => {
-  return client.user.id === '929421200797626388'; //Yagi's id (Production Bot)
+  return client.user.id === '929421200797626388';
 };
 //----------
 /**

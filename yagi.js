@@ -185,7 +185,8 @@ const registerApplicationCommands = async (yagi) => {
       });
       console.log('Successfully registered guild application commands');
     } else {
-      //TODO: Add global register here
+      await rest.put(Routes.applicationCommands('518196430104428579'), { body: commandList });
+      console.log('Successfully registered global application commands');
     }
   } catch (error) {
     console.log(error);
