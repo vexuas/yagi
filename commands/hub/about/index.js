@@ -38,7 +38,7 @@ module.exports = {
           },
           {
             name: 'Last Update',
-            value: '04-March-2023',
+            value: '05-March-2023',
             inline: true,
           },
           {

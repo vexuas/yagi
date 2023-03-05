@@ -1,6 +1,6 @@
 {
   "name": "yagi",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Vulture's Vale/Blizzard Berg World Boss Timer for Aura Kingdom",
   "main": "yagi.js",
   "author": "Vexuas",
@@ -10,7 +10,7 @@
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
     "auto:release": "yarn auto:changelog && yarn auto:version",
-    "release": "git fetch --tags && git checkout -b release/$(date +'%Y-%m-%d') && yarn auto:release && git push -u origin head"
+    "release": "git fetch --tags --force && git checkout -b release/$(date +'%Y-%m-%d') && yarn auto:release && git push -u origin head"
   },
   "dependencies": {
     "@discordjs/rest": "^1.0.1",

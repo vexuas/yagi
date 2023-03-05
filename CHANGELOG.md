@@ -1,3 +1,23 @@
+# v3.1.0 (Sun Mar 05 2023)
+
+#### 🚀 Enhancement
+
+- Register global application commands [#110](https://github.com/vexuas/yagi/pull/110) ([@vexuas](https://github.com/vexuas))
+- Update invite link for application commands [#109](https://github.com/vexuas/yagi/pull/109) ([@vexuas](https://github.com/vexuas))
+- Add delete guild handlers [#108](https://github.com/vexuas/yagi/pull/108) ([@vexuas](https://github.com/vexuas))
+- Remove prefix commands [#107](https://github.com/vexuas/yagi/pull/107) ([@vexuas](https://github.com/vexuas))
+- Add slash commands [#106](https://github.com/vexuas/yagi/pull/106) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 02 26 [#105](https://github.com/vexuas/yagi/pull/105) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.0.0 (Sun Feb 26 2023)
 
 #### 💥 Breaking Change
