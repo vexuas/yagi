@@ -30,12 +30,10 @@ const { createGuildTable, insertNewGuild, deleteGuild } = require('./database');
 const rest = new REST({ version: '9' }).setToken(token);
 
 const activitylist = [
-  'info | bot information',
-  'ping me for prefix!',
-  'goats | Olympus wb',
-  'help | command list',
-  'setprefix | custom prefix',
-  'v2.7.0 | 11/12/2021',
+  '/about | bot information',
+  '/goats | Olympus wb',
+  '/help | command list',
+  'v3.1.0 | 05/03/2023',
 ];
 let mixpanel;
 
