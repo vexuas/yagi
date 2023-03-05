@@ -123,7 +123,7 @@ yagi.on('messageCreate', async (message) => {
   if (message.author.bot) return; //Ignore messages made by yagi
 
   const embed = {
-    description: `Yagi no longer supports prefix commands and instead uses Slash Commands now.\nFor example: \`${defaultPrefix}goats\` -> \`/goats\`.\n\nTo see the full list of commands, use \`/help\``,
+    description: `Yagi no longer supports prefix commands and instead uses Slash Commands now.\nFor example: \`${defaultPrefix}goats\` -> \`/goats\`.\n\nTo see the full list of commands, use \`/help\`\n\nIf you can't see the commands in your server, [reinvite Yagi with this link](https://discord.com/api/oauth2/authorize?client_id=518196430104428579&permissions=805309456&scope=bot) as it needs extra scope and permissions`,
     color: 32896,
   };
   try {
