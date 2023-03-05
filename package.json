@@ -28,6 +28,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "auto": "^10.13.1"
+    "auto": "^10.13.1",
+    "eslint": "^8.35.0"
   }
 }
