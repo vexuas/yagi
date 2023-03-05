@@ -7,7 +7,7 @@ const {
   formatCountdown,
   formatLocation,
   isInWeeklyMaintenance,
-} = require('../../helpers');
+} = require('../../utils/helpers');
 const {
   format,
   differenceInMilliseconds,

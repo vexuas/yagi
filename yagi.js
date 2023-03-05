@@ -20,7 +20,7 @@ const {
   validateWorldBossData,
   sendHealthLog,
   codeBlock,
-} = require('./helpers');
+} = require('./utils/helpers');
 const { sendMixpanelEvent } = require('./services/analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
