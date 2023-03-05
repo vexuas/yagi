@@ -21,11 +21,11 @@ const {
   sendHealthLog,
   codeBlock,
 } = require('./helpers');
-const { sendMixpanelEvent } = require('./analytics');
+const { sendMixpanelEvent } = require('./services/analytics');
 const { AutoPoster } = require('topgg-autoposter');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { createGuildTable, insertNewGuild, deleteGuild } = require('./database');
+const { createGuildTable, insertNewGuild, deleteGuild } = require('./services/database');
 
 const rest = new REST({ version: '9' }).setToken(token);
 
