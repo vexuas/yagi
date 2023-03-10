@@ -1,25 +1,17 @@
 const { defaultPrefix } = require('../config/yagi.json');
 const { getApplicationCommands } = require('../commands');
-const { deleteGuild } = require('../services/database');
 const { sendErrorLog } = require('../utils/helpers');
 const { sendMixpanelEvent } = require('../services/analytics');
 const anything = require('./ready');
 const anythingTwo = require('./guildCreate');
+const anythingThree = require('./guildDelete');
 
 const appCommands = getApplicationCommands();
 
 exports.registerEventHandlers = ({ yagi, mixpanel }) => {
   anything(yagi, appCommands);
   anythingTwo(yagi);
-  //------
-
-  yagi.on('guildDelete', async (guild) => {
-    try {
-      await deleteGuild(guild, yagi);
-    } catch (e) {
-      sendErrorLog(yagi, e);
-    }
-  });
+  anythingThree(yagi);
   //------
   /**
    * Event handler for when a message is sent in a channel that yagi is in
