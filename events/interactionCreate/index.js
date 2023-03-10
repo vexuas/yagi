@@ -1,6 +1,6 @@
 const { sendMixpanelEvent } = require('../../services/analytics');
 
-module.exports = (yagi, appCommands, mixpanel) => {
+module.exports = ({ yagi, appCommands, mixpanel }) => {
   yagi.on('interactionCreate', async (interaction) => {
     if (!interaction.inGuild()) return; //Only respond in server channels or if it's an actual command
 

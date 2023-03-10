@@ -19,7 +19,7 @@ const activitylist = [
   'v3.1.0 | 05/03/2023',
 ];
 
-module.exports = (yagi, appCommands) => {
+module.exports = ({ yagi, appCommands }) => {
   /**
    * Event handler that fires only once when yagi is done booting up
    * Houses function initialisations such as database creation and activity list randomizer

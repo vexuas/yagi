@@ -1,7 +1,7 @@
 const { insertNewGuild } = require('../../services/database');
 const { sendErrorLog } = require('../../utils/helpers');
 
-module.exports = (yagi) => {
+module.exports = ({ yagi }) => {
   /**
    * Event handlers for when yagi is invited to a new server, when he is kicked or when the guild he is in is updated
    * Sends notification to channel in Yagi's Den

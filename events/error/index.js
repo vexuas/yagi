@@ -1,6 +1,6 @@
 const { sendErrorLog } = require('../../utils/helpers');
 
-module.exports = (yagi) => {
+module.exports = ({ yagi }) => {
   yagi.on('error', (error) => {
     sendErrorLog(yagi, error);
   });

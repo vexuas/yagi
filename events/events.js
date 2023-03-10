@@ -18,7 +18,7 @@ exports.registerEventHandlers = ({ yagi, mixpanel }) => {
         if (file.name === 'index.js') {
           const modulePath = `./${filePath.replace('events', '')}`;
           const currentModule = require(modulePath);
-          currentModule(yagi, appCommands, mixpanel);
+          currentModule({ yagi, appCommands, mixpanel });
         }
       });
     });
