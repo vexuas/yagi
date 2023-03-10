@@ -73,7 +73,6 @@ module.exports = ({ yagi, appCommands }) => {
     const isInDevelopment = checkIfInDevelopment(yagi);
     const commandList = Object.keys(appCommands)
       .map((key) => appCommands[key].data)
-      .filter((command) => command)
       .map((command) => command.toJSON());
 
     try {

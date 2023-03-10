@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { getApplicationCommands } = require('../commands');
+const { getApplicationCommands } = require('../commands/commands');
 const appCommands = getApplicationCommands();
 
 /**
