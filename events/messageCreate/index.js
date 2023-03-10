@@ -1,12 +1,12 @@
 const { defaultPrefix } = require('../../config/yagi.json');
 const { sendErrorLog } = require('../../utils/helpers');
 
+/**
+ * Event handler for when a message is sent in a channel that yagi is in
+ * Keeping this in for now for legacy sake and letting users know we've switched over to application commands
+ * TODO: Remove this after a couple of months
+ */
 module.exports = ({ yagi }) => {
-  /**
-   * Event handler for when a message is sent in a channel that yagi is in
-   * Keeping this in for now for legacy sake and letting users know we've switched over to application commands
-   * TODO: Remove this after a couple of months
-   */
   yagi.on('messageCreate', async (message) => {
     const yagiPrefix = defaultPrefix;
     if (message.author.bot) return; //Ignore messages made by yagi

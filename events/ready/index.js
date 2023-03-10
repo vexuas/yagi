@@ -18,7 +18,7 @@ const activitylist = [
   '/help | command list',
   'v3.1.0 | 05/03/2023',
 ];
-
+//TODO: Refactor these someday
 module.exports = ({ yagi, appCommands }) => {
   /**
    * Event handler that fires only once when yagi is done booting up
