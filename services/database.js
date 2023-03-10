@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 const { databaseConfig } = require('../config/database');
-const { sendGuildUpdateNotification, generateUUID } = require('../helpers');
+const { sendGuildUpdateNotification } = require('../utils/helpers');
 const pool = new Pool(databaseConfig);
 
 exports.createGuildTable = async (guildsOfYagi, yagi) => {

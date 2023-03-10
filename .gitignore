@@ -9,10 +9,6 @@ node_modules
 /config/database.js
 /config/ca-certificate.cer
 
-#database
-/database/yagi.db
-/database/yagi.db-journal
-
 # system files
 .DS_Store
 .env
