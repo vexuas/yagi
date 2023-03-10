@@ -1,12 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { getApplicationCommands } = require('../commands');
-const anything = require('./ready');
-const anythingTwo = require('./guildCreate');
-const anythingThree = require('./guildDelete');
-const anythingFour = require('./messageCreate');
-const anythingFive = require('./error');
-const anythingSix = require('./interactionCreate');
 
 const appCommands = getApplicationCommands();
 
@@ -22,17 +16,12 @@ exports.registerEventHandlers = ({ yagi, mixpanel }) => {
           return loadModules(filePath);
         }
         if (file.name === 'index.js') {
-          console.log('wtf');
+          const modulePath = `./${filePath.replace('events', '')}`;
+          const currentModule = require(modulePath);
+          currentModule(yagi, appCommands, mixpanel);
         }
       });
     });
   };
   loadModules('./events');
-
-  anything(yagi, appCommands);
-  anythingTwo(yagi);
-  anythingThree(yagi);
-  anythingFour(yagi);
-  anythingFive(yagi);
-  anythingSix(yagi, appCommands, mixpanel);
 };
