@@ -1,3 +1,5 @@
+const { WebhookClient } = require('discord.js');
+const { webhooks } = require('../../config/yagi.json');
 const { insertNewGuild } = require('../../services/database');
 const { sendErrorLog } = require('../../utils/helpers');
 
@@ -9,6 +11,13 @@ module.exports = ({ yagi }) => {
   yagi.on('guildCreate', async (guild) => {
     try {
       await insertNewGuild(guild, yagi);
+      const notificationWebhook = new WebhookClient({ url: webhooks.guildNotifcation.devURL });
+      await notificationWebhook.send({
+        content: 'this is a guild notification',
+        username: 'Yagi Server Notificaiton',
+        avatarURL:
+          'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
+      });
     } catch (e) {
       sendErrorLog(yagi, e);
     }

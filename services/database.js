@@ -61,7 +61,7 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
         newGuild.ownerId,
       ]);
       await client.query('COMMIT');
-      await sendGuildUpdateNotification(yagi, newGuild, 'join');
+      // await sendGuildUpdateNotification(yagi, newGuild, 'join');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
