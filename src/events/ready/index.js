@@ -9,7 +9,7 @@ const {
   validateWorldBossData,
   sendHealthLog,
   checkIfInDevelopment,
-} = require('../../../utils/helpers');
+} = require('../../utils/helpers');
 
 const rest = new REST({ version: '9' }).setToken(token);
 const activitylist = [

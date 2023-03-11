@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { validateWorldBossData } = require('../utils/helpers');
+const { validateWorldBossData } = require('../src/utils/helpers');
 
 describe('validateWorldBossData', function () {
   describe('when sheet is updated', function () {

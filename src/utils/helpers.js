@@ -20,8 +20,8 @@ const {
   isWednesday,
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
-const { currentOffset } = require('../config/offset.json');
-const { api } = require('../config/yagi.json');
+const { currentOffset } = require('../../config/offset.json');
+const { api } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const grvAcnt = '`';

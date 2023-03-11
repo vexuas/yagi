@@ -1,5 +1,5 @@
 const { defaultPrefix } = require('../../../config/yagi.json');
-const { sendErrorLog } = require('../../../utils/helpers');
+const { sendErrorLog } = require('../../utils/helpers');
 
 /**
  * Event handler for when a message is sent in a channel that yagi is in

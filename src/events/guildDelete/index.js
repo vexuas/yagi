@@ -1,7 +1,7 @@
 const { WebhookClient } = require('discord.js');
 const { webhooks } = require('../../../config/yagi.json');
 const { deleteGuild } = require('../../../services/database');
-const { sendErrorLog, serverEmbed } = require('../../../utils/helpers');
+const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
 
 /**
  * Event handlers for when yagi is kickined from a server
