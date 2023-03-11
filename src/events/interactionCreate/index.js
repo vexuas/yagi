@@ -1,4 +1,4 @@
-const { sendMixpanelEvent } = require('../../../services/analytics');
+const { sendMixpanelEvent } = require('../../services/analytics');
 
 module.exports = ({ yagi, appCommands, mixpanel }) => {
   yagi.on('interactionCreate', async (interaction) => {
