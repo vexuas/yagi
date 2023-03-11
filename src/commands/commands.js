@@ -13,7 +13,6 @@ exports.getApplicationCommands = () => {
     const files = fs.readdirSync(directoryPath, { withFileTypes: true });
     files.forEach((file) => {
       const filePath = path.join(directoryPath, file.name);
-      console.log(filePath);
       if (file.isDirectory()) {
         return loadModules(filePath);
       }
@@ -24,6 +23,5 @@ exports.getApplicationCommands = () => {
     });
   };
   loadModules('./src/commands');
-  console.log(appCommands);
   return appCommands;
 };
