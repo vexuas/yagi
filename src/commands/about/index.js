@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { format } = require('date-fns');
-const package = require('../../package.json');
+const package = require('../../../package.json');
 
 module.exports = {
   data: new SlashCommandBuilder()

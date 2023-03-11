@@ -5,7 +5,7 @@ const yagi = new Discord.Client({
 });
 const Mixpanel = require('mixpanel');
 const { AutoPoster } = require('topgg-autoposter');
-const { registerEventHandlers } = require('./events/events.js');
+const { registerEventHandlers } = require('./src/events/events.js');
 const { checkIfInDevelopment } = require('./utils/helpers');
 let mixpanel;
 

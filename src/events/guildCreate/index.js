@@ -1,7 +1,7 @@
 const { WebhookClient } = require('discord.js');
-const { webhooks } = require('../../config/yagi.json');
-const { insertNewGuild } = require('../../services/database');
-const { sendErrorLog, serverEmbed, checkIfInDevelopment } = require('../../utils/helpers');
+const { webhooks } = require('../../../config/yagi.json');
+const { insertNewGuild } = require('../../../services/database');
+const { sendErrorLog, serverEmbed, checkIfInDevelopment } = require('../../../utils/helpers');
 
 /**
  * Event handlers for when yagi is invited to a new server

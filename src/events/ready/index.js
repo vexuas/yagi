@@ -1,7 +1,7 @@
-const { token, guildIDs } = require('../../config/yagi.json');
+const { token, guildIDs } = require('../../../config/yagi.json');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { createGuildTable } = require('../../services/database');
+const { createGuildTable } = require('../../../services/database');
 const {
   sendErrorLog,
   getWorldBossData,
@@ -9,7 +9,7 @@ const {
   validateWorldBossData,
   sendHealthLog,
   checkIfInDevelopment,
-} = require('../../utils/helpers');
+} = require('../../../utils/helpers');
 
 const rest = new REST({ version: '9' }).setToken(token);
 const activitylist = [

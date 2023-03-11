@@ -13,15 +13,17 @@ exports.getApplicationCommands = () => {
     const files = fs.readdirSync(directoryPath, { withFileTypes: true });
     files.forEach((file) => {
       const filePath = path.join(directoryPath, file.name);
+      console.log(filePath);
       if (file.isDirectory()) {
         return loadModules(filePath);
       }
       if (file.name === 'index.js') {
-        const modulePath = `./${filePath.replace('commands/', '')}`;
-        appCommands[directoryPath.replace('commands/', '')] = require(modulePath);
+        const modulePath = `./${filePath.replace('src/commands/', '')}`;
+        appCommands[directoryPath.replace('src/commands/', '')] = require(modulePath);
       }
     });
   };
-  loadModules('./commands');
+  loadModules('./src/commands');
+  console.log(appCommands);
   return appCommands;
 };

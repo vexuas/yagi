@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { validateSpawn } = require('../commands/goats');
+const { validateSpawn } = require('../src/commands/goats');
 
 describe('goats', function () {
   describe('validateSpawn', function () {

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { api } = require('../../config/yagi.json');
+const { api } = require('../../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const {
@@ -7,7 +7,7 @@ const {
   formatCountdown,
   formatLocation,
   isInWeeklyMaintenance,
-} = require('../../utils/helpers');
+} = require('../../../utils/helpers');
 const {
   format,
   differenceInMilliseconds,
