@@ -6,7 +6,7 @@
   "author": "Vexuas",
   "scripts": {
     "test": "mocha",
-    "start": "yarn nodemon yagi.js",
+    "start": "yarn nodemon src/yagi.js",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
     "auto:release": "yarn auto:changelog && yarn auto:version",

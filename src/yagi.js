@@ -1,12 +1,12 @@
 const Discord = require('discord.js');
-const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('./config/yagi.json');
+const { token, bisoMixpanel, yagiMixpanel, topggToken } = require('../config/yagi.json');
 const yagi = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
 const Mixpanel = require('mixpanel');
 const { AutoPoster } = require('topgg-autoposter');
-const { registerEventHandlers } = require('./src/events/events.js');
-const { checkIfInDevelopment } = require('./src/utils/helpers');
+const { registerEventHandlers } = require('./events/events.js');
+const { checkIfInDevelopment } = require('./utils/helpers');
 let mixpanel;
 
 //----------
