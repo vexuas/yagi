@@ -1,4 +1,4 @@
-const { token, guildIDs } = require('../../../config/yagi.json');
+const { token, guildIDs } = require('../../config/yagi.json');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { createGuildTable } = require('../../services/database');

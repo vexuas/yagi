@@ -1,4 +1,4 @@
-const { defaultPrefix } = require('../../../config/yagi.json');
+const { defaultPrefix } = require('../../config/yagi.json');
 const { sendErrorLog } = require('../../utils/helpers');
 
 /**

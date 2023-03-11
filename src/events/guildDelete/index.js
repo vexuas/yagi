@@ -1,5 +1,5 @@
 const { WebhookClient } = require('discord.js');
-const { webhooks } = require('../../../config/yagi.json');
+const { webhooks } = require('../../config/yagi.json');
 const { deleteGuild } = require('../../services/database');
 const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
 
