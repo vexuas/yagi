@@ -12,7 +12,11 @@ module.exports = ({ yagi }) => {
     try {
       await deleteGuild(guild, yagi);
       const embed = await serverEmbed(yagi, guild, 'leave');
-      const notificationWebhook = new WebhookClient({ url: webhooks.guildNotifcation.devURL });
+      const notificationWebhook = new WebhookClient({
+        url: checkIfInDevelopment(yagi)
+          ? webhooks.guildNotifcation.devURL
+          : webhooks.guildNotifcation.prodURL,
+      });
       await notificationWebhook.send({
         embeds: [embed],
         username: 'Yagi Server Notificaiton',
