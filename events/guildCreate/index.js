@@ -10,7 +10,7 @@ const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
 module.exports = ({ yagi }) => {
   yagi.on('guildCreate', async (guild) => {
     try {
-      await insertNewGuild(guild, yagi);
+      await insertNewGuild(guild);
       const embed = await serverEmbed(yagi, guild, 'join');
       const notificationWebhook = new WebhookClient({ url: webhooks.guildNotifcation.devURL });
       await notificationWebhook.send({

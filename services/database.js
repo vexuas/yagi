@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 const { databaseConfig } = require('../config/database');
-const { sendGuildUpdateNotification } = require('../utils/helpers');
 const pool = new Pool(databaseConfig);
 
 exports.createGuildTable = async (guildsOfYagi, yagi) => {
@@ -47,7 +46,7 @@ exports.getGuilds = async () => {
     }
   }
 };
-exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
+exports.insertNewGuild = async (newGuild, existingClient) => {
   let client = existingClient ? existingClient : await pool.connect();
   if (client) {
     try {
@@ -61,7 +60,6 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
         newGuild.ownerId,
       ]);
       await client.query('COMMIT');
-      // await sendGuildUpdateNotification(yagi, newGuild, 'join');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
@@ -71,7 +69,7 @@ exports.insertNewGuild = async (newGuild, yagi, existingClient) => {
     }
   }
 };
-exports.deleteGuild = async (existingGuild, yagi) => {
+exports.deleteGuild = async (existingGuild) => {
   const client = await pool.connect();
   if (client) {
     try {
@@ -79,7 +77,6 @@ exports.deleteGuild = async (existingGuild, yagi) => {
       const deleteGuildQuery = 'DELETE from Guild WHERE uuid = ($1)';
       await client.query(deleteGuildQuery, [existingGuild.id]);
       await client.query('COMMIT');
-      await sendGuildUpdateNotification(yagi, existingGuild, 'leave');
     } catch (error) {
       await client.query('ROLLBACK');
       console.log(error);
