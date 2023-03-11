@@ -21,12 +21,12 @@ exports.registerEventHandlers = ({ yagi, mixpanel }) => {
           return loadModules(filePath);
         }
         if (file.name === 'index.js') {
-          const modulePath = `./${filePath.replace('events', '')}`;
+          const modulePath = `./${filePath.replace('src/events', '')}`;
           const currentModule = require(modulePath);
           currentModule({ yagi, appCommands, mixpanel });
         }
       });
     });
   };
-  loadModules('./events');
+  loadModules('./src/events');
 };
