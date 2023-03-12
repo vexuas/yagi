@@ -4,10 +4,9 @@
 node_modules
 
 # config
-src/config/yagi.json
-src/config/psa.json
 src/config/database.js
 src/config/ca-certificate.cer
+src/config/environment.js
 
 # system files
 .DS_Store

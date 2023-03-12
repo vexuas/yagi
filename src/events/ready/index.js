@@ -1,4 +1,3 @@
-const { token, guildIDs } = require('../../config/yagi.json');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { createGuildTable } = require('../../services/database');
@@ -10,8 +9,9 @@ const {
   sendHealthLog,
   checkIfInDevelopment,
 } = require('../../utils/helpers');
+const { BOT_TOKEN, GUILD_IDS } = require('../../config/environment');
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: '9' }).setToken(BOT_TOKEN);
 const activitylist = [
   '/about | bot information',
   '/goats | Olympus wb',
@@ -77,7 +77,7 @@ module.exports = ({ yagi, appCommands }) => {
 
     try {
       if (isInDevelopment) {
-        await rest.put(Routes.applicationGuildCommands('929421200797626388', guildIDs), {
+        await rest.put(Routes.applicationGuildCommands('929421200797626388', GUILD_IDS), {
           body: commandList,
         });
         console.log('Successfully registered guild application commands');

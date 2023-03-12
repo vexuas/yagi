@@ -21,8 +21,8 @@ const {
 } = require('date-fns');
 const { v4: uuidv4 } = require('uuid');
 const { currentOffset } = require('../config/offset.json');
-const { api } = require('../config/yagi.json');
 const { google } = require('googleapis');
+const { GOOGLE_CLIENT_ID } = require('../config/environment');
 const sheets = google.sheets('v4');
 const grvAcnt = '`';
 
@@ -261,7 +261,7 @@ const generateUUID = () => {
  * auth: an authenticated token you can get from google's sheet api; as the sheet is public you can pretty much use any
  */
 const getWorldBossData = async () => {
-  const authClient = api;
+  const authClient = GOOGLE_CLIENT_ID;
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
