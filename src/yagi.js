@@ -7,8 +7,10 @@ const Mixpanel = require('mixpanel');
 const { AutoPoster } = require('topgg-autoposter');
 const { registerEventHandlers } = require('./events/events.js');
 const { checkIfInDevelopment } = require('./utils/helpers');
+const { defaultPrefix } = require('./config/environment');
 let mixpanel;
 
+console.log(defaultPrefix);
 //----------
 /**
  * Initialize yagi to log in and establish a connection to Discord
