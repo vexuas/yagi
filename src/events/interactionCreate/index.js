@@ -7,13 +7,14 @@ module.exports = ({ yagi, appCommands, mixpanel }) => {
     if (interaction.isCommand()) {
       const { commandName } = interaction;
       await appCommands[commandName].execute({ interaction, yagi });
-      sendMixpanelEvent({
-        user: interaction.user,
-        channel: interaction.channel,
-        guild: interaction.guild,
-        command: commandName,
-        client: mixpanel,
-      }); //Send tracking event to mixpanel
+      mixpanel &&
+        sendMixpanelEvent({
+          user: interaction.user,
+          channel: interaction.channel,
+          guild: interaction.guild,
+          command: commandName,
+          client: mixpanel,
+        }); //Send tracking event to mixpanel
     }
   });
 };

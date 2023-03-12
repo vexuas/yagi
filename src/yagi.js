@@ -14,9 +14,13 @@ const { isEmpty } = require('lodash');
  * Wrapped in an async function as we want to wait for the promise to end so that our mixpanel instance knows which project to initialize in
  */
 const initialize = async () => {
-  await yagi.login(BOT_TOKEN);
-  const mixpanel = Mixpanel.init(MIXPANEL_ID);
-  !isEmpty(TOP_GG_TOKEN) && AutoPoster(TOP_GG_TOKEN, yagi);
-  registerEventHandlers({ yagi, mixpanel });
+  try {
+    await yagi.login(BOT_TOKEN);
+    const mixpanel = MIXPANEL_ID && !isEmpty(MIXPANEL_ID) && Mixpanel.init(MIXPANEL_ID);
+    TOP_GG_TOKEN && !isEmpty(TOP_GG_TOKEN) && AutoPoster(TOP_GG_TOKEN, yagi);
+    registerEventHandlers({ yagi, mixpanel });
+  } catch (error) {
+    console.log(error);
+  }
 };
 initialize();
