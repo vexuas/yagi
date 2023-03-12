@@ -8,6 +8,7 @@
     "test": "mocha",
     "start": "yarn nodemon src/yagi.js",
     "start:prod": "BOT_ENV=prod yarn nodemon src/yagi.js",
+    "build": "tsc",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
     "auto:release": "yarn auto:changelog && yarn auto:version",
