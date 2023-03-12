@@ -6,6 +6,7 @@ const Mixpanel = require('mixpanel');
 const { AutoPoster } = require('topgg-autoposter');
 const { registerEventHandlers } = require('./events/events.js');
 const { BOT_TOKEN, MIXPANEL_ID, TOP_GG_TOKEN } = require('./config/environment');
+const { isEmpty } = require('lodash');
 
 //----------
 /**
@@ -15,7 +16,7 @@ const { BOT_TOKEN, MIXPANEL_ID, TOP_GG_TOKEN } = require('./config/environment')
 const initialize = async () => {
   await yagi.login(BOT_TOKEN);
   const mixpanel = Mixpanel.init(MIXPANEL_ID);
-  TOP_GG_TOKEN.length !== 0 && AutoPoster(TOP_GG_TOKEN, yagi);
+  !isEmpty(TOP_GG_TOKEN) && AutoPoster(TOP_GG_TOKEN, yagi);
   registerEventHandlers({ yagi, mixpanel });
 };
 initialize();

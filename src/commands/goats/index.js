@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { api } = require('../../config/yagi.json');
 const { google } = require('googleapis');
 const sheets = google.sheets('v4');
 const {
@@ -19,6 +18,7 @@ const {
   startOfDay,
   endOfDay,
 } = require('date-fns');
+const { GOOGLE_CLIENT_ID } = require('../../config/environment');
 //----------
 /**
  * GET request to spreadsheet for values
@@ -32,7 +32,7 @@ const getWorldBossData = async function requestToExternalSpreadsheetAndReturnRea
   interaction,
   sendMessageCallback
 ) {
-  const authClient = api;
+  const authClient = GOOGLE_CLIENT_ID;
   const request = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 

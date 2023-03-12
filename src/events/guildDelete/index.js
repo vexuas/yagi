@@ -1,5 +1,5 @@
 const { WebhookClient } = require('discord.js');
-const { webhooks } = require('../../config/yagi.json');
+const { GUILD_NOTIFICATION_WEBHOOK_URL } = require('../../config/environment');
 const { deleteGuild } = require('../../services/database');
 const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
 
@@ -12,11 +12,7 @@ module.exports = ({ yagi }) => {
     try {
       await deleteGuild(guild, yagi);
       const embed = await serverEmbed(yagi, guild, 'leave');
-      const notificationWebhook = new WebhookClient({
-        url: checkIfInDevelopment(yagi)
-          ? webhooks.guildNotifcation.devURL
-          : webhooks.guildNotifcation.prodURL,
-      });
+      const notificationWebhook = new WebhookClient({ url: GUILD_NOTIFICATION_WEBHOOK_URL });
       await notificationWebhook.send({
         embeds: [embed],
         username: 'Yagi Server Notificaiton',

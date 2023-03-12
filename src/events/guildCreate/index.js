@@ -1,7 +1,7 @@
 const { WebhookClient } = require('discord.js');
-const { webhooks } = require('../../config/yagi.json');
+const { GUILD_NOTIFICATION_WEBHOOK_URL } = require('../../config/environment');
 const { insertNewGuild } = require('../../services/database');
-const { sendErrorLog, serverEmbed, checkIfInDevelopment } = require('../../utils/helpers');
+const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
 
 /**
  * Event handlers for when yagi is invited to a new server
@@ -12,11 +12,7 @@ module.exports = ({ yagi }) => {
     try {
       await insertNewGuild(guild);
       const embed = await serverEmbed(yagi, guild, 'join');
-      const notificationWebhook = new WebhookClient({
-        url: checkIfInDevelopment(yagi)
-          ? webhooks.guildNotifcation.devURL
-          : webhooks.guildNotifcation.prodURL,
-      });
+      const notificationWebhook = new WebhookClient({ url: GUILD_NOTIFICATION_WEBHOOK_URL });
       await notificationWebhook.send({
         embeds: [embed],
         username: 'Yagi Server Notificaiton',

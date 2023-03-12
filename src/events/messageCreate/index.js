@@ -1,4 +1,4 @@
-const { defaultPrefix } = require('../../config/yagi.json');
+const { DEFAULT_PREFIX } = require('../../config/environment');
 const { sendErrorLog } = require('../../utils/helpers');
 
 /**
@@ -8,7 +8,7 @@ const { sendErrorLog } = require('../../utils/helpers');
  */
 module.exports = ({ yagi }) => {
   yagi.on('messageCreate', async (message) => {
-    const yagiPrefix = defaultPrefix;
+    const yagiPrefix = DEFAULT_PREFIX;
     if (message.author.bot) return; //Ignore messages made by yagi
 
     const embed = {
