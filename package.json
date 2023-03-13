@@ -6,8 +6,8 @@
   "author": "Vexuas",
   "scripts": {
     "test": "mocha",
-    "start": "yarn nodemon src/yagi.js",
-    "start:prod": "BOT_ENV=prod yarn nodemon src/yagi.js",
+    "start": "yarn build && yarn nodemon dist/yagi.js",
+    "start:prod": "yarn build && BOT_ENV=prod yarn nodemon dist/yagi.js",
     "build": "tsc",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
