@@ -6,8 +6,9 @@
   "author": "Vexuas",
   "scripts": {
     "test": "mocha",
-    "start": "yarn build && yarn nodemon dist/yagi.js",
-    "start:prod": "yarn build && BOT_ENV=prod yarn nodemon dist/yagi.js",
+    "start": "yarn prebuild && yarn build && yarn nodemon dist/yagi.js",
+    "start:prod": "yarn prebuild && yarn build && BOT_ENV=prod yarn nodemon dist/yagi.js",
+    "prebuild": "node -p \"'exports.BOT_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "tsc",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",

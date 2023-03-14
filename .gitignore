@@ -3,6 +3,9 @@
 # dependencies
 node_modules
 
+# Compiled files
+dist
+
 # config
 src/config/database.js
 src/config/ca-certificate.cer

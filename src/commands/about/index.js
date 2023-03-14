@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { format } = require('date-fns');
-const package = require('../../../package.json');
+const { BOT_VERSION } = require('../../version');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -28,7 +28,7 @@ module.exports = {
           },
           {
             name: 'Version',
-            value: package.version,
+            value: BOT_VERSION,
             inline: true,
           },
           {
