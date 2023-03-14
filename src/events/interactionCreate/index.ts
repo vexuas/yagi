@@ -1,13 +1,8 @@
-import { CacheType, Client, Interaction } from 'discord.js';
-import { Mixpanel } from 'mixpanel';
+import { CacheType, Interaction } from 'discord.js';
 import { sendMixpanelEvent } from '../../services/analytics';
+import { EventModule } from '../events';
 
-interface Props {
-  yagi: Client;
-  appCommands: any;
-  mixpanel: Mixpanel;
-}
-export default function ({ yagi, appCommands, mixpanel }: Props) {
+export default function ({ yagi, appCommands, mixpanel }: EventModule) {
   yagi.on('interactionCreate', async (interaction: Interaction<CacheType>) => {
     if (!interaction.inGuild()) return; //Only respond in server channels or if it's an actual command
 

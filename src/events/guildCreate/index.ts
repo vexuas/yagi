@@ -1,15 +1,16 @@
-const { WebhookClient } = require('discord.js');
-const { isEmpty } = require('lodash');
-const { GUILD_NOTIFICATION_WEBHOOK_URL } = require('../../config/environment');
-const { insertNewGuild } = require('../../services/database');
-const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
+import { Client, Guild, WebhookClient } from 'discord.js';
+import { isEmpty } from 'lodash';
+import { GUILD_NOTIFICATION_WEBHOOK_URL } from '../../config/environment';
+import { insertNewGuild } from '../../services/database';
+import { sendErrorLog, serverEmbed } from '../../utils/helpers';
+import { EventModule } from '../events';
 
 /**
  * Event handlers for when yagi is invited to a new server
  * Creates a guild record in our database and sends notification to channel in Yagi's Den
  */
-module.exports = ({ yagi }) => {
-  yagi.on('guildCreate', async (guild) => {
+export default function ({ yagi }: EventModule) {
+  yagi.on('guildCreate', async (guild: Guild) => {
     try {
       await insertNewGuild(guild);
       if (GUILD_NOTIFICATION_WEBHOOK_URL && !isEmpty(GUILD_NOTIFICATION_WEBHOOK_URL)) {
@@ -26,4 +27,4 @@ module.exports = ({ yagi }) => {
       sendErrorLog(yagi, e);
     }
   });
-};
+}
