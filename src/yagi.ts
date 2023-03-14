@@ -1,12 +1,14 @@
-const Discord = require('discord.js');
-const yagi = new Discord.Client({
-  intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+import { Client, Intents } from 'discord.js';
+
+import Mixpanel from 'mixpanel';
+import { AutoPoster } from 'topgg-autoposter';
+import { registerEventHandlers } from './events/events';
+import { BOT_TOKEN, MIXPANEL_ID, TOP_GG_TOKEN } from './config/environment';
+import { isEmpty } from 'lodash';
+
+const yagi: Client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
-const Mixpanel = require('mixpanel');
-const { AutoPoster } = require('topgg-autoposter');
-const { registerEventHandlers } = require('./events/events.js');
-const { BOT_TOKEN, MIXPANEL_ID, TOP_GG_TOKEN } = require('./config/environment');
-const { isEmpty } = require('lodash');
 
 //----------
 /**
