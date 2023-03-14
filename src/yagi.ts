@@ -1,5 +1,4 @@
 import { Client, Intents } from 'discord.js';
-
 import Mixpanel from 'mixpanel';
 import { AutoPoster } from 'topgg-autoposter';
 import { registerEventHandlers } from './events/events';
@@ -10,10 +9,10 @@ const yagi: Client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
 
-//----------
 /**
- * Initialize yagi to log in and establish a connection to Discord
- * Wrapped in an async function as we want to wait for the promise to end so that our mixpanel instance knows which project to initialize in
+ * Entry point for yagi or any discord bot in general
+ * We want to create a discordjs Client which is the main hub for interacting with the Discord API
+ * We then login using our bot's token to establish a connection with Discord
  */
 const initialize = async () => {
   try {
