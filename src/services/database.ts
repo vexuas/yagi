@@ -1,9 +1,17 @@
-const { Pool } = require('pg');
-const { databaseConfig } = require('../config/database');
-const pool = new Pool(databaseConfig);
+import { Collection, Guild } from 'discord.js';
+import { Pool, PoolClient } from 'pg';
+import { databaseConfig } from '../config/database';
+const pool: Pool = new Pool(databaseConfig);
 
-exports.createGuildTable = async (guildsOfYagi, yagi) => {
-  const client = await pool.connect();
+type GuildRecord = {
+  uuid: string;
+  name: string;
+  member_count: number;
+  owner_id: string;
+};
+
+export async function createGuildTable(guildsOfYagi: Collection<string, Guild>) {
+  const client: PoolClient = await pool.connect();
   if (client) {
     try {
       await client.query('BEGIN');
@@ -11,12 +19,13 @@ exports.createGuildTable = async (guildsOfYagi, yagi) => {
         'CREATE TABLE IF NOT EXISTS Guild(uuid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, member_count INTEGER NOT NULL, owner_id TEXT NOT NULL)';
       await client.query(createGuildTableQuery);
 
-      const guildsInDatabase = await this.getGuilds();
-      guildsOfYagi.forEach(async (guild) => {
+      const guildsInDatabase = await getGuilds();
+      guildsOfYagi.forEach(async (guild: Guild) => {
         const isInDatabase =
-          guildsInDatabase && guildsInDatabase.rows.find((guildDb) => guildDb.uuid === guild.id);
+          guildsInDatabase &&
+          guildsInDatabase.rows.find((guildDb: GuildRecord) => guildDb.uuid === guild.id);
         if (!isInDatabase) {
-          await this.insertNewGuild(guild, yagi, client);
+          await insertNewGuild(guild, client);
         }
       });
       await client.query('COMMIT');
@@ -28,9 +37,9 @@ exports.createGuildTable = async (guildsOfYagi, yagi) => {
       client.release();
     }
   }
-};
-exports.getGuilds = async () => {
-  const client = await pool.connect();
+}
+export async function getGuilds() {
+  const client: PoolClient = await pool.connect();
   if (client) {
     try {
       await client.query('BEGIN');
@@ -45,9 +54,9 @@ exports.getGuilds = async () => {
       client.release();
     }
   }
-};
-exports.insertNewGuild = async (newGuild, existingClient) => {
-  let client = existingClient ? existingClient : await pool.connect();
+}
+export async function insertNewGuild(newGuild: Guild, existingClient: PoolClient) {
+  let client: PoolClient = existingClient ? existingClient : await pool.connect();
   if (client) {
     try {
       await client.query('BEGIN');
@@ -68,9 +77,9 @@ exports.insertNewGuild = async (newGuild, existingClient) => {
       !existingClient && client.release();
     }
   }
-};
-exports.deleteGuild = async (existingGuild) => {
-  const client = await pool.connect();
+}
+export async function deleteGuild(existingGuild: Guild) {
+  const client: PoolClient = await pool.connect();
   if (client) {
     try {
       await client.query('BEGIN');
@@ -84,4 +93,4 @@ exports.deleteGuild = async (existingGuild) => {
       client.release();
     }
   }
-};
+}

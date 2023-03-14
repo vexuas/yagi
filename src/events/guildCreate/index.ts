@@ -1,4 +1,4 @@
-import { Client, Guild, WebhookClient } from 'discord.js';
+import { Guild, WebhookClient } from 'discord.js';
 import { isEmpty } from 'lodash';
 import { GUILD_NOTIFICATION_WEBHOOK_URL } from '../../config/environment';
 import { insertNewGuild } from '../../services/database';
