@@ -1,12 +1,13 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { AppCommand, AppCommandOptions } from '../commands';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 //TODO: Rename this to status
 //TODO: Refactor remind functionality
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('remind')
     .setDescription('Displays information on setting up automatic goat updates'),
-  async execute({ interaction }) {
+  async execute({ interaction }: AppCommandOptions) {
     try {
       const embed = {
         title: 'Reminder',
@@ -19,4 +20,4 @@ module.exports = {
       console.log(error);
     }
   },
-};
+} as AppCommand;
