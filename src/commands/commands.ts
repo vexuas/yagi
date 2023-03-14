@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { Client, CommandInteraction} from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 /**
@@ -18,7 +19,14 @@ export type AppCommands = {
 };
 export type AppCommand = {
   data: SlashCommandBuilder;
-  execute: () => void;
+  execute: (data: AppCommandOptions) => void;
+};
+export type AppCommandOptions = {
+  interaction: CommandInteraction;
+  yagi?: Client;
+};
+type ExportedAppCommand = {
+  default: AppCommand;
 };
 export function getApplicationCommands(): AppCommands {
   const appCommands: AppCommands = {};
@@ -31,9 +39,9 @@ export function getApplicationCommands(): AppCommands {
       }
       if (file.name === 'index.js') {
         const modulePath = `./${filePath.replace('dist/commands/', '')}`;
-        appCommands[
-          directoryPath.replace('dist/commands/', '') as keyof AppCommands
-        ] = require(modulePath);
+        const currentModule = require(modulePath) as ExportedAppCommand;
+        appCommands[directoryPath.replace('dist/commands/', '') as keyof AppCommands] =
+          currentModule.default;
       }
     });
   };
