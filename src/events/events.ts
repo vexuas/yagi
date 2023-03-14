@@ -22,18 +22,19 @@ export function registerEventHandlers({ yagi, mixpanel }: Props): void {
       if (error) {
         console.log(error);
       }
-      files.forEach((file) => {
-        const filePath = path.join(directoryPath, file.name);
-        if (file.isDirectory()) {
-          return loadModules(filePath);
-        }
-        if (file.name === 'index.js') {
-          const modulePath = `./${filePath.replace('src/events', '')}`;
-          const currentModule = require(modulePath);
-          currentModule({ yagi, appCommands, mixpanel });
-        }
-      });
+      files &&
+        files.forEach((file) => {
+          const filePath = path.join(directoryPath, file.name);
+          if (file.isDirectory()) {
+            return loadModules(filePath);
+          }
+          if (file.name === 'index.js') {
+            const modulePath = `.${filePath.replace('dist/events', '')}`;
+            const currentModule = require(modulePath);
+            currentModule({ yagi, appCommands, mixpanel });
+          }
+        });
     });
   };
-  loadModules('./src/events');
+  loadModules('./dist/events');
 }

@@ -1,25 +1,31 @@
-const { Routes } = require('discord-api-types/v9');
-const { REST } = require('@discordjs/rest');
-const { createGuildTable } = require('../../services/database');
-const {
+import { AnyChannel, Client, TextBasedChannel } from 'discord.js';
+import { Routes } from 'discord-api-types/v9';
+import { REST } from '@discordjs/rest';
+import { createGuildTable } from '../../services/database';
+import {
   sendErrorLog,
   getWorldBossData,
   getServerTime,
   validateWorldBossData,
   sendHealthLog,
   checkIfInDevelopment,
-} = require('../../utils/helpers');
-const { BOT_TOKEN, GUILD_IDS } = require('../../config/environment');
+} from '../../utils/helpers';
+import { BOT_TOKEN, GUILD_IDS } from '../../config/environment';
 
-const rest = new REST({ version: '9' }).setToken(BOT_TOKEN);
-const activitylist = [
+const rest: REST = new REST({ version: '9' }).setToken(BOT_TOKEN);
+const activitylist: string[] = [
   '/about | bot information',
   '/goats | Olympus wb',
   '/help | command list',
   'v3.1.0 | 05/03/2023',
 ];
+
 //TODO: Refactor these someday
-module.exports = ({ yagi, appCommands }) => {
+interface Props {
+  yagi: Client;
+  appCommands: any;
+}
+export default function ({ yagi, appCommands }: Props) {
   /**
    * Event handler that fires only once when yagi is done booting up
    * Houses function initialisations such as database creation and activity list randomizer
@@ -27,8 +33,10 @@ module.exports = ({ yagi, appCommands }) => {
   yagi.once('ready', async () => {
     try {
       await registerApplicationCommands(yagi);
-      const testChannel = yagi.channels.cache.get('582213795942891521');
-      testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
+      const testChannel: AnyChannel | undefined = yagi.channels.cache.get(
+        '582213795942891521'
+      ) as TextBasedChannel;
+      testChannel && testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
       /**
        * Initial call to the Olympus spreadsheet and get world boss data
        * As the public sheet isn't accurate with the timestamps given (only returns time and not date), we validate the data first. See more info in the helpers file
@@ -47,10 +55,10 @@ module.exports = ({ yagi, appCommands }) => {
        * Changes Yagi's activity every 2 minutes on random
        * Starts on the first index of the activityList array and then sets to a different one after
        */
-      yagi.user.setActivity(activitylist[0]);
+      yagi.user && yagi.user.setActivity(activitylist[0]);
       setInterval(() => {
         const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
-        yagi.user.setActivity(activitylist[index]);
+        yagi.user && yagi.user.setActivity(activitylist[index]);
       }, 120000);
       const healthChannel = yagi.channels.cache.get('866297328159686676'); //goat-health channel in Yagi's Den
       sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
@@ -69,7 +77,7 @@ module.exports = ({ yagi, appCommands }) => {
    * While global commands can be used to every server that bot is in
    * Main difference between the two apart from server constraints are that app commands are instantly registered in guilds while global would take up to an hour for changes to appear
    */
-  const registerApplicationCommands = async (yagi) => {
+  const registerApplicationCommands = async (yagi: Client) => {
     const isInDevelopment = checkIfInDevelopment(yagi);
     const commandList = Object.keys(appCommands)
       .map((key) => appCommands[key].data)
@@ -89,4 +97,4 @@ module.exports = ({ yagi, appCommands }) => {
       console.log(error);
     }
   };
-};
+}
