@@ -17,7 +17,8 @@ const yagi: Client = new Client({
 const initialize = async () => {
   try {
     await yagi.login(BOT_TOKEN);
-    const mixpanel = MIXPANEL_ID && !isEmpty(MIXPANEL_ID) && Mixpanel.init(MIXPANEL_ID);
+    const mixpanel: Mixpanel.Mixpanel | null =
+      MIXPANEL_ID && !isEmpty(MIXPANEL_ID) ? Mixpanel.init(MIXPANEL_ID) : null;
     TOP_GG_TOKEN && !isEmpty(TOP_GG_TOKEN) && AutoPoster(TOP_GG_TOKEN, yagi);
     registerEventHandlers({ yagi, mixpanel });
   } catch (error) {
