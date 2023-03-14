@@ -50,7 +50,7 @@ export default function ({ yagi, appCommands }: Props) {
        * Will create them if they don't exist
        * See relevant files under database/* for more information
        */
-      await createGuildTable(yagi.guilds.cache, yagi);
+      await createGuildTable(yagi.guilds.cache);
       /**
        * Changes Yagi's activity every 2 minutes on random
        * Starts on the first index of the activityList array and then sets to a different one after

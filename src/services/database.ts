@@ -55,7 +55,7 @@ export async function getGuilds() {
     }
   }
 }
-export async function insertNewGuild(newGuild: Guild, existingClient: PoolClient) {
+export async function insertNewGuild(newGuild: Guild, existingClient?: PoolClient) {
   let client: PoolClient = existingClient ? existingClient : await pool.connect();
   if (client) {
     try {
