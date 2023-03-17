@@ -9,7 +9,7 @@ dist
 # config
 src/config/database.js
 src/config/ca-certificate.cer
-src/config/environment.js
+src/config/environment.ts
 
 # system files
 .DS_Store

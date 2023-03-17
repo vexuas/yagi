@@ -85,10 +85,12 @@ export default function ({ yagi, appCommands }: Props) {
 
     try {
       if (isInDevelopment) {
-        await rest.put(Routes.applicationGuildCommands('929421200797626388', GUILD_IDS), {
-          body: commandList,
-        });
-        console.log('Successfully registered guild application commands');
+        if (GUILD_IDS) {
+          await rest.put(Routes.applicationGuildCommands('929421200797626388', GUILD_IDS), {
+            body: commandList,
+          });
+          console.log('Successfully registered guild application commands');
+        }
       } else {
         await rest.put(Routes.applicationCommands('518196430104428579'), { body: commandList });
         console.log('Successfully registered global application commands');
