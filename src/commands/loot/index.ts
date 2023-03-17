@@ -1,10 +1,11 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { AppCommand, AppCommandOptions } from '../commands';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('loot')
     .setDescription('Displays the loot dropped by World Bosses'),
-  async execute({ interaction }) {
+  async execute({ interaction }: AppCommandOptions) {
     try {
       const embed = {
         color: 32896,
@@ -27,4 +28,4 @@ module.exports = {
       console.log(error);
     }
   },
-};
+} as AppCommand;

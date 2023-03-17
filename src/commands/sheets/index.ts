@@ -1,10 +1,11 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { AppCommand, AppCommandOptions } from '../commands';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('sheets')
     .setDescription('Collection of current and previous sheets used by leads/editors'),
-  async execute({ interaction }) {
+  async execute({ interaction }: AppCommandOptions) {
     try {
       const embed = {
         title: 'Public Sheets',
@@ -25,4 +26,4 @@ module.exports = {
       console.log(error);
     }
   },
-};
+} as AppCommand;

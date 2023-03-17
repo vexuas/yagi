@@ -1,13 +1,9 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { google } = require('googleapis');
-const sheets = google.sheets('v4');
-const {
-  getServerTime,
-  formatCountdown,
-  formatLocation,
-  isInWeeklyMaintenance,
-} = require('../../utils/helpers');
-const {
+import { CommandInteraction } from 'discord.js';
+import { AppCommand, AppCommandOptions } from '../commands';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { google, sheets_v4 } from 'googleapis';
+import { getServerTime, formatCountdown, formatLocation } from '../../utils/helpers';
+import {
   format,
   differenceInMilliseconds,
   addHours,
@@ -17,8 +13,12 @@ const {
   isWithinRange,
   startOfDay,
   endOfDay,
-} = require('date-fns');
-const { GOOGLE_CLIENT_ID } = require('../../config/environment');
+} from 'date-fns';
+import { GOOGLE_CLIENT_ID } from '../../config/environment';
+import { GaxiosResponse } from 'gaxios';
+const sheets: sheets_v4.Sheets = google.sheets('v4');
+
+//TODO: REFACTOR ALL OF THESE SOMEDAY
 //----------
 /**
  * GET request to spreadsheet for values
@@ -28,12 +28,35 @@ const { GOOGLE_CLIENT_ID } = require('../../config/environment');
  * Since it's a public sheet, I set up a personal api token for use as no authentication required
  * Passed in a callback function to send the message to user after everything is done
  */
-const getWorldBossData = async function requestToExternalSpreadsheetAndReturnReadableData(
-  interaction,
-  sendMessageCallback
+type GoogleSheetRequestPayload = {
+  spreadsheetId: string;
+  ranges: string[];
+  auth: string;
+};
+type WorldBossData = {
+  location: string;
+  lastSpawn: string;
+  nextSpawn: string;
+  countdown: string;
+};
+type WorldBossTimerEmbed = {
+  title: string;
+  description: string;
+  color: number;
+  thumbnail: {
+    url: string;
+  };
+  fields: { name: string; value: string; inline?: boolean }[];
+  footer: {
+    text: string;
+  };
+};
+const getWorldBossData = async function (
+  interaction: CommandInteraction,
+  sendMessageCallback: (embed: WorldBossTimerEmbed | undefined) => void
 ) {
   const authClient = GOOGLE_CLIENT_ID;
-  const request = {
+  const request: GoogleSheetRequestPayload = {
     spreadsheetId: 'tUL0-Nn3Jx7e6uX3k4_yifQ',
 
     ranges: ['C4', 'C6', 'C8', 'C10'],
@@ -41,40 +64,53 @@ const getWorldBossData = async function requestToExternalSpreadsheetAndReturnRea
     auth: authClient,
   };
 
-  sheets.spreadsheets.values.batchGet(request, function (err, response) {
-    try {
-      const rawSheetValues = response.data.valueRanges;
-      /**
-       * rawSheetValues is the response which is an array of objects
-       * The data we need is the values key inside each object
-       * First Object: Location
-       * Second Object: Last Spawn
-       * Third Object: Next Spawn
-       * Below extracts the actual data and pushes them in a new array
-       * Then sets the value to its corresponding data key
-       */
-      let actualSheetValues = [];
-      rawSheetValues.forEach((item) => {
-        console.log(item.values);
-        actualSheetValues.push(item.values[0][0]);
-      });
-      const worldBossData = {
-        location: actualSheetValues[0],
-        lastSpawn: actualSheetValues[1],
-        nextSpawn: actualSheetValues[2],
-        countdown: actualSheetValues[3],
-      };
-      console.log(worldBossData.countdown);
-      sendMessageCallback(generateEmbed(worldBossData));
-    } catch (e) {
-      console.log(e);
-      //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
-      //Altho definitely have to add cases here in the future
-      interaction.reply(
-        'Oops! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
-      );
+  sheets.spreadsheets.values.batchGet(
+    request,
+    (
+      err: Error | null,
+      response: GaxiosResponse<sheets_v4.Schema$BatchGetValuesResponse> | null | undefined
+    ) => {
+      try {
+        if (err) {
+          //TODO: Add actual error handling here
+          console.log(err);
+          return;
+        }
+        if (response) {
+          const rawSheetValues: sheets_v4.Schema$ValueRange[] | undefined =
+            response.data.valueRanges;
+          /**
+           * rawSheetValues is the response which is an array of objects
+           * The data we need is the values key inside each object
+           * First Object: Location
+           * Second Object: Last Spawn
+           * Third Object: Next Spawn
+           * Below extracts the actual data and pushes them in a new array
+           * Then sets the value to its corresponding data key
+           */
+          let actualSheetValues: string[] = [];
+          rawSheetValues &&
+            rawSheetValues.forEach((item) => {
+              item.values && actualSheetValues.push(item.values[0][0]);
+            });
+          const worldBossData: WorldBossData = {
+            location: actualSheetValues[0],
+            lastSpawn: actualSheetValues[1],
+            nextSpawn: actualSheetValues[2],
+            countdown: actualSheetValues[3],
+          };
+          sendMessageCallback(generateEmbed(worldBossData));
+        }
+      } catch (e) {
+        console.log(e);
+        //For now I'll put this as default error message; I'm confident enough that this is the only time my timer will fail
+        //Altho definitely have to add cases here in the future
+        interaction.reply(
+          'Oops! Sorry about that, looks like something went wrong. Try again in a bit!（・□・；）'
+        );
+      }
     }
-  });
+  );
 };
 //----------
 /**
@@ -93,7 +129,7 @@ const getWorldBossData = async function requestToExternalSpreadsheetAndReturnRea
  * It seems farfetched for more than 2 to happen, even just 2 misses in a row is pushing it already
  * Tho 1 miss would definitely happen most of the time
  */
-const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBossData, serverTime) {
+const validateSpawn = (worldBossData: WorldBossData, serverTime: number) => {
   const currentDay = format(serverTime, 'D');
   const currentMonth = format(serverTime, 'MMMM');
   const currentYear = format(serverTime, 'YYYY');
@@ -154,7 +190,7 @@ const validateSpawn = function validateSpawnTimeUsingServerAndSpawnTime(worldBos
  * Not too sure if it's better using discord's .RichEmbed()
  * but sticking to this since I got used to it
  */
-const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
+const generateEmbed = (worldBossData: WorldBossData): WorldBossTimerEmbed | undefined => {
   let embedData;
   const grvAcnt = '`'; //Making this a variable to make use of concatenation
 
@@ -171,24 +207,7 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
     countdownSheet[2]
   } secs`;
   **/
-  const isTimerAccurate = validatedSpawn && validatedSpawn.accurate;
-  if (isInWeeklyMaintenance(isTimerAccurate)) {
-    embedData = {
-      title: 'Olympus | World Boss',
-      description: `${serverTimeDesc}`,
-      color: 16776960,
-      thumbnail: {
-        url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
-      },
-      fields: [
-        {
-          name: 'Status',
-          value:
-            'Game servers have went down for weekly maintenance. Timer will be offline for a while; To get the next world boss spawn, refer to the [Olympus sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/htmlview?pru=AAABetvDVTc*CUO1z4a8sJgbuqturEfCGQ#) or wait in-game for world boss leads instructions',
-        },
-      ],
-    };
-  } else {
+  if (validatedSpawn) {
     const spawnDesc = `Spawn: ${grvAcnt}${worldBossData.location.toLowerCase()}, ${
       validatedSpawn.nextSpawn
     }${grvAcnt}`;
@@ -226,18 +245,18 @@ const generateEmbed = function generateWorldBossEmbedToSend(worldBossData) {
   return embedData;
 };
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName('goats')
     .setDescription(`Shows current timer for Vulture's Vale and Blizzard Berg World Boss`),
-  async execute({ interaction }) {
+  async execute({ interaction }: AppCommandOptions) {
     try {
       await interaction.deferReply();
-      await getWorldBossData(interaction, async (embed) => {
-        await interaction.editReply({ embeds: [embed] });
+      await getWorldBossData(interaction, async (embed: WorldBossTimerEmbed | undefined) => {
+        await interaction.editReply({ embeds: embed ? [embed] : undefined });
       });
     } catch (error) {
       console.log(error);
     }
   },
-};
+} as AppCommand;

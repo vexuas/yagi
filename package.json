@@ -5,9 +5,12 @@
   "main": "yagi.js",
   "author": "Vexuas",
   "scripts": {
+    "start": "yarn prebuild && yarn build && yarn build:watch",
+    "start:prod": "yarn prebuild && yarn build && BOT_ENV=prod yarn node dist/yagi.js",
+    "prebuild": "node -p \"'export const BOT_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "build": "tsc",
+    "build:watch": "yarn tsc-watch --onSuccess 'nodemon dist/yagi.js'",
     "test": "mocha",
-    "start": "yarn nodemon src/yagi.js",
-    "start:prod": "BOT_ENV=prod yarn nodemon src/yagi.js",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
     "auto:release": "yarn auto:changelog && yarn auto:version",
@@ -30,8 +33,12 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
+    "@types/pg": "^8.6.6",
     "auto": "^10.13.1",
     "eslint": "^8.35.0",
-    "eslint-plugin-unused-imports": "^2.0.0"
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "tsc-watch": "^6.0.0",
+    "typescript": "^4.9.5"
   }
 }

@@ -6,16 +6,29 @@
  * I do regret not implementing this right in the begininng but better late than never? It's been one hell of a learning experience anyway and I doubt I'll forget to add these in new projects
  * For reference: https://developer.mixpanel.com/docs/nodejs
  */
-const sendMixpanelEvent = ({
+import { User, Guild, TextBasedChannel } from 'discord.js';
+import { Mixpanel } from 'mixpanel';
+
+interface Props {
+  user: User;
+  channel: TextBasedChannel;
+  guild: Guild;
+  command: String;
+  client: Mixpanel;
+  options?: string;
+  isApplicationCommand?: boolean;
+  properties?: Object; //This could be very much any object so just typing it as a generic object
+}
+export function sendMixpanelEvent({
   user,
   channel,
   guild,
   command,
   client,
-  arguments,
+  options,
   isApplicationCommand = true,
   properties,
-}) => {
+}: Props) {
   const eventToSend = `Use ${command} command`; //Name of event; string interpolated with command as best to write an event as an action a user is doing
   /**
    * Creates and updates a user profile
@@ -28,7 +41,7 @@ const sendMixpanelEvent = ({
     guild: guild.name,
     guild_id: guild.id,
   });
-  if (channel.type !== 'dm') {
+  if (channel.type !== 'DM') {
     /**
      * Event to send to mixpanel
      * Added relevant properties along with event such as user, channel and guild
@@ -43,7 +56,7 @@ const sendMixpanelEvent = ({
       guild: guild.name,
       guild_id: guild.id,
       command: command,
-      arguments: arguments ? arguments : 'none',
+      arguments: options ? options : 'none',
       isApplicationCommand: isApplicationCommand,
       ...properties,
     });
@@ -69,8 +82,4 @@ const sendMixpanelEvent = ({
       user_name: user.username,
     });
   }
-};
-
-module.exports = {
-  sendMixpanelEvent,
-};
+}

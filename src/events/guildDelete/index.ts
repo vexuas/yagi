@@ -1,17 +1,18 @@
-const { WebhookClient } = require('discord.js');
-const { isEmpty } = require('lodash');
-const { GUILD_NOTIFICATION_WEBHOOK_URL } = require('../../config/environment');
-const { deleteGuild } = require('../../services/database');
-const { sendErrorLog, serverEmbed } = require('../../utils/helpers');
+import { Guild, WebhookClient } from 'discord.js';
+import { isEmpty } from 'lodash';
+import { GUILD_NOTIFICATION_WEBHOOK_URL } from '../../config/environment';
+import { deleteGuild } from '../../services/database';
+import { sendErrorLog, serverEmbed } from '../../utils/helpers';
+import { EventModule } from '../events';
 
 /**
  * Event handlers for when yagi is kickined from a server
  * Deletes guild record in our database and sends notification to channel in Yagi's Den
  */
-module.exports = ({ yagi }) => {
-  yagi.on('guildDelete', async (guild) => {
+export default function ({ yagi }: EventModule) {
+  yagi.on('guildDelete', async (guild: Guild) => {
     try {
-      await deleteGuild(guild, yagi);
+      await deleteGuild(guild);
       if (GUILD_NOTIFICATION_WEBHOOK_URL && !isEmpty(GUILD_NOTIFICATION_WEBHOOK_URL)) {
         const embed = await serverEmbed(yagi, guild, 'leave');
         const notificationWebhook = new WebhookClient({ url: GUILD_NOTIFICATION_WEBHOOK_URL });
@@ -26,4 +27,4 @@ module.exports = ({ yagi }) => {
       sendErrorLog(yagi, e);
     }
   });
-};
+}

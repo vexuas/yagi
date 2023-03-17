@@ -3,11 +3,11 @@
 # dependencies
 node_modules
 
-# config
-src/config/database.js
-src/config/ca-certificate.cer
-src/config/environment.js
+# Compiled files
+dist
 
-# system files
-.DS_Store
+# config
+src/config/database.ts
+src/config/ca-certificate.cer
+src/config/environment.ts
 .env
