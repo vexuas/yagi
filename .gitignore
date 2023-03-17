@@ -7,10 +7,7 @@ node_modules
 dist
 
 # config
-src/config/database.js
+src/config/database.ts
 src/config/ca-certificate.cer
 src/config/environment.ts
-
-# system files
-.DS_Store
 .env
