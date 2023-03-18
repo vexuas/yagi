@@ -55,7 +55,10 @@ export const getServerTime = (): number => {
  * This function tries to achieve this
  * TODO: Probably don't need this anymore; refactor this one day with distanceInWords
  */
-export const formatCountdown = (nextSpawnDate: number | Date, serverTime: number): string => {
+export const formatCountdown = (
+  nextSpawnDate: number | Date,
+  serverTime: number | Date
+): string => {
   let formattedCountdown = [];
   let calculatedTime = nextSpawnDate;
   /**
@@ -229,7 +232,7 @@ export const getWorldBossData = async (): Promise<WorldBossData> => {
  * @param serverTime - current server time
  * TODO: Add type for validated world boss data
  */
-export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: number) => {
+export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: number | Date) => {
   //Gets current day, month and year of server time
   const currentDay = format(serverTime, 'd');
   const currentMonth = format(serverTime, 'MMMM');
@@ -268,7 +271,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
        * Normal timer for the full day
        * If we have the full timestamp the function stops here but we can't have everything in life
        **/
-      actualSpawnDate = nextSpawnDate.toString();
+      actualSpawnDate = format(nextSpawnDate, 'MMMM d yyyy h:mm:ss a');
       return {
         serverTime: format(serverTime, 'MMMM d yyyy h:mm:ss a'),
         nextSpawn: actualSpawnDate,
@@ -320,7 +323,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
      */
     if (
       isWithinInterval(serverTime, { start: eightPM, end: twelveAMEnd }) &&
-      nextSpawnDate.toString().includes('AM')
+      format(nextSpawnDate, 'MMMM d yyyy h:mm:ss a').includes('AM')
     ) {
       actualSpawnDate = format(addDays(nextSpawnDate, 1), 'MMMM d yyyy h:mm:ss a');
       return {
