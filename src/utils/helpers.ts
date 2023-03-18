@@ -268,7 +268,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
        * Normal timer for the full day
        * If we have the full timestamp the function stops here but we can't have everything in life
        **/
-      actualSpawnDate = nextSpawnDate.toString();
+      actualSpawnDate = format(nextSpawnDate, 'MMMM d yyyy h:mm:ss a');
       return {
         serverTime: format(serverTime, 'MMMM d yyyy h:mm:ss a'),
         nextSpawn: actualSpawnDate,
