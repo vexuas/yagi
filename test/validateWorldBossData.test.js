@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { validateWorldBossData } = require('../src/utils/helpers');
+const { validateWorldBossData } = require('../dist/utils/helpers');
 
 describe('validateWorldBossData', function () {
   describe('when sheet is updated', function () {
@@ -7,7 +7,7 @@ describe('validateWorldBossData', function () {
       const worldBossData = {
         nextSpawn: '2:45:00 AM',
       };
-      const serverTime = 'July 17, 2021 2:00:45 AM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(worldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 17, 2021 2:45:00 AM');
@@ -18,7 +18,7 @@ describe('validateWorldBossData', function () {
       const worldBossData = {
         nextSpawn: '3:45:00 PM',
       };
-      const serverTime = 'July 17, 2021 2:00:45 PM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(worldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 17, 2021 3:45:00 PM');
@@ -29,7 +29,7 @@ describe('validateWorldBossData', function () {
       const worldBossData = {
         nextSpawn: '8:45:00 PM',
       };
-      const serverTime = 'July 17, 2021 8:00:45 PM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(worldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 17, 2021 8:45:00 PM');
@@ -40,7 +40,7 @@ describe('validateWorldBossData', function () {
       const worldBossData = {
         nextSpawn: '1:45:00 AM',
       };
-      const serverTime = 'July 17, 2021 11:00:45 PM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(worldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 18, 2021 1:45:00 AM');
@@ -53,7 +53,7 @@ describe('validateWorldBossData', function () {
       const wrongWorldBossData = {
         nextSpawn: '10:45:00 PM',
       };
-      const serverTime = 'July 18, 2021 1:00:45 AM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(wrongWorldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 18, 2021 2:45:00 AM');
@@ -64,7 +64,7 @@ describe('validateWorldBossData', function () {
       const wrongWorldBossData = {
         nextSpawn: '4:45:00 AM',
       };
-      const serverTime = 'July 18, 2021 7:00:45 AM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(wrongWorldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 18, 2021 8:45:00 AM');
@@ -75,7 +75,7 @@ describe('validateWorldBossData', function () {
       const wrongWorldBossData = {
         nextSpawn: '2:45:00 PM',
       };
-      const serverTime = 'July 18, 2021 5:00:45 PM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(wrongWorldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 18, 2021 6:45:00 PM');
@@ -86,7 +86,7 @@ describe('validateWorldBossData', function () {
       const wrongWorldBossData = {
         nextSpawn: '9:45:00 PM',
       };
-      const serverTime = 'July 18, 2021 11:00:45 PM';
+      const serverTime = new Date('August 21, 2019 2:00:45 PM');
       const result = validateWorldBossData(wrongWorldBossData, serverTime);
 
       assert.strictEqual(result.nextSpawn, 'July 19, 2021 1:45:00 AM');
