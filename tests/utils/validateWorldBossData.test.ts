@@ -1,4 +1,4 @@
-import { validateWorldBossData } from '../src/utils/helpers';
+import { validateWorldBossData } from '../../src/utils/helpers';
 
 describe('when sheet is updated', function () {
   it('should return the correct nextSpawn data when server time is in the morning', function () {
