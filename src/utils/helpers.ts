@@ -309,6 +309,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
         countdown: formatCountdown(nextSpawnDate, serverTime),
         accurate: true,
         location: worldBoss.location,
+        lastSpawn: worldBoss.lastSpawn,
         projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     } else {
@@ -332,6 +333,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
           countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
           accurate: false,
           location: worldBoss.location,
+          lastSpawn: worldBoss.lastSpawn,
           projectedNextSpawn: format(
             addHours(new Date(actualSpawnDate), 4),
             'MMMM d yyyy h:mm:ss a'
@@ -361,6 +363,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
         countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
         accurate: true,
         location: worldBoss.location,
+        lastSpawn: worldBoss.lastSpawn,
         projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     } else {
@@ -376,6 +379,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
         countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
         accurate: false,
         location: worldBoss.location,
+        lastSpawn: worldBoss.lastSpawn,
         projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     }
