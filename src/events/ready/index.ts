@@ -8,9 +8,8 @@ import {
   getServerTime,
   validateWorldBossData,
   sendHealthLog,
-  checkIfInDevelopment,
 } from '../../utils/helpers';
-import { BOT_TOKEN, GUILD_IDS } from '../../config/environment';
+import { BOT_TOKEN, ENV, GUILD_IDS } from '../../config/environment';
 
 const rest: REST = new REST({ version: '9' }).setToken(BOT_TOKEN);
 const activitylist: string[] = [
@@ -32,7 +31,7 @@ export default function ({ yagi, appCommands }: Props) {
    */
   yagi.once('ready', async () => {
     try {
-      await registerApplicationCommands(yagi);
+      await registerApplicationCommands();
       const testChannel = yagi.channels.cache.get('582213795942891521') as TextChannel;
       testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
       /**
@@ -75,14 +74,13 @@ export default function ({ yagi, appCommands }: Props) {
    * While global commands can be used to every server that bot is in
    * Main difference between the two apart from server constraints are that app commands are instantly registered in guilds while global would take up to an hour for changes to appear
    */
-  const registerApplicationCommands = async (yagi: Client) => {
-    const isInDevelopment = checkIfInDevelopment(yagi);
+  const registerApplicationCommands = async () => {
     const commandList = Object.keys(appCommands)
       .map((key) => appCommands[key].data)
       .map((command) => command.toJSON());
 
     try {
-      if (isInDevelopment) {
+      if (ENV === 'dev') {
         if (GUILD_IDS) {
           await rest.put(Routes.applicationGuildCommands('929421200797626388', GUILD_IDS), {
             body: commandList,

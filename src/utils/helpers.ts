@@ -53,7 +53,7 @@ export const getServerTime = (): number => {
  * date-fns doesn't let you format distanceInWordsStrict yet
  * so can't return X hours, y mins, z seconds and can only get individually
  * This function tries to achieve this
- * TODO: Probably don't need this anymore; refactor this
+ * TODO: Probably don't need this anymore; refactor this one day with distanceInWords
  */
 export const formatCountdown = (nextSpawnDate: number | Date, serverTime: number): string => {
   let formattedCountdown = [];
@@ -164,40 +164,6 @@ export const serverEmbed = async (yagi: Client, guild: Guild, status: string) =>
     ],
   };
   return embed;
-};
-//----------
-/**
- * As I use Bisolen for development and testing of new features, it is a bit annoying to clear testing notifications from channels that yagi stores data in
- * This comes from hardcoding channels to log data in the event handlers.
- * To avoid dirtying the data and cluttering production channels, this function determines if the client is Bisolen and is being used for development
- * Bisolen ID - 582202266828668998
- * Yagi ID - 518196430104428579
- * Shizuka Test ID - 929421200797626388
- */
-export const checkIfInDevelopment = (client: Client) => {
-  return client.user && client.user.id === '929421200797626388';
-};
-//----------
-/**
- * Sends a notification embed message to a specific channel
- * 582213795942891521: bot-development channel for Bisolen development
- * 614749682849021972: goat-servers channel for Yagi real guild data tracker
- * @param client - initialising discord client
- * @param guild  - guild data
- */
-export const sendGuildUpdateNotification = async (
-  client: Client,
-  guild: Guild,
-  type: string
-): Promise<void> => {
-  const embed = await serverEmbed(client, guild, type);
-  const channelId = checkIfInDevelopment(client) ? '582213795942891521' : '614749682849021972';
-  const channelToSend = client.channels.cache.get(channelId) as TextChannel;
-
-  channelToSend.send({ embeds: [embed] });
-  if (!checkIfInDevelopment(client)) {
-    channelToSend.setTopic(`Servers: ${client.guilds.cache.size}`);
-  }
 };
 /**
  * Sends an error log to a specific channel for better error management
