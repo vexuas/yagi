@@ -10,7 +10,7 @@ import {
   addDays,
   subDays,
   isAfter,
-  isWithinRange,
+  isWithinInterval,
   startOfDay,
   endOfDay,
 } from 'date-fns';
@@ -130,22 +130,30 @@ const getWorldBossData = async function (
  * Tho 1 miss would definitely happen most of the time
  */
 const validateSpawn = (worldBossData: WorldBossData, serverTime: number) => {
-  const currentDay = format(serverTime, 'D');
+  const currentDay = format(serverTime, 'd');
   const currentMonth = format(serverTime, 'MMMM');
-  const currentYear = format(serverTime, 'YYYY');
+  const currentYear = format(serverTime, 'yyyy');
 
-  const nextSpawnDate = `${currentMonth} ${currentDay}, ${currentYear} ${worldBossData.nextSpawn}`; //August 19, 2019 9:56:21 PM
+  const nextSpawnDate = new Date(
+    `${currentMonth} ${currentDay}, ${currentYear} ${worldBossData.nextSpawn}`
+  ); //August 19, 2019 9:56:21 PM
   //Using 8pm cuz wb spawns every 4 hours so anything after 8 is already past midnight
-  const eightPMCutOff = `${currentMonth} ${currentDay}, ${currentYear} 8:00:00 PM`; //August 19, 2019 8:00:00 PM
-
+  const eightPMCutOff = new Date(`${currentMonth} ${currentDay}, ${currentYear} 8:00:00 PM`); //August 19, 2019 8:00:00 PM
+  console.log(nextSpawnDate.toString());
   //To be as accurate as possible
   const countdownValidity = differenceInMilliseconds(nextSpawnDate, serverTime);
 
   console.log(countdownValidity);
 
   if (
-    isWithinRange(serverTime, startOfDay(serverTime), addHours(startOfDay(serverTime), 4)) &&
-    isWithinRange(nextSpawnDate, eightPMCutOff, endOfDay(nextSpawnDate))
+    isWithinInterval(serverTime, {
+      start: startOfDay(serverTime),
+      end: addHours(startOfDay(serverTime), 4),
+    }) &&
+    isWithinInterval(nextSpawnDate, {
+      start: eightPMCutOff,
+      end: endOfDay(nextSpawnDate),
+    })
   ) {
     /**
      * Edge case - midnight timer; servertime is over 12am but spawnTime is before 12am; no editor updated sheet
@@ -154,7 +162,7 @@ const validateSpawn = (worldBossData: WorldBossData, serverTime: number) => {
      * Any place other than here would result logic always firing countdownValidity >= 0
      */
     return {
-      nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss A'),
+      nextSpawn: format(addHours(subDays(nextSpawnDate, 1), 4), 'h:mm:ss a'),
       countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
       accurate: false,
     };
@@ -166,7 +174,7 @@ const validateSpawn = (worldBossData: WorldBossData, serverTime: number) => {
       countdown: formatCountdown(nextSpawnDate, serverTime),
       accurate: true,
     };
-  } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.includes('AM')) {
+  } else if (isAfter(serverTime, eightPMCutOff) && nextSpawnDate.toString().includes('AM')) {
     //late night timer; servertime is over 8pm and sheet is updated
     //+1 day to current nextSpawnDate
     return {
@@ -178,7 +186,7 @@ const validateSpawn = (worldBossData: WorldBossData, serverTime: number) => {
     //Edge case - no editor updated sheet for both normal and late night flow
     //+4 hours to current nextSpawnDate
     return {
-      nextSpawn: format(addHours(nextSpawnDate, 4), 'h:mm:ss A'),
+      nextSpawn: format(addHours(nextSpawnDate, 4), 'h:mm:ss a'),
       countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
       accurate: false,
     };
@@ -196,7 +204,7 @@ const generateEmbed = (worldBossData: WorldBossData): WorldBossTimerEmbed | unde
 
   const serverTimeDesc = `Server Time: ${grvAcnt}${format(
     getServerTime(),
-    'dddd, h:mm:ss A'
+    'eeee, h:mm:ss a'
   )}${grvAcnt}`;
   const validatedSpawn = validateSpawn(worldBossData, getServerTime());
   /** 

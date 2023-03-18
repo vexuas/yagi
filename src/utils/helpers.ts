@@ -14,7 +14,7 @@ import {
   addHours,
   addDays,
   format,
-  isWithinRange,
+  isWithinInterval,
   startOfDay,
   endOfDay,
 } from 'date-fns';
@@ -55,10 +55,7 @@ export const getServerTime = (): number => {
  * This function tries to achieve this
  * TODO: Probably don't need this anymore; refactor this
  */
-export const formatCountdown = (
-  nextSpawnDate: string | number | Date,
-  serverTime: number
-): string => {
+export const formatCountdown = (nextSpawnDate: number | Date, serverTime: number): string => {
   let formattedCountdown = [];
   let calculatedTime = nextSpawnDate;
   /**
@@ -268,9 +265,9 @@ export const getWorldBossData = async (): Promise<WorldBossData> => {
  */
 export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: number) => {
   //Gets current day, month and year of server time
-  const currentDay = format(serverTime, 'D');
+  const currentDay = format(serverTime, 'd');
   const currentMonth = format(serverTime, 'MMMM');
-  const currentYear = format(serverTime, 'YYYY');
+  const currentYear = format(serverTime, 'yyyy');
 
   /**
    * Tentative nextSpawn date
@@ -279,8 +276,10 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
    * Server Time = July 17, 2021 10:40:00 AM
    * nextSpawnDate = July 17, 2021 {{whatever time from sheet}}
    **/
-  const nextSpawnDate = `${currentMonth} ${currentDay} ${currentYear} ${worldBoss.nextSpawn}`;
-  let actualSpawnDate;
+  const nextSpawnDate = new Date(
+    `${currentMonth} ${currentDay} ${currentYear} ${worldBoss.nextSpawn}`
+  );
+  let actualSpawnDate: string;
 
   //Cut-off time variables of current day
   const twelveAMStart = startOfDay(serverTime);
@@ -303,14 +302,14 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
        * Normal timer for the full day
        * If we have the full timestamp the function stops here but we can't have everything in life
        **/
-      actualSpawnDate = nextSpawnDate;
+      actualSpawnDate = nextSpawnDate.toString();
       return {
-        serverTime: format(serverTime, 'MMMM D YYYY h:mm:ss A'),
+        serverTime: format(serverTime, 'MMMM d yyyy h:mm:ss a'),
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(nextSpawnDate, serverTime),
         accurate: true,
         location: worldBoss.location,
-        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
+        projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     } else {
       /**
@@ -323,17 +322,20 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
        * If it is, we substract a day from nextSpawnDate and add 4 hours to it as well as for countdown
        */
       if (
-        isWithinRange(serverTime, twelveAMStart, fourAM) &&
-        isWithinRange(nextSpawnDate, eightPM, twelveAMEnd)
+        isWithinInterval(serverTime, { start: twelveAMStart, end: fourAM }) &&
+        isWithinInterval(nextSpawnDate, { start: eightPM, end: twelveAMEnd })
       ) {
-        actualSpawnDate = format(addHours(subDays(nextSpawnDate, 1), 4), 'MMMM D YYYY h:mm:ss A');
+        actualSpawnDate = format(addHours(subDays(nextSpawnDate, 1), 4), 'MMMM d yyyy h:mm:ss a');
         return {
-          serverTime: format(serverTime, 'MMMM D YYYY h:mm:ss A'),
+          serverTime: format(serverTime, 'MMMM d yyyy h:mm:ss a'),
           nextSpawn: actualSpawnDate,
           countdown: formatCountdown(addHours(subDays(nextSpawnDate, 1), 4), serverTime),
           accurate: false,
           location: worldBoss.location,
-          projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
+          projectedNextSpawn: format(
+            addHours(new Date(actualSpawnDate), 4),
+            'MMMM d yyyy h:mm:ss a'
+          ),
         };
       }
     }
@@ -348,15 +350,18 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
      * To fix this, we check if server time is in the late night 8PM-12AM and if nextSpawnDate is in the morning
      * If it is, we add a day to nextSpawnDate as well as for countdown
      */
-    if (isWithinRange(serverTime, eightPM, twelveAMEnd) && nextSpawnDate.includes('AM')) {
-      actualSpawnDate = format(addDays(nextSpawnDate, 1), 'MMMM D YYYY h:mm:ss A');
+    if (
+      isWithinInterval(serverTime, { start: eightPM, end: twelveAMEnd }) &&
+      nextSpawnDate.toString().includes('AM')
+    ) {
+      actualSpawnDate = format(addDays(nextSpawnDate, 1), 'MMMM d yyyy h:mm:ss a');
       return {
-        serverTime: format(serverTime, 'MMMM D YYYY hh:mm:ss A'),
+        serverTime: format(serverTime, 'MMMM d yyyy hh:mm:ss a'),
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addDays(nextSpawnDate, 1), serverTime),
         accurate: true,
         location: worldBoss.location,
-        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
+        projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     } else {
       /**
@@ -364,14 +369,14 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
        * In this case, it's during 12AM-8PM and only due to leads not updating the sheet
        * We default +4 hours to previous nextSpawn data
        */
-      actualSpawnDate = format(addHours(nextSpawnDate, 4), 'MMMM D YYYY h:mm:ss A');
+      actualSpawnDate = format(addHours(nextSpawnDate, 4), 'MMMM d yyyy h:mm:ss a');
       return {
-        serverTime: format(serverTime, 'MMMM D YYYY hh:mm:ss A'),
+        serverTime: format(serverTime, 'MMMM d yyyy hh:mm:ss a'),
         nextSpawn: actualSpawnDate,
         countdown: formatCountdown(addHours(nextSpawnDate, 4), serverTime),
         accurate: false,
         location: worldBoss.location,
-        projectedNextSpawn: format(addHours(actualSpawnDate, 4), 'MMMM D YYYY h:mm:ss A'),
+        projectedNextSpawn: format(addHours(new Date(actualSpawnDate), 4), 'MMMM d yyyy h:mm:ss a'),
       };
     }
   }

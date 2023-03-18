@@ -26,7 +26,7 @@ export default {
           },
           {
             name: 'Date Created',
-            value: yagi && yagi.user ? format(yagi.user.createdTimestamp, 'DD-MM-YYYY') : 'N/A',
+            value: yagi && yagi.user ? format(yagi.user.createdTimestamp, 'dd-MM-yyyy') : 'N/A',
             inline: true,
           },
           {
