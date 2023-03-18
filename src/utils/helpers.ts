@@ -55,7 +55,10 @@ export const getServerTime = (): number => {
  * This function tries to achieve this
  * TODO: Probably don't need this anymore; refactor this one day with distanceInWords
  */
-export const formatCountdown = (nextSpawnDate: number | Date, serverTime: number): string => {
+export const formatCountdown = (
+  nextSpawnDate: number | Date,
+  serverTime: number | Date
+): string => {
   let formattedCountdown = [];
   let calculatedTime = nextSpawnDate;
   /**
@@ -229,7 +232,7 @@ export const getWorldBossData = async (): Promise<WorldBossData> => {
  * @param serverTime - current server time
  * TODO: Add type for validated world boss data
  */
-export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: number) => {
+export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: number | Date) => {
   //Gets current day, month and year of server time
   const currentDay = format(serverTime, 'd');
   const currentMonth = format(serverTime, 'MMMM');
