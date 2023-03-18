@@ -320,7 +320,7 @@ export const validateWorldBossData = (worldBoss: WorldBossData, serverTime: numb
      */
     if (
       isWithinInterval(serverTime, { start: eightPM, end: twelveAMEnd }) &&
-      nextSpawnDate.toString().includes('AM')
+      format(nextSpawnDate, 'MMMM d yyyy h:mm:ss a').includes('AM')
     ) {
       actualSpawnDate = format(addDays(nextSpawnDate, 1), 'MMMM d yyyy h:mm:ss a');
       return {
