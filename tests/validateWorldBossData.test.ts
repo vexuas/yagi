@@ -1,5 +1,4 @@
 const assert = require('assert');
-// const { format } = require('date-fns');
 const { validateWorldBossData } = require('../dist/utils/helpers');
 
 describe('when sheet is updated', function () {
