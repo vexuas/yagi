@@ -25,7 +25,7 @@ export default function ({ yagi }: EventModule) {
       });
       message.content.startsWith(yagiPrefix) && (await message.channel.send({ embeds: [embed] }));
     } catch (e) {
-      sendErrorLog(yagi, e);
+      sendErrorLog(yagi, e as Error);
     }
   });
 }
