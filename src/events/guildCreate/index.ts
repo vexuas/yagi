@@ -24,7 +24,7 @@ export default function ({ yagi }: EventModule) {
         });
       }
     } catch (e) {
-      sendErrorLog(yagi, e);
+      sendErrorLog(yagi, e as Error);
     }
   });
 }

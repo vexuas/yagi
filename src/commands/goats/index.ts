@@ -33,7 +33,7 @@ type GoogleSheetRequestPayload = {
   ranges: string[];
   auth: string;
 };
-type WorldBossData = {
+export type WorldBossData = {
   location: string;
   lastSpawn: string;
   nextSpawn: string;
