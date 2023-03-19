@@ -83,6 +83,7 @@ export default {
     .setName('goats')
     .setDescription(`Shows current timer for Vulture's Vale and Blizzard Berg World Boss`),
   async execute({ yagi, interaction }: AppCommandOptions) {
+    console.log(yagi);
     try {
       await interaction.deferReply();
       const serverTime = getServerTime();
