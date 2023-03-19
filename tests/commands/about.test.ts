@@ -1,8 +1,10 @@
 import About from '../../src/commands/about';
-import MockCommandInteraction from '../mocks/CommandInteraction.json';
+import MockDiscord from '../mocks/MockDiscord';
 
 it.only('this is a test', () => {
-  console.log(MockCommandInteraction);
-  About.execute({ interaction: MockCommandInteraction });
+  const mockDiscord = new MockDiscord();
+  const testClient = mockDiscord.getClient();
+  console.log(testClient);
+  // About.execute({ interaction: MockCommandInteraction, yagi: testClient });
   console.log(About.data);
 });
