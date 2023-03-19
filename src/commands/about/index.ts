@@ -8,6 +8,7 @@ export default {
     .setName('about')
     .setDescription('Displays information about Yagi'),
   async execute({ interaction, yagi }: AppCommandOptions) {
+    console.log('about command');
     try {
       const embed = {
         title: 'Info',
