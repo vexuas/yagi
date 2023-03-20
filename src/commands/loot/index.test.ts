@@ -1,6 +1,6 @@
 import { generateLootEmbed } from '.';
 
-describe('Invite Command', () => {
+describe('Loot Command', () => {
   it('generates an embed correctly', () => {
     const embed = generateLootEmbed();
 

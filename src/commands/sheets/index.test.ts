@@ -1,6 +1,6 @@
 import { generateSheetsEmbed } from '.';
 
-describe('Invite Command', () => {
+describe('Sheets Command', () => {
   it('generates an embed correctly', () => {
     const embed = generateSheetsEmbed();
 

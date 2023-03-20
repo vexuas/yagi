@@ -1,6 +1,6 @@
 import { generateReminderEmbed } from '.';
 
-describe('Invite Command', () => {
+describe('Remind Command', () => {
   it('generates an embed correctly', () => {
     const embed = generateReminderEmbed();
 

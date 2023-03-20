@@ -8,7 +8,7 @@ import {
   sendErrorLog,
 } from '../../utils/helpers';
 import { format } from 'date-fns';
-import { MessageEmbed } from 'discord.js';
+import { APIEmbed } from 'discord-api-types/v9';
 
 export type WorldBossData = {
   location: string;
@@ -21,20 +21,8 @@ export interface ValidWorldBossData extends WorldBossData {
   accurate: boolean;
   projectedNextSpawn: string;
 }
-type WorldBossTimerEmbed = {
-  title: string;
-  description: string;
-  color: number;
-  thumbnail: {
-    url: string;
-  };
-  fields: { name: string; value: string; inline?: boolean }[];
-  footer: {
-    text: string;
-  };
-};
 
-const generateEmbed = (worldBossData: ValidWorldBossData): WorldBossTimerEmbed => {
+export const generateGoatsEmbed = (worldBossData: ValidWorldBossData): APIEmbed => {
   const serverTimeDesc = `Server Time: \`${format(
     new Date(worldBossData.serverTime),
     'eeee, h:mm:ss a'
@@ -88,8 +76,8 @@ export default {
       const serverTime = getServerTime();
       const worldBossData = await getWorldBossData();
       const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
-      const embed = validatedWorldBossData && generateEmbed(validatedWorldBossData);
-      await interaction.editReply({ embeds: [embed as MessageEmbed] });
+      const embed = validatedWorldBossData && generateGoatsEmbed(validatedWorldBossData);
+      embed && (await interaction.editReply({ embeds: [embed] }));
     } catch (error) {
       yagi && sendErrorLog(yagi, error as Error);
     }
