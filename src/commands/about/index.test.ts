@@ -1,6 +1,6 @@
 import { Client } from 'discord.js';
 import { generateAboutEmbed } from '.';
-import { BOT_VERSION } from '../../version';
+import { BOT_UPDATED_AT, BOT_VERSION } from '../../version';
 
 describe('About Command', () => {
   it('generates an embed correctly', () => {
@@ -48,5 +48,13 @@ describe('About Command', () => {
     expect(embed.fields).not.toBeUndefined();
     expect(embed.fields && embed.fields[2].name).toBe('Version');
     expect(embed.fields && embed.fields[2].value).toBe(BOT_VERSION);
+  });
+  it('displays the correct Last Updated field', () => {
+    const embed = generateAboutEmbed();
+
+    expect(embed).not.toBeUndefined();
+    expect(embed.fields).not.toBeUndefined();
+    expect(embed.fields && embed.fields[4].name).toBe('Last Updated');
+    expect(embed.fields && embed.fields[4].value).toBe(BOT_UPDATED_AT);
   });
 });

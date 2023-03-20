@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { format } from 'date-fns';
 import { APIEmbed } from 'discord-api-types/v9';
 import { Client } from 'discord.js';
-import { BOT_VERSION } from '../../version';
+import { BOT_UPDATED_AT, BOT_VERSION } from '../../version';
 import { AppCommand, AppCommandOptions } from '../commands';
 
 export const generateAboutEmbed = (yagi?: Client): APIEmbed => {
@@ -37,8 +37,8 @@ export const generateAboutEmbed = (yagi?: Client): APIEmbed => {
         inline: true,
       },
       {
-        name: 'Last Update',
-        value: '05-March-2023',
+        name: 'Last Updated',
+        value: BOT_UPDATED_AT,
         inline: true,
       },
       {
