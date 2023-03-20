@@ -1,10 +1,11 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { format } from 'date-fns';
+import { APIEmbed } from 'discord-api-types/v9';
 import { Client } from 'discord.js';
 import { BOT_VERSION } from '../../version';
 import { AppCommand, AppCommandOptions } from '../commands';
 
-export const generateAboutEmbed = (yagi?: Client) => {
+export const generateAboutEmbed = (yagi?: Client): APIEmbed => {
   const embed = {
     title: 'Info',
     description: `Hi there! I'm Yagi and I provide information for the world bosses of Vulture's Vale and Blizzard Berg in Aura Kingdom EN!\n\nInitially my creator only wanted to make a [website](https://ak-goats.com/) but eventually opted to make a discord version as well! Since then I'm currently serving ${

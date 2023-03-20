@@ -11,24 +11,42 @@ describe('About Command', () => {
   it('displays the correct fields in the embed', () => {
     const embed = generateAboutEmbed();
 
-    expect(embed.title).toBeDefined();
-    expect(embed.description).toBeDefined();
-    expect(embed.color).toBeDefined();
-    expect(embed.thumbnail.url).toBeDefined();
-    expect(embed.fields).toBeDefined();
-    expect(embed.fields.length).toBe(6);
+    expect(embed.title).not.toBeUndefined();
+    expect(embed.description).not.toBeUndefined();
+    expect(embed.color).not.toBeUndefined();
+    expect(embed.thumbnail).not.toBeUndefined();
+    expect(embed.thumbnail && embed.thumbnail.url).not.toBeUndefined();
+    expect(embed.fields).not.toBeUndefined();
+    expect(embed.fields && embed.fields.length).toBe(6);
+  });
+  it('displays the correct description if client is not passed in', () => {
+    const embed = generateAboutEmbed();
+
+    expect(embed).not.toBeUndefined();
+    expect(embed.description).not.toBeUndefined();
+    expect(embed.description && embed.description.includes('N/A')).toBeTruthy();
   });
   it('displays the correct description if client is passed in', () => {
     const yagi = new Client({ intents: [] });
     const embed = generateAboutEmbed(yagi);
 
     expect(embed).not.toBeUndefined();
-    expect(embed.description).toBeDefined();
-    expect(embed.description.includes('0 servers')).toBeTruthy();
+    expect(embed.description).not.toBeUndefined();
+    expect(embed.description && embed.description.includes('0 servers')).toBeTruthy();
+  });
+  it('dispays the correct Date Created field if client is not passed in', () => {
+    const embed = generateAboutEmbed();
+
+    expect(embed).not.toBeUndefined();
+    expect(embed.fields).not.toBeUndefined();
+    expect(embed.fields && embed.fields[1].name).toBe('Date Created');
+    expect(embed.fields && embed.fields[1].value).toBe('N/A');
   });
   it('displays the correct bot version', () => {
     const embed = generateAboutEmbed();
-    expect(embed.fields[2].name).toBe('Version');
-    expect(embed.fields[2].value).toBe(BOT_VERSION);
+
+    expect(embed.fields).not.toBeUndefined();
+    expect(embed.fields && embed.fields[2].name).toBe('Version');
+    expect(embed.fields && embed.fields[2].value).toBe(BOT_VERSION);
   });
 });
