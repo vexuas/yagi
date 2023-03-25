@@ -21,4 +21,5 @@ jobs:
           password: ${{ secrets.DO_PASSWORD }}
           script: |
             cd test-yagi
-            touch test.ts
+            git fetch --tags
+            git checkout tags/v3.1.0 -b test-v3.1.0-tag
