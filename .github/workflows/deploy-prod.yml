@@ -19,7 +19,6 @@ jobs:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
           password: ${{ secrets.DO_PASSWORD }}
-          script_stop: true
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
