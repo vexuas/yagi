@@ -23,6 +23,7 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+            nvm install 16.13.0
             cd test-yagi
             git checkout develop
             git pull
@@ -32,7 +33,6 @@ jobs:
             echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
             echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
-            nvm install v16.9.0
             yarn install 
             yarn build
             yarn node dist/yagi.js
