@@ -49,5 +49,8 @@
     "testMatch": [
       "**/src/**/*.test.ts"
     ]
+  },
+  "engines": {
+    "node": ">=16.9.0"
   }
 }
