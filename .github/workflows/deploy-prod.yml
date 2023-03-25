@@ -34,4 +34,4 @@ jobs:
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
             yarn install 
             yarn build
-            yarn node dist/yagi.js
+            pm2 start dist/yagi.js --name test-yagi
