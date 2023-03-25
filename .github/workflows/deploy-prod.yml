@@ -13,11 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.9.0
-
       - name: Log in to DigitalOcean droplet
         uses: appleboy/ssh-action@v0.1.8
         with:
@@ -27,15 +22,14 @@ jobs:
           script_stop: true
           script: |
             cd test-yagi
-            git fetch --tags
-            git branch -D test/workflow
             git checkout develop
             git pull
+            git fetch --tags
+            git branch | grep -v "develop" | xargs git branch -D            
             git checkout -b test/workflow
             echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
             echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
-            nvm install v16.13.0
             yarn install 
             yarn build
             yarn node dist/yagi.js
