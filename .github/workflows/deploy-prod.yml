@@ -1,0 +1,25 @@
+name: deploy/prod
+
+on:
+  push:
+    branches:
+      - release/**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to DigitalOcean droplet
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          password: ${{ secrets.DO_PASSWORD }}
+
+      - name: 'Test something'
+        run: cd test-yagi
+      - run: nano test.ts
