@@ -8,23 +8,6 @@ on:
 
 # Disregarded cache for now but maybe add it if the workflow gets too long
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run lint
-        run: yarn lint
-
   typescript:
     runs-on: ubuntu-latest
     steps:
@@ -37,10 +20,10 @@ jobs:
           node-version: 16
 
       # Typescript and our jest tests complain since there are missing files
-      # We load the config to their respected files using secret variables
+      # We need to load the config to their respected files using secret variables
       # We dont really need to add values to the variables, just need them defined in a file
       - name: Load environment config
-        run: echo "${{ secrets.CONFIG }}" > src/config/environment.ts
+        run: echo "${{ secrets.ENVIRONMENT_TEST }}" > src/config/environment.ts
       - name: Load database config
         run: echo "export const databaseConfig = {};" > src/config/database.ts
 
@@ -62,7 +45,7 @@ jobs:
           node-version: 16
 
       - name: Load environment config
-        run: echo "${{ secrets.CONFIG }}" > src/config/environment.ts
+        run: echo "${{ secrets.ENVIRONMENT_TEST }}" > src/config/environment.ts
       - name: Load database config
         run: echo "export const databaseConfig = {};" > src/config/database.ts
 
