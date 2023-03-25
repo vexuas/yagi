@@ -36,13 +36,6 @@ jobs:
         with:
           node-version: 16
 
-      # Typescript and our jest tests complain since there are missing files
-      # We load the config to their respected files using secret variables
-      # We dont really need to add values to the variables, just need them defined in a file
-      - name: Load config
-        run: echo "${{ secrets.CONFIG }}" > src/config/environment.ts
-          touch > src/config/database.ts
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -59,9 +52,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-
-      - name: Load config
-        run: echo "${{ secrets.CONFIG }}" > src/config/environment.ts
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
