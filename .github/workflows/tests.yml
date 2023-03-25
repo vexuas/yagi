@@ -1,0 +1,56 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+
+# Disregarded cache for now but maybe add it if the workflow gets too long
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      # Typescript and our jest tests complain since there are missing files
+      # We need to load the config to their respected files using secret variables
+      # We dont really need to add values to the variables, just need them defined in a file
+      - name: Load environment config
+        run: echo "${{ secrets.ENVIRONMENT_TEST }}" > src/config/environment.ts
+      - name: Load database config
+        run: echo "export const databaseConfig = {};" > src/config/database.ts
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Typescript checks
+        run: yarn tsc --noEmit
+
+  jest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Load environment config
+        run: echo "${{ secrets.ENVIRONMENT_TEST }}" > src/config/environment.ts
+      - name: Load database config
+        run: echo "export const databaseConfig = {};" > src/config/database.ts
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Jest tests
+        run: yarn test
