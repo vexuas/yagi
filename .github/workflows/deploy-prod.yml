@@ -21,6 +21,8 @@ jobs:
           password: ${{ secrets.DO_PASSWORD }}
           script_stop: true
           script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             cd test-yagi
             git checkout develop
             git pull
