@@ -1,4 +1,4 @@
-name: Run Tests
+name: tests
 
 on:
   pull_request:
@@ -18,6 +18,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
+
+      - name: Load config
+        run: echo "${{ secrets.CONFIG }}" > src/config/environment.ts
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
