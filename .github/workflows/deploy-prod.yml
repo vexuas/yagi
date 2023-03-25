@@ -22,4 +22,5 @@ jobs:
           script: |
             cd test-yagi
             git fetch --tags
-            git checkout tags/v3.1.0 -b test-v3.1.0-tag
+            git branch | grep -v "develop" | xargs git branch -D
+            git checkout tags/v3.1.0 -b new-test-v3.1.0-tag
