@@ -21,4 +21,4 @@ jobs:
           password: ${{ secrets.DO_PASSWORD }}
           script: |
             cd test-yagi
-            nano test.ts
+            touch test.ts
