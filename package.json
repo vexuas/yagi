@@ -12,6 +12,7 @@
     "build": "tsc",
     "build:watch": "yarn tsc-watch --onSuccess 'nodemon dist/yagi.js'",
     "test": "jest",
+    "lint": "eslint ./",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
     "auto:release": "yarn auto:changelog && yarn auto:version",
