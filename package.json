@@ -8,7 +8,7 @@
   "scripts": {
     "start": "yarn build && yarn build:watch",
     "start:prod": "yarn build && BOT_ENV=prod yarn node dist/yagi.js",
-    "prebuild": "node -p \"'export const BOT_VERSION = ' + JSON.stringify(require('./package.json').version) + ';' + 'export const BOT_UPDATED_AT = ' + JSON.stringify('$(date +'%d-%b-%Y')')\" > src/version.ts",
+    "update:version": "node -p \"'export const BOT_VERSION = ' + JSON.stringify(require('./package.json').version) + ';' + 'export const BOT_UPDATED_AT = ' + JSON.stringify('$(date +'%d-%b-%Y')')\" > src/version.ts",
     "build": "tsc",
     "build:watch": "yarn tsc-watch --onSuccess 'nodemon dist/yagi.js'",
     "test": "jest",
