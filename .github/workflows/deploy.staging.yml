@@ -1,0 +1,45 @@
+name: deploy/prod
+
+on:
+  push:
+    branches:
+      - release/**
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to DigitalOcean droplet
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          password: ${{ secrets.DO_PASSWORD }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            nvm install 16.13.0
+            cd test-yagi
+            git checkout develop
+            git pull
+            git fetch --tags
+            git branch | grep -v "develop" | xargs git branch -D            
+            git checkout -b test/workflow
+            echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
+            echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
+            echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
+            yarn install 
+            yarn build
+            pm2 start dist/yagi.js --name test-yagi
+
+      - name: Send notification to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_NOTIFICATION_WEBHOOK }}
+          DISCORD_USERNAME: 'Yagi Release Notification'
+          DISCORD_AVATAR: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+          DISCORD_EMBEDS: "[{ color: 55296, title: 'Successfully deployed ${{ github.ref_name }}' }]"
+        uses: Ilshidur/action-discord@0.3.2
