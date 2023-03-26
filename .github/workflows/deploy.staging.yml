@@ -41,5 +41,5 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_NOTIFICATION_WEBHOOK }}
           DISCORD_USERNAME: 'Yagi Release Notification'
           DISCORD_AVATAR: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
-          DISCORD_EMBEDS: "[{ color: 55296, title: 'Successfully deployed ${{ github.ref_name }}' }]"
+          DISCORD_EMBEDS: "${{ toJSON([{ color: 55296, title: 'Successfully deployed ${{ github.ref_name }}' }]) }}"
         uses: Ilshidur/action-discord@0.3.2
