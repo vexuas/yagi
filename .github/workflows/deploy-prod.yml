@@ -28,6 +28,7 @@ jobs:
             pm2 stop yagi
             pm2 delete yagi
             cd yagi
+            git restore .
             git checkout develop
             git pull
             git fetch --tags
@@ -39,7 +40,7 @@ jobs:
             yarn update:version
             yarn install
             yarn build
-            pm2 start dist/yagi.js --name yagi --env BOT_ENV=prod
+            pm2 start deploy.config.js --env prod
 
       - name: Send notification to Discord
         env:
