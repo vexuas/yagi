@@ -5,7 +5,7 @@ import { APIEmbed } from 'discord-api-types/v9';
 export const generateHelpEmbed = (): APIEmbed => {
   const embed = {
     color: 32896,
-    description: 'Below you can see all the commands that I know! This is a test',
+    description: 'Below you can see all the commands that I know!',
     fields: [
       {
         name: 'Timer',
