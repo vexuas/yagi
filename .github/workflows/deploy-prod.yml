@@ -1,9 +1,9 @@
 name: deploy/prod
 
 on:
-  push:
-    branches:
-      - release/**
+  release:
+    types:
+      - 'published'
 
 jobs:
   deploy:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Log in to DigitalOcean droplet
+      - name: Logs in to DigitalOcean droplet and deploy changes
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.DO_HOST }}
@@ -23,15 +23,15 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
             nvm install 16.13.0
-            cd test-yagi
+            cd yagi
             git checkout develop
             git pull
             git fetch --tags
             git branch | grep -v "develop" | xargs git branch -D            
-            git checkout -b test/workflow
+            git checkout tags/${{ github.ref_name }} -b prod/${{ github.ref_name }}
             echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
             echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
-            yarn install 
+            yarn install
             yarn build
             pm2 start dist/yagi.js --name test-yagi
