@@ -29,6 +29,7 @@ jobs:
             pm2 delete yagi
             cd yagi
             git restore .
+            git clean -f
             git checkout develop
             git pull
             git fetch --tags
