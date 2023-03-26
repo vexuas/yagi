@@ -36,7 +36,7 @@ jobs:
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
             yarn install
             yarn build
-            pm2 start dist/yagi.js --name yagi -f --branch="prod/${{github.ref_name }}"
+            pm2 start dist/yagi.js --name yagi -f --branch="prod/${{ github.ref_name }}"
 
       - name: Send notification to Discord
         env:
