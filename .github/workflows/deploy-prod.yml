@@ -1,0 +1,39 @@
+name: deploy/prod
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Probably a better way to do this but I'm just simulating what I normally do
+      # This logs in to the DO droplet and pretty much just pulls the release changes and restarts the server
+      # Does assume there's already a droplet created and initiated as well as the yagi repo cloned
+      - name: Logs in to DigitalOcean droplet and deploy changes
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          password: ${{ secrets.DO_PASSWORD }}
+          script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            nvm install 16.13.0
+            cd yagi
+            git checkout develop
+            git pull
+            git fetch --tags
+            git branch | grep -v "develop" | xargs git branch -D            
+            git checkout tags/${{ github.ref_name }} -b prod/${{ github.ref_name }}
+            echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
+            echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
+            echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
+            yarn install
+            yarn build
+            pm2 start dist/yagi.js --name yagi
