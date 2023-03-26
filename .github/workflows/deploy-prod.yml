@@ -13,6 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Probably a better way to do this but I'm just simulating what I normally do
+      # This logs in to the DO droplet and pretty much just pulls the release changes and restarts the server
+      # Does assume there's already a droplet created and initiated as well as the yagi repo cloned
       - name: Logs in to DigitalOcean droplet and deploy changes
         uses: appleboy/ssh-action@v0.1.8
         with:
