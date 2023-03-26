@@ -36,4 +36,13 @@ jobs:
             echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
             yarn install
             yarn build
-            pm2 start dist/yagi.js --name yagi
+            pm2 start dist/yagi.js --name yagi -f --branch="prod/${{ github.ref_name }}"
+
+      - name: Send notification to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_NOTIFICATION_WEBHOOK }}
+          DISCORD_USERNAME: 'Yagi Release Notification'
+          DISCORD_AVATAR: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png'
+        uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: 'Successfully deployed `${{ github.ref_name }}` to production'
