@@ -2,7 +2,7 @@
   <img src="https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png" width=120px/>
 </div>
 
-# yagi | v3.1.0 <br>Aura Kingdom EN World Boss Timer for Discord
+# yagi | v3.2.0 <br>Aura Kingdom EN World Boss Timer for Discord
 
 Discord bot created for the MMORPG [Aura Kingdom](https://aurakingdom.aeriagames.com/). Its main
 function is to give information of when the next spawn of the world bosses of Vulture's Vale and
@@ -41,7 +41,6 @@ Instead of prefixes, Yagi uses Discord's [Slash Commands](https://support.discor
 ## Useful Links
 
 - [Yagi Support Server](https://discord.gg/7nAYYDm)
-- [Yagi Feedback Form](https://cyhmwysg8uq.typeform.com/to/szg4bUPU)
 - [Olympus WB Sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/htmlview?pru=AAABetvDVTc*CUO1z4a8sJgbuqturEfCGQ#)
 - [Guide for new WB hunters](https://aurakingdom.aeriagames.com/forum/index.php?thread/2817-info-the-olympus-world-boss-team/)
 

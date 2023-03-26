@@ -1,3 +1,42 @@
+# v3.2.0 (Sun Mar 26 2023)
+
+#### 🚀 Enhancement
+
+- Create deploy prod workflow file [#125](https://github.com/vexuas/yagi/pull/125) ([@vexuas](https://github.com/vexuas))
+- Add auto config and license [#122](https://github.com/vexuas/yagi/pull/122) ([@vexuas](https://github.com/vexuas))
+- Refactor testing suites [#121](https://github.com/vexuas/yagi/pull/121) ([@vexuas](https://github.com/vexuas))
+- Refactor helper file [#120](https://github.com/vexuas/yagi/pull/120) ([@vexuas](https://github.com/vexuas))
+- Migrate to typescript [#119](https://github.com/vexuas/yagi/pull/119) ([@vexuas](https://github.com/vexuas))
+- Refactor environment variables [#118](https://github.com/vexuas/yagi/pull/118) ([@vexuas](https://github.com/vexuas))
+- More app restructure [#117](https://github.com/vexuas/yagi/pull/117) ([@vexuas](https://github.com/vexuas))
+- Use webhooks for guild notifications [#116](https://github.com/vexuas/yagi/pull/116) ([@vexuas](https://github.com/vexuas))
+- Refactor commands imports [#115](https://github.com/vexuas/yagi/pull/115) ([@vexuas](https://github.com/vexuas))
+- Refactor events file [#114](https://github.com/vexuas/yagi/pull/114) ([@vexuas](https://github.com/vexuas))
+- Refactor app structure [#113](https://github.com/vexuas/yagi/pull/113) ([@vexuas](https://github.com/vexuas))
+- Remove unused dependencies [#112](https://github.com/vexuas/yagi/pull/112) ([@vexuas](https://github.com/vexuas))
+
+#### 🧪 Tests
+
+- Add test workflow for GitHub actions [#124](https://github.com/vexuas/yagi/pull/124) ([@vexuas](https://github.com/vexuas))
+- Add tests for commands [#123](https://github.com/vexuas/yagi/pull/123) ([@vexuas](https://github.com/vexuas))
+
+#### 🐛 Bug Fix
+
+- Fix workflow scripts [#129](https://github.com/vexuas/yagi/pull/129) ([@vexuas](https://github.com/vexuas))
+- Add discord notification after release deploy [#128](https://github.com/vexuas/yagi/pull/128) ([@vexuas](https://github.com/vexuas))
+- Surely this is the latest required version [#127](https://github.com/vexuas/yagi/pull/127) ([@vexuas](https://github.com/vexuas))
+- Add required version of Node [#126](https://github.com/vexuas/yagi/pull/126) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 03 05 [#111](https://github.com/vexuas/yagi/pull/111) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.1.0 (Sun Mar 05 2023)
 
 #### 🚀 Enhancement
