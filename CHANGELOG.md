@@ -1,3 +1,19 @@
+# v3.2.1 (Sun Mar 26 2023)
+
+#### 🐛 Fixes
+
+- Add deployment config [#131](https://github.com/vexuas/yagi/pull/131) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 03 26 [#130](https://github.com/vexuas/yagi/pull/130) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.0 (Sun Mar 26 2023)
 
 #### 🚀 Enhancement
