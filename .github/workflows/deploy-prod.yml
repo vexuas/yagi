@@ -37,7 +37,6 @@ jobs:
             git checkout tags/${{ github.ref_name }} -b prod/${{ github.ref_name }}
             echo "${{ secrets.ENVIRONMENT_PROD }}" > src/config/environment.ts
             echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
-            echo "${{ secrets.CA_CERTIFICATE }}" > src/config/ca-certificate.cer
             yarn update:version
             yarn install
             yarn build
