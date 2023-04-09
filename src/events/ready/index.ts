@@ -2,13 +2,7 @@ import { Client, TextChannel } from 'discord.js';
 import { Routes } from 'discord-api-types/v9';
 import { REST } from '@discordjs/rest';
 import { createGuildTable } from '../../services/database';
-import {
-  sendErrorLog,
-  getWorldBossData,
-  getServerTime,
-  validateWorldBossData,
-  sendHealthLog,
-} from '../../utils/helpers';
+import { sendErrorLog } from '../../utils/helpers';
 import { BOT_TOKEN, ENV, GUILD_IDS } from '../../config/environment';
 
 const rest: REST = new REST({ version: '9' }).setToken(BOT_TOKEN);
@@ -35,14 +29,6 @@ export default function ({ yagi, appCommands }: Props) {
       const testChannel = yagi.channels.cache.get('582213795942891521') as TextChannel;
       testChannel.send("I'm booting up! (◕ᴗ◕✿)"); //Sends to test bot channel in yagi's den
       /**
-       * Initial call to the Olympus spreadsheet and get world boss data
-       * As the public sheet isn't accurate with the timestamps given (only returns time and not date), we validate the data first. See more info in the helpers file
-       * After the data gets validated and is as accurate as possible now, we'll then be using this to store in our database
-       */
-      const worldBossData = await getWorldBossData();
-      const serverTime = getServerTime();
-      const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
-      /**
        * Initialise Database and its tables
        * Will create them if they don't exist
        * See relevant files under database/* for more information
@@ -57,8 +43,6 @@ export default function ({ yagi, appCommands }: Props) {
         const index = Math.floor(Math.random() * (activitylist.length - 1) + 1);
         yagi.user && yagi.user.setActivity(activitylist[index]);
       }, 120000);
-      const healthChannel = yagi.channels.cache.get('866297328159686676') as TextChannel; //goat-health channel in Yagi's Den
-      sendHealthLog(healthChannel, worldBossData, validatedWorldBossData, 'timer');
     } catch (e) {
       sendErrorLog(yagi, e as Error);
     }
