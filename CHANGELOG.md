@@ -1,3 +1,19 @@
+# v3.2.2 (Sun Apr 09 2023)
+
+#### 🐛 Bug Fix
+
+- Remove health log [#133](https://github.com/vexuas/yagi/pull/133) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 03 26 [#132](https://github.com/vexuas/yagi/pull/132) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.1 (Sun Mar 26 2023)
 
 #### 🐛 Fixes
