@@ -1,3 +1,28 @@
+# v3.2.3 (Mon Apr 17 2023)
+
+#### 🏠 Internal
+
+- Release/2023 04 09 [#134](https://github.com/vexuas/yagi/pull/134) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump node-fetch from 2.6.1 to 2.6.7 [#143](https://github.com/vexuas/yagi/pull/143) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Upgrade googleapis [#142](https://github.com/vexuas/yagi/pull/142) ([@vexuas](https://github.com/vexuas))
+- Upgrade auto [#141](https://github.com/vexuas/yagi/pull/141) ([@vexuas](https://github.com/vexuas))
+- Remove nodemon [#140](https://github.com/vexuas/yagi/pull/140) ([@vexuas](https://github.com/vexuas))
+- Bump http-cache-semantics from 4.1.0 to 4.1.1 [#139](https://github.com/vexuas/yagi/pull/139) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump ansi-regex from 4.1.0 to 4.1.1 [#138](https://github.com/vexuas/yagi/pull/138) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump qs from 6.10.1 to 6.11.1 [#137](https://github.com/vexuas/yagi/pull/137) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump undici from 5.8.0 to 5.21.2 [#136](https://github.com/vexuas/yagi/pull/136) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump minimatch from 3.0.4 to 3.1.2 [#135](https://github.com/vexuas/yagi/pull/135) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.2 (Sun Apr 09 2023)
 
 #### 🐛 Bug Fix
