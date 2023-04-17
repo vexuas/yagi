@@ -10,7 +10,7 @@
     "start:prod": "yarn build && BOT_ENV=prod yarn node dist/yagi.js",
     "update:version": "node -p \"'export const BOT_VERSION = ' + JSON.stringify(require('./package.json').version) + ';' + 'export const BOT_UPDATED_AT = ' + JSON.stringify('$(date +'%d-%b-%Y')')\" > src/version.ts",
     "build": "tsc",
-    "build:watch": "yarn tsc-watch --onSuccess 'nodemon dist/yagi.js'",
+    "build:watch": "yarn tsc-watch --onSuccess 'node dist/yagi.js'",
     "test": "jest",
     "auto:changelog": "yarn auto changelog",
     "auto:version": "yarn version --`auto version`",
@@ -26,7 +26,6 @@
     "googleapis": "39",
     "lodash": "^4.17.21",
     "mixpanel": "^0.13.0",
-    "nodemon": "^2.0.7",
     "pg": "^8.9.0",
     "topgg-autoposter": "^2.0.0",
     "uuid": "^8.3.2"
