@@ -2,7 +2,7 @@
   <img src="https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png" width=120px/>
 </div>
 
-# yagi | v3.2.0 <br>Aura Kingdom EN World Boss Timer for Discord
+# yagi | v3.2.3 <br>Aura Kingdom EN World Boss Timer for Discord
 
 Discord bot created for the MMORPG [Aura Kingdom](https://aurakingdom.aeriagames.com/). Its main
 function is to give information of when the next spawn of the world bosses of Vulture's Vale and
@@ -24,10 +24,11 @@ Yagi, thanks a lot I really appreciate it! (◕ᴗ◕✿)
 ## Tech Stack
 
 - [Discord.js](https://discord.js.org/#/) - Node.js module to interact easier with Discord's API
-- [PostgreSQL](https://www.postgresql.org/) | [DigitalOcean](https://www.digitalocean.com/products/managed-databases)  - Managed database to store server data
+- [PostgreSQL](https://www.postgresql.org/) | [DigitalOcean](https://www.digitalocean.com/products/managed-databases) - Managed database to store server data
 - [Mixpanel](https://mixpanel.com/) - user analytics tracker
 
 ## Commands List
+
 Instead of prefixes, Yagi uses Discord's [Slash Commands](https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ) `/`
 
 - `goats` - information for the next world boss spawn
