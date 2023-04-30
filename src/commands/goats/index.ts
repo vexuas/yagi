@@ -67,6 +67,15 @@ export const generateGoatsEmbed = (worldBossData: ValidWorldBossData): APIEmbed 
   return embedData;
 };
 
+export const generateGoatsErrorEmbed = (): APIEmbed => {
+  const embed: APIEmbed = {
+    title: 'Olympus | World Boss',
+    description:
+      'Whoops looks like there is an issue in getting the world boss data D:\n\nCheck out the [sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/edit#gid=1990459509) for more information!',
+    color: 32896,
+  };
+  return embed;
+};
 export default {
   data: new SlashCommandBuilder()
     .setName('goats')
@@ -77,7 +86,7 @@ export default {
       const serverTime = getServerTime();
       const worldBossData = await getWorldBossData();
       if (worldBossData.hasErrorData) {
-        await interaction.editReply({ content: 'something went wrong with data' });
+        await interaction.editReply({ embeds: [generateGoatsErrorEmbed()] });
         return;
       }
       const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
