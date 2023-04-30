@@ -213,6 +213,7 @@ export const getWorldBossData = async (): Promise<WorldBossData> => {
       lastSpawn: actualSheetValues[1],
       nextSpawn: actualSheetValues[2],
       countdown: actualSheetValues[3],
+      hasErrorData,
     };
   } catch (e) {
     console.log(e);

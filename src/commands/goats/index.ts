@@ -15,6 +15,7 @@ export type WorldBossData = {
   lastSpawn: string;
   nextSpawn: string;
   countdown: string;
+  hasErrorData?: boolean;
 };
 export interface ValidWorldBossData extends WorldBossData {
   serverTime: string;
@@ -75,7 +76,10 @@ export default {
       await interaction.deferReply();
       const serverTime = getServerTime();
       const worldBossData = await getWorldBossData();
-      console.log(worldBossData);
+      if (worldBossData.hasErrorData) {
+        await interaction.editReply({ content: 'something went wrong with data' });
+        return;
+      }
       const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
       const embed = validatedWorldBossData && generateGoatsEmbed(validatedWorldBossData);
       embed && (await interaction.editReply({ embeds: [embed] }));
