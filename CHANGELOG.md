@@ -1,3 +1,19 @@
+# v3.2.4 (Mon May 01 2023)
+
+#### 🐛 Fixes
+
+- Handle sheet data when it's erroring out [#145](https://github.com/vexuas/yagi/pull/145) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 04 17 [#144](https://github.com/vexuas/yagi/pull/144) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.3 (Mon Apr 17 2023)
 
 #### 🏠 Internal
