@@ -75,6 +75,7 @@ export default {
       await interaction.deferReply();
       const serverTime = getServerTime();
       const worldBossData = await getWorldBossData();
+      console.log(worldBossData);
       const validatedWorldBossData = validateWorldBossData(worldBossData, serverTime);
       const embed = validatedWorldBossData && generateGoatsEmbed(validatedWorldBossData);
       embed && (await interaction.editReply({ embeds: [embed] }));

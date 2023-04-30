@@ -207,6 +207,7 @@ export const getWorldBossData = async (): Promise<WorldBossData> => {
       rawSheetValues.forEach((item) => {
         item.values && actualSheetValues.push(item.values[0][0]);
       });
+    const hasErrorData = actualSheetValues.some((value) => !value || value.includes('---'));
     return {
       location: actualSheetValues[0],
       lastSpawn: actualSheetValues[1],
