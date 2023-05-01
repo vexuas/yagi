@@ -2,7 +2,7 @@
   <img src="https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png" width=120px/>
 </div>
 
-# yagi | v3.2.3 <br>Aura Kingdom EN World Boss Timer for Discord
+# yagi | v3.2.4 <br>Aura Kingdom EN World Boss Timer for Discord
 
 Discord bot created for the MMORPG [Aura Kingdom](https://aurakingdom.aeriagames.com/). Its main
 function is to give information of when the next spawn of the world bosses of Vulture's Vale and
