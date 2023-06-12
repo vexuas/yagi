@@ -10,7 +10,7 @@ const activitylist: string[] = [
   '/about | bot information',
   '/goats | Olympus wb',
   '/help | command list',
-  'v3.2.4 | 01/05/2023',
+  'v3.2.5 | 12/06/2023',
 ];
 
 //TODO: Refactor these someday
