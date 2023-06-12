@@ -1,3 +1,20 @@
+# v3.2.5 (Mon Jun 12 2023)
+
+#### 🐛 Bug Fix
+
+- Change offset to dst [#148](https://github.com/vexuas/yagi/pull/148) ([@vexuas](https://github.com/vexuas))
+- Revert error handling [#147](https://github.com/vexuas/yagi/pull/147) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 05 01 [#146](https://github.com/vexuas/yagi/pull/146) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.4 (Mon May 01 2023)
 
 #### 🐛 Fixes
