@@ -39,6 +39,7 @@ jobs:
             echo "${{ secrets.DATABASE_PROD }}" > src/config/database.ts
             yarn update:version
             yarn install
+            rm -R dist
             yarn build
             pm2 start deploy.config.js --env prod
 
