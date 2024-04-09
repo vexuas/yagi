@@ -1,3 +1,27 @@
+# v3.3.0 (Tue Apr 09 2024)
+
+#### 🚀 Enhancement
+
+- Update offset.json for daylights [#156](https://github.com/vexuas/yagi/pull/156) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2023 06 12 [#149](https://github.com/vexuas/yagi/pull/149) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump @babel/traverse from 7.21.3 to 7.23.2 [#153](https://github.com/vexuas/yagi/pull/153) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump undici from 5.21.2 to 5.26.3 [#152](https://github.com/vexuas/yagi/pull/152) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump word-wrap from 1.2.3 to 1.2.4 [#151](https://github.com/vexuas/yagi/pull/151) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump semver from 6.3.0 to 6.3.1 [#150](https://github.com/vexuas/yagi/pull/150) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.2.5 (Mon Jun 12 2023)
 
 #### 🐛 Bug Fix
