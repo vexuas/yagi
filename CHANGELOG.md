@@ -1,3 +1,19 @@
+# v3.5.0 (Sat Jan 04 2025)
+
+#### 🚀 Enhancement
+
+- Revert back to daylights offset [#165](https://github.com/vexuas/yagi/pull/165) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2025 01 04 [#164](https://github.com/vexuas/yagi/pull/164) ([@vexuas](https://github.com/vexuas))
+
+#### Authors: 1
+
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.4.0 (Sat Jan 04 2025)
 
 #### 🚀 Enhancement
