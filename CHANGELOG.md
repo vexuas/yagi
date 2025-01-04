@@ -1,3 +1,29 @@
+# v3.4.0 (Sat Jan 04 2025)
+
+#### 🚀 Enhancement
+
+- Delete compiled folder before recompiling in deployment workflow [#158](https://github.com/vexuas/yagi/pull/158) ([@vexuas](https://github.com/vexuas))
+- Update offset for 2024 daylights end [#162](https://github.com/vexuas/yagi/pull/162) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2024 04 09 [#157](https://github.com/vexuas/yagi/pull/157) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump micromatch from 4.0.4 to 4.0.8 [#161](https://github.com/vexuas/yagi/pull/161) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump cross-spawn from 7.0.3 to 7.0.6 [#163](https://github.com/vexuas/yagi/pull/163) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ws from 8.8.1 to 8.17.1 [#160](https://github.com/vexuas/yagi/pull/160) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump braces from 3.0.2 to 3.0.3 [#159](https://github.com/vexuas/yagi/pull/159) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+- Bump undici from 5.26.3 to 5.28.4 [#155](https://github.com/vexuas/yagi/pull/155) ([@dependabot[bot]](https://github.com/dependabot[bot]) [@vexuas](https://github.com/vexuas))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.3.0 (Tue Apr 09 2024)
 
 #### 🚀 Enhancement
