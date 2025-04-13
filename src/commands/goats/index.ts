@@ -9,6 +9,7 @@ import {
 } from '../../utils/helpers';
 import { format } from 'date-fns';
 import { APIEmbed } from 'discord-api-types/v9';
+import { YAGI_AVATAR_URL } from '../../utils/constants';
 
 export type WorldBossData = {
   location: string;
@@ -41,7 +42,7 @@ export const generateGoatsEmbed = (worldBossData: ValidWorldBossData): APIEmbed 
     description: `${serverTimeDesc}\n${spawnDesc}`,
     color: 32896,
     thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
+      url: YAGI_AVATAR_URL,
     },
     footer: {
       text: spawnFooter,

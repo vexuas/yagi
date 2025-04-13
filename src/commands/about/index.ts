@@ -4,6 +4,7 @@ import { APIEmbed } from 'discord-api-types/v9';
 import { Client } from 'discord.js';
 import { BOT_UPDATED_AT, BOT_VERSION } from '../../version';
 import { AppCommand, AppCommandOptions } from '../commands';
+import { YAGI_AVATAR_URL } from '../../utils/constants';
 
 export const generateAboutEmbed = (yagi?: Client): APIEmbed => {
   const embed = {
@@ -13,7 +14,7 @@ export const generateAboutEmbed = (yagi?: Client): APIEmbed => {
     } servers!\n\nMy timer data is extracted from the player-run [Olympus WB Sheet](https://docs.google.com/spreadsheets/d/tUL0-Nn3Jx7e6uX3k4_yifQ/edit#gid=585652389). Kudos to the hardwork of the editors and leads in the team!\n\nFor a detailed list of my commands, type \`/help\``,
     color: 32896,
     thumbnail: {
-      url: 'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
+      url: YAGI_AVATAR_URL,
     },
     fields: [
       {

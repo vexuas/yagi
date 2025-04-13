@@ -4,6 +4,7 @@ import { GUILD_NOTIFICATION_WEBHOOK_URL } from '../../config/environment';
 import { deleteGuild } from '../../services/database';
 import { sendErrorLog, serverEmbed } from '../../utils/helpers';
 import { EventModule } from '../events';
+import { YAGI_AVATAR_URL } from '../../utils/constants';
 
 /**
  * Event handlers for when yagi is kickined from a server
@@ -19,8 +20,7 @@ export default function ({ yagi }: EventModule) {
         await notificationWebhook.send({
           embeds: [embed],
           username: 'Yagi Server Notificaiton',
-          avatarURL:
-            'https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png',
+          avatarURL: YAGI_AVATAR_URL,
         });
       }
     } catch (e) {

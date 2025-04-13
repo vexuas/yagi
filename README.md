@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://cdn.discordapp.com/attachments/491143568359030794/500863196471754762/goat-timer_logo_dark2.png" width=120px/>
+  <img src="https://vexuas.b-cdn.net/goat-timer_logo_dark2.png" width=120px/>
 </div>
 
 # yagi | v3.2.4 <br>Aura Kingdom EN World Boss Timer for Discord
