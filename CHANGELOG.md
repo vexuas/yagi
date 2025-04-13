@@ -1,3 +1,31 @@
+# v3.6.0 (Sun Apr 13 2025)
+
+#### 🚀 Enhancement
+
+- Update discord cdn urls to personal cdn [#174](https://github.com/vexuas/yagi/pull/174) ([@vexuas](https://github.com/vexuas))
+- Update to use node 18 [#176](https://github.com/vexuas/yagi/pull/176) ([@vexuas](https://github.com/vexuas))
+- Schedule monthly dependabot updates [#168](https://github.com/vexuas/yagi/pull/168) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2025 01 04 [#166](https://github.com/vexuas/yagi/pull/166) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump topgg-autoposter from 2.0.0 to 2.0.2 [#173](https://github.com/vexuas/yagi/pull/173) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump pg and @types/pg [#171](https://github.com/vexuas/yagi/pull/171) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @top-gg/sdk from 3.1.2 to 3.1.6 [#172](https://github.com/vexuas/yagi/pull/172) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump typescript from 4.9.5 to 5.8.3 [#170](https://github.com/vexuas/yagi/pull/170) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump @types/lodash from 4.14.191 to 4.17.16 [#169](https://github.com/vexuas/yagi/pull/169) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump undici from 5.28.4 to 5.28.5 [#167](https://github.com/vexuas/yagi/pull/167) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.5.0 (Sat Jan 04 2025)
 
 #### 🚀 Enhancement
