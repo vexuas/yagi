@@ -797,7 +797,7 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
-"@jpbberry/typed-emitter@^1.0.1":
+"@jpbberry/typed-emitter@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@jpbberry/typed-emitter/-/typed-emitter-1.2.1.tgz#3a83d712cd4d40fed1aa7df32791131070c096f9"
   integrity sha512-XTYlVkcj329NNQfo+Fcix/ZcTQHn0F+5gt2lJvI5rBeulT+tq0uzeIIk3oAlwJg7GT9u4mqG0bNLq/kqKXxf4Q==
@@ -1075,7 +1075,7 @@
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
   integrity sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==
 
-"@top-gg/sdk@^3.0.9", "@top-gg/sdk@^3.1.6":
+"@top-gg/sdk@^3.1.6":
   version "3.1.6"
   resolved "https://registry.yarnpkg.com/@top-gg/sdk/-/sdk-3.1.6.tgz#e41c166b2b92466c8fcaff0cc2b260507d9d00f6"
   integrity sha512-qWWYDKAwJHaKaA/5EyLYMzfR76MwCbmKVMSXTPMd9FZFPHuLWJHO+m7Q8dWpWtcnunHa6evRAwlB3p83cht7Ww==
@@ -4321,14 +4321,13 @@ token-types@^5.0.0-alpha.2:
     "@tokenizer/token" "^0.3.0"
     ieee754 "^1.2.1"
 
-topgg-autoposter@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/topgg-autoposter/-/topgg-autoposter-2.0.0.tgz#c07bfadc3b6587c382fdc568178dc4083cc9d686"
-  integrity sha512-0p+nQFwonIDfc6H0B5A9DO+34WYJvjaAMV+aVh+7sG+ChIi2Etl+w6bFEXhI1ws7dnsmp26Jstpyb9lK/Sy0dw==
+topgg-autoposter@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/topgg-autoposter/-/topgg-autoposter-2.0.2.tgz#5bc98719c18971834999c13e3cd038131b47276d"
+  integrity sha512-SvAYFpRisHC84OWPCHm8JVb0hk/f1duBmnfZmT7yAXsCr/0TA5UdS/addtEJtQsyxwSeeBxKapN65wAPoEogrQ==
   dependencies:
-    "@jpbberry/typed-emitter" "^1.0.1"
-    "@top-gg/sdk" "^3.0.9"
-    typescript "^4.2.3"
+    "@jpbberry/typed-emitter" "^1.2.1"
+    "@top-gg/sdk" "^3.1.6"
 
 tr46@~0.0.3:
   version "0.0.3"
@@ -4446,11 +4445,6 @@ typescript-memoize@^1.0.0-alpha.3:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/typescript-memoize/-/typescript-memoize-1.0.1.tgz#0a8199aa28f6fe18517f6e9308ef7bfbe9a98d59"
   integrity sha512-oJNge1qUrOK37d5Y6Ly2txKeuelYVsFtNF6U9kXIN7juudcQaHJQg2MxLOy0CqtkW65rVDYuTCOjnSIVPd8z3w==
-
-typescript@^4.2.3:
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.5.2.tgz#8ac1fba9f52256fdb06fb89e4122fa6a346c2998"
-  integrity sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==
 
 typescript@^5.8.3:
   version "5.8.3"
