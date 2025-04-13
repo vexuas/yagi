@@ -23,6 +23,7 @@ import { google } from 'googleapis';
 import { GOOGLE_CLIENT_ID } from '../config/environment';
 import { Client, Guild, TextChannel } from 'discord.js';
 import { WorldBossData } from '../commands/goats';
+import { GUILD_ICON_FALLBACK_URL } from './constants';
 const sheets = google.sheets('v4');
 
 export const getServerTime = (): number => {
@@ -128,8 +129,7 @@ export const formatLocation = (rawLocation: string): string => {
 export const serverEmbed = async (yagi: Client, guild: Guild, status: string) => {
   let embedTitle;
   let embedColor;
-  const defaultIcon =
-    'https://cdn.discordapp.com/attachments/248430185463021569/614789995596742656/Wallpaper2.png';
+  const defaultIcon = GUILD_ICON_FALLBACK_URL;
   if (status === 'join') {
     embedTitle = 'Joined a new server';
     embedColor = 55296;
