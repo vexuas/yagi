@@ -25,7 +25,7 @@
     "discord.js": "^13.3.1",
     "googleapis": "^118.0.0",
     "lodash": "^4.17.21",
-    "mixpanel": "^0.13.0",
+    "mixpanel": "^0.18.1",
     "pg": "^8.15.6",
     "topgg-autoposter": "^2.0.2",
     "uuid": "^8.3.2"
