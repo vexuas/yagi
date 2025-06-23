@@ -1,3 +1,32 @@
+# v3.7.0 (Tue Jun 24 2025)
+
+#### 🚀 Enhancement
+
+- Update to use digital ocean space [#188](https://github.com/vexuas/yagi/pull/188) ([@vexuas](https://github.com/vexuas))
+
+#### 🏠 Internal
+
+- Release/2025 04 13 [#177](https://github.com/vexuas/yagi/pull/177) ([@vexuas](https://github.com/vexuas))
+
+#### 🔩 Dependency Updates
+
+- Bump @types/lodash from 4.17.16 to 4.17.17 [#187](https://github.com/vexuas/yagi/pull/187) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump tsc-watch from 6.0.0 to 7.1.1 [#185](https://github.com/vexuas/yagi/pull/185) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump uuid from 8.3.2 to 11.1.0 [#186](https://github.com/vexuas/yagi/pull/186) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump ts-jest from 29.0.5 to 29.3.4 [#184](https://github.com/vexuas/yagi/pull/184) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump jest and @types/jest [#182](https://github.com/vexuas/yagi/pull/182) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump mixpanel from 0.13.0 to 0.18.1 [#181](https://github.com/vexuas/yagi/pull/181) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump auto from 10.44.0 to 11.3.0 [#179](https://github.com/vexuas/yagi/pull/179) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump date-fns from 2.29.3 to 4.1.0 [#180](https://github.com/vexuas/yagi/pull/180) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump pg and @types/pg [#178](https://github.com/vexuas/yagi/pull/178) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Gabriel R ([@vexuas](https://github.com/vexuas))
+
+---
+
 # v3.6.0 (Sun Apr 13 2025)
 
 #### 🚀 Enhancement
